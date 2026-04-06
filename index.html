@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QUNOX — Infraestructura bajo control</title>
+  <meta name="description" content="QUNOX combina experiencia técnica real con estrategia para transformar sistemas complejos en infraestructura confiable, escalable y continua." />
+  <meta property="og:title" content="QUNOX — Infraestructura bajo control" />
+  <meta property="og:description" content="QUNOX combina experiencia técnica real con estrategia para transformar sistemas complejos en infraestructura confiable, escalable y continua." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://qunox.com/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #030309;
+      --card-bg: rgba(10, 11, 28, 0.85);
+      --blue: #4361EE;
+      --purple: #7209B7;
+      --cyan: #4CC9F0;
+      --text: #E2E8F0;
+      --text-sec: #94A3B8;
+      --border: rgba(67, 97, 238, 0.2);
+      --gutter: clamp(1.5rem, 5vw, 5rem);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5 { font-family: 'Space Grotesk', sans-serif; line-height: 1.2; }
+
+    a { color: inherit; text-decoration: none; }
+
+    img, svg { display: block; }
+
+    /* ─── SCROLLBAR ─────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ─── NAV ────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.25rem var(--gutter);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    #nav.scrolled {
+      background: rgba(3, 3, 9, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-color: var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(67,97,238,0.7), 0 0 40px rgba(67,97,238,0.4);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-sec);
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--blue);
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    .nav-cta {
+      padding: 0.625rem 1.375rem;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #fff;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-cta:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(67,97,238,0.4);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 3, 9, 0.97);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .mobile-menu a {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      transition: color 0.2s;
+    }
+
+    .mobile-menu a:hover { color: var(--cyan); }
+
+    /* ─── HERO ───────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-fade-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 860px;
+      padding: 0 var(--gutter);
+      margin: 0 auto;
+      text-align: center;
+      will-change: transform;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1.75rem;
+      background: rgba(76, 201, 240, 0.05);
+    }
+
+    .hero-eyebrow span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero-title {
+      font-size: clamp(2.75rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.08;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title .accent-blue { color: var(--blue); }
+    .hero-title .accent-cyan { color: var(--cyan); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-sec);
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 0.875rem 2rem;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      will-change: transform;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(67,97,238,0.45);
+    }
+
+    .btn-ghost {
+      padding: 0.875rem 2rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--blue);
+      background: rgba(67,97,238,0.08);
+      transform: translateY(-2px);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-sec);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: bounce-down 2s infinite;
+    }
+
+    .scroll-indicator svg { opacity: 0.5; }
+
+    @keyframes bounce-down {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ─── SECTION COMMONS ────────────────────────── */
+    section { padding: clamp(4rem, 8vw, 7rem) var(--gutter); }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title .line-accent {
+      display: inline-block;
+      position: relative;
+    }
+
+    .section-title .line-accent::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 0;
+      width: 60%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), transparent);
+      border-radius: 2px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ─── REVEAL ─────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── PROBLEMA ───────────────────────────────── */
+    #problema {
+      background: linear-gradient(180deg, var(--bg) 0%, rgba(5,5,15,1) 100%);
+    }
+
+    .problema-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .problema-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .pain-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,80,50,0.15);
+      border-left: 3px solid rgba(255,100,50,0.6);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      will-change: transform;
+    }
+
+    .pain-card:hover {
+      border-color: rgba(255,100,50,0.4);
+      border-left-color: rgba(255,100,50,0.9);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255,80,50,0.12);
+    }
+
+    .pain-icon {
+      width: 36px; height: 36px;
+      margin-bottom: 1rem;
+      color: rgba(255,130,80,0.8);
+    }
+
+    .pain-question {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .pain-consequence {
+      font-size: 0.85rem;
+      color: var(--text-sec);
+      line-height: 1.6;
+    }
+
+    .problema-closing {
+      text-align: center;
+      font-size: 1.05rem;
+      color: var(--text-sec);
+      font-style: italic;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(67,97,238,0.04);
+    }
+
+    /* ─── TRANSICION ─────────────────────────────── */
+    #transicion {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(67,97,238,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(67,97,238,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: grid-shift 20s linear infinite;
+    }
+
+    @keyframes grid-shift {
+      from { background-position: 0 0; }
+      to { background-position: 48px 48px; }
+    }
+
+    .transicion-content { position: relative; z-index: 2; }
+
+    .transicion-title {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .transicion-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-sec);
+      max-width: 500px;
+      margin: 0 auto 3rem;
+    }
+
+    /* Node animation SVG */
+    .nodes-anim {
+      width: 320px;
+      margin: 0 auto;
+      height: 120px;
+    }
+
+    .node-dot {
+      fill: var(--blue);
+      opacity: 0;
+      animation: node-appear 1s forwards;
+    }
+
+    .node-line {
+      stroke: var(--cyan);
+      stroke-width: 1;
+      opacity: 0;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: line-draw 0.8s forwards;
+    }
+
+    @keyframes node-appear {
+      from { opacity: 0; transform: scale(0); }
+      to { opacity: 0.9; transform: scale(1); }
+    }
+
+    @keyframes line-draw {
+      to { stroke-dashoffset: 0; opacity: 0.4; }
+    }
+
+    /* ─── NOSOTROS ───────────────────────────────── */
+    #nosotros {
+      background: rgba(5,5,18,1);
+    }
+
+    .nosotros-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .nosotros-body {
+      font-size: 1.05rem;
+      color: var(--text-sec);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+
+    .nosotros-points {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .point-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.875rem 1.25rem;
+      background: rgba(67,97,238,0.06);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .point-icon {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      background: rgba(67,97,238,0.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+    }
+
+    .point-text {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    /* Hexagon network SVG */
+    .hex-network {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .hex-path {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 1.2;
+      opacity: 0.35;
+    }
+
+    .hex-dot {
+      fill: var(--cyan);
+      animation: hex-pulse 3s ease-in-out infinite;
+    }
+
+    .hex-dot:nth-child(odd) { animation-delay: 0.5s; }
+    .hex-dot:nth-child(3n) { animation-delay: 1s; }
+
+    @keyframes hex-pulse {
+      0%, 100% { r: 3; opacity: 0.8; }
+      50% { r: 5; opacity: 0.3; }
+    }
+
+    /* ─── SERVICIOS ──────────────────────────────── */
+    #servicios {
+      background: var(--bg);
+    }
+
+    .servicios-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .servicios-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      will-change: transform;
+    }
+
+    .service-card:hover {
+      border-color: rgba(67,97,238,0.5);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(67,97,238,0.18), 0 0 0 1px rgba(67,97,238,0.12);
+    }
+
+    .service-icon {
+      width: 44px; height: 44px;
+      margin-bottom: 1.25rem;
+      color: var(--cyan);
+    }
+
+    .service-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .service-what {
+      font-size: 0.875rem;
+      color: var(--text-sec);
+      line-height: 1.6;
+      margin-bottom: 0.875rem;
+    }
+
+    .service-benefit {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--cyan);
+      padding: 0.375rem 0.75rem;
+      background: rgba(76,201,240,0.08);
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .partners-badge {
+      text-align: center;
+      padding: 1.25rem 2rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 400px;
+      margin: 0 auto;
+      background: rgba(67,97,238,0.04);
+    }
+
+    .partners-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-sec);
+      margin-bottom: 0.5rem;
+    }
+
+    .partners-names {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+
+    .partners-sep { color: var(--border); margin: 0 0.75rem; }
+
+    /* ─── PROPUESTA DE VALOR ─────────────────────── */
+    #propuesta {
+      background: rgba(5,5,18,1);
+      overflow: hidden;
+    }
+
+    .propuesta-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .pv-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 2rem;
+      align-items: center;
+      padding: 2.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .pv-item:last-child { border-bottom: none; }
+
+    .pv-item.right {
+      grid-template-columns: 1fr 80px;
+      text-align: right;
+    }
+
+    .pv-item.right .pv-number { order: 2; }
+    .pv-item.right .pv-content { order: 1; }
+
+    .pv-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: rgba(67,97,238,0.15);
+      line-height: 1;
+      user-select: none;
+    }
+
+    .pv-title {
+      font-size: clamp(1.2rem, 2.5vw, 1.75rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .pv-desc {
+      font-size: 0.95rem;
+      color: var(--text-sec);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+
+    .pv-item.right .pv-desc { margin-left: auto; }
+
+    /* ─── CONTACTO ───────────────────────────────── */
+    #contacto {
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #contacto::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(ellipse, rgba(67,97,238,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .contacto-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .contacto-header-text {
+      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .contacto-sub {
+      font-size: 1rem;
+      color: var(--text-sec);
+      margin-bottom: 2rem;
+    }
+
+    .contacto-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-sec);
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .contact-link:hover { color: var(--cyan); }
+
+    .contact-link svg { color: var(--blue); flex-shrink: 0; }
+
+    /* Form */
+    .contact-form {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-sec);
+      pointer-events: none;
+      transition: transform 0.2s, font-size 0.2s, color 0.2s;
+      transform-origin: left top;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      resize: vertical;
+    }
+
+    .form-group textarea { min-height: 110px; }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--blue);
+      background: rgba(67,97,238,0.06);
+    }
+
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group textarea:focus + label,
+    .form-group textarea:not(:placeholder-shown) + label {
+      transform: translateY(-1.5rem) scale(0.8);
+      color: var(--cyan);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: transparent; }
+
+    .form-submit {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(67,97,238,0.4);
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .form-success.visible { display: block; }
+
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(76,201,240,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--cyan);
+    }
+
+    .success-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-msg {
+      font-size: 0.875rem;
+      color: var(--text-sec);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    footer {
+      border-top: 1px solid transparent;
+      padding: 2.5rem var(--gutter);
+      background: rgba(2,2,8,1);
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(67,97,238,0.5);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: var(--text-sec);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-partners {
+      font-size: 0.8rem;
+      color: var(--text-sec);
+    }
+
+    .footer-partners strong { color: var(--text); }
+
+    .footer-copy {
+      width: 100%;
+      text-align: center;
+      font-size: 0.78rem;
+      color: rgba(148,163,184,0.5);
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 968px) {
+      .nosotros-inner { grid-template-columns: 1fr; }
+      .hex-network { max-width: 280px; }
+      .contacto-inner { grid-template-columns: 1fr; }
+      .pv-item { grid-template-columns: 60px 1fr; }
+      .pv-item.right { grid-template-columns: 1fr 60px; }
+      .pv-number { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .hamburger { display: flex; }
+
+      .problema-grid { grid-template-columns: 1fr 1fr; }
+      .servicios-grid { grid-template-columns: 1fr 1fr; }
+
+      .pv-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      .pv-item.right { grid-template-columns: 1fr; text-align: left; }
+      .pv-item.right .pv-number { order: 1; }
+      .pv-item.right .pv-content { order: 2; }
+      .pv-item.right .pv-desc { margin-left: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .problema-grid { grid-template-columns: 1fr; }
+      .servicios-grid { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-ghost { width: 100%; max-width: 280px; text-align: center; }
+
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     NAV
+════════════════════════════════════════════ -->
+<nav id="nav" role="navigation" aria-label="Navegación principal">
+  <a href="#hero" class="nav-logo">QUNOX</a>
+
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#servicios" data-section="servicios">Servicios</a></li>
+    <li><a href="#nosotros" data-section="nosotros">Nosotros</a></li>
+    <li><a href="#contacto" data-section="contacto">Contacto</a></li>
+  </ul>
+
+  <a href="#contacto" class="nav-cta">Hablar con un especialista</a>
+
+  <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú móvil">
+  <a href="#servicios" class="mobile-link">Servicios</a>
+  <a href="#nosotros" class="mobile-link">Nosotros</a>
+  <a href="#contacto" class="mobile-link">Contacto</a>
+  <a href="#contacto" class="btn-primary" style="margin-top:1rem;">Hablar con un especialista</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+<section id="hero" aria-label="Portada">
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <div class="hero-fade-bottom" aria-hidden="true"></div>
+
+  <div class="hero-content" id="hero-content">
+    <div class="hero-eyebrow">
+      <span></span>
+      Infraestructura técnica especializada
+    </div>
+    <h1 class="hero-title">
+      Infraestructura<br><span class="accent-cyan">bajo control.</span>
+    </h1>
+    <p class="hero-sub">
+      QUNOX combina experiencia técnica real con estrategia para transformar sistemas complejos en infraestructura confiable, escalable y continua.
+    </p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-primary">Hablar con un especialista</a>
+      <a href="#servicios" class="btn-ghost">Ver servicios</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PROBLEMA
+════════════════════════════════════════════ -->
+<section id="problema" aria-labelledby="problema-title">
+  <div class="container">
+    <div class="problema-header reveal">
+      <span class="section-label">Diagnóstico</span>
+      <h2 class="section-title" id="problema-title">
+        <span class="line-accent">¿Te suena familiar?</span>
+      </h2>
+    </div>
+
+    <div class="problema-grid">
+
+      <article class="pain-card reveal" data-delay="0">
+        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        <p class="pain-question">¿Tu infraestructura crece sin control?</p>
+        <p class="pain-consequence">Sistemas que escalan sin planificación generan puntos de falla invisibles.</p>
+      </article>
+
+      <article class="pain-card reveal" data-delay="80">
+        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p class="pain-question">¿Tus recursos están realmente bien utilizados?</p>
+        <p class="pain-consequence">Capacidad desperdiciada o sobreasignada que nadie monitorea.</p>
+      </article>
+
+      <article class="pain-card reveal" data-delay="160">
+        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M21 12c-1 4.5-5 8-9 8s-8-3.5-9-8 5-8 9-8 8 3.5 9 8z"/>
+        </svg>
+        <p class="pain-question">¿Tu arquitectura ha sido validada alguna vez?</p>
+        <p class="pain-consequence">Diseños sin prueba real que funcionan hasta que dejan de funcionar.</p>
+      </article>
+
+      <article class="pain-card reveal" data-delay="0">
+        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <p class="pain-question">¿Estás preparado para una falla real?</p>
+        <p class="pain-consequence">Sin un DR probado, una falla se convierte en crisis.</p>
+      </article>
+
+      <article class="pain-card reveal" data-delay="80">
+        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <p class="pain-question">¿Tienes visibilidad total de tu infraestructura?</p>
+        <p class="pain-consequence">Sin monitoreo continuo, los problemas se ven cuando ya es tarde.</p>
+      </article>
+
+      <article class="pain-card reveal" data-delay="160">
+        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        <p class="pain-question">¿Tu plan de continuidad sobreviviría una crisis?</p>
+        <p class="pain-consequence">La continuidad operativa no puede ser teórica.</p>
+      </article>
+
+    </div>
+
+    <p class="problema-closing reveal">
+      "Si una de estas preguntas generó incomodidad, ya sabes que hay trabajo por hacer."
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     TRANSICIÓN
+════════════════════════════════════════════ -->
+<section id="transicion" aria-label="Propósito">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="transicion-content container">
+    <div class="reveal">
+      <h2 class="transicion-title">Convertimos complejidad en control.</h2>
+      <p class="transicion-sub">Cada sistema tiene un punto de orden. Lo encontramos, lo diseñamos y lo sostenemos.</p>
+    </div>
+
+    <!-- Animated SVG: nodes organizing into grid -->
+    <div class="reveal" data-delay="200">
+      <svg class="nodes-anim" viewBox="0 0 320 120" aria-hidden="true" id="nodes-svg">
+        <!-- scattered nodes -->
+        <circle class="node-dot" cx="30" cy="80" r="4" style="animation-delay:0.1s"/>
+        <circle class="node-dot" cx="70" cy="30" r="4" style="animation-delay:0.2s"/>
+        <circle class="node-dot" cx="120" cy="90" r="4" style="animation-delay:0.3s"/>
+        <circle class="node-dot" cx="155" cy="20" r="4" style="animation-delay:0.4s"/>
+        <circle class="node-dot" cx="200" cy="75" r="4" style="animation-delay:0.5s"/>
+        <circle class="node-dot" cx="255" cy="40" r="4" style="animation-delay:0.6s"/>
+        <circle class="node-dot" cx="290" cy="90" r="4" style="animation-delay:0.7s"/>
+        <!-- connecting lines -->
+        <line class="node-line" x1="30" y1="80" x2="70" y2="30" style="animation-delay:0.8s"/>
+        <line class="node-line" x1="70" y1="30" x2="120" y2="90" style="animation-delay:0.9s"/>
+        <line class="node-line" x1="120" y1="90" x2="155" y2="20" style="animation-delay:1.0s"/>
+        <line class="node-line" x1="155" y1="20" x2="200" y2="75" style="animation-delay:1.1s"/>
+        <line class="node-line" x1="200" y1="75" x2="255" y2="40" style="animation-delay:1.2s"/>
+        <line class="node-line" x1="255" y1="40" x2="290" y2="90" style="animation-delay:1.3s"/>
+        <line class="node-line" x1="30" y1="80" x2="120" y2="90" style="animation-delay:1.4s"/>
+        <line class="node-line" x1="70" y1="30" x2="155" y2="20" style="animation-delay:1.5s"/>
+        <line class="node-line" x1="200" y1="75" x2="290" y2="90" style="animation-delay:1.6s"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     NOSOTROS
+════════════════════════════════════════════ -->
+<section id="nosotros" aria-labelledby="nosotros-title">
+  <div class="container">
+    <div class="nosotros-inner">
+
+      <div class="reveal">
+        <span class="section-label">Quiénes somos</span>
+        <h2 class="section-title" id="nosotros-title">Un aliado técnico real</h2>
+        <p class="nosotros-body">
+          QUNOX no vende soluciones genéricas. Trabajamos desde la experiencia en centros de datos reales, migraciones complejas y arquitecturas que deben funcionar sin margen de error. Somos el equipo técnico que acompaña cada decisión de infraestructura.
+        </p>
+        <div class="nosotros-points">
+          <div class="point-item">
+            <div class="point-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <span class="point-text">Experiencia en centros de datos reales</span>
+          </div>
+          <div class="point-item">
+            <div class="point-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
+              </svg>
+            </div>
+            <span class="point-text">Migraciones complejas resueltas</span>
+          </div>
+          <div class="point-item">
+            <div class="point-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+              </svg>
+            </div>
+            <span class="point-text">Soporte especializado continuo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hexagon network -->
+      <div class="reveal" data-delay="150">
+        <svg class="hex-network" viewBox="0 0 400 340" aria-hidden="true">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Hexagons -->
+          <polygon class="hex-path" points="200,30 240,52 240,96 200,118 160,96 160,52" filter="url(#glow)"/>
+          <polygon class="hex-path" points="120,100 160,122 160,166 120,188 80,166 80,122" filter="url(#glow)" style="stroke:var(--purple);opacity:0.25"/>
+          <polygon class="hex-path" points="280,100 320,122 320,166 280,188 240,166 240,122" filter="url(#glow)" style="stroke:var(--cyan);opacity:0.2"/>
+          <polygon class="hex-path" points="200,170 240,192 240,236 200,258 160,236 160,192" filter="url(#glow)" style="stroke:var(--purple);opacity:0.3"/>
+          <polygon class="hex-path" points="80,240 120,262 120,306 80,328 40,306 40,262" filter="url(#glow)" style="opacity:0.15"/>
+          <polygon class="hex-path" points="320,240 360,262 360,306 320,328 280,306 280,262" filter="url(#glow)" style="stroke:var(--cyan);opacity:0.15"/>
+
+          <!-- Connection lines -->
+          <line x1="200" y1="118" x2="120" y2="122" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
+          <line x1="200" y1="118" x2="280" y2="122" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
+          <line x1="120" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
+          <line x1="280" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
+          <line x1="120" y1="188" x2="80" y2="262" stroke="var(--purple)" stroke-width="0.8" opacity="0.15"/>
+          <line x1="280" y1="188" x2="320" y2="262" stroke="var(--purple)" stroke-width="0.8" opacity="0.15"/>
+
+          <!-- Pulse dots -->
+          <circle class="hex-dot" cx="200" cy="74" r="3" filter="url(#glow)" style="fill:var(--cyan)"/>
+          <circle class="hex-dot" cx="120" cy="144" r="3" filter="url(#glow)" style="fill:var(--blue);animation-delay:0.5s"/>
+          <circle class="hex-dot" cx="280" cy="144" r="3" filter="url(#glow)" style="fill:var(--purple);animation-delay:1s"/>
+          <circle class="hex-dot" cx="200" cy="214" r="3" filter="url(#glow)" style="fill:var(--blue);animation-delay:1.5s"/>
+          <circle class="hex-dot" cx="80" cy="284" r="3" filter="url(#glow)" style="fill:var(--cyan);animation-delay:0.7s"/>
+          <circle class="hex-dot" cx="320" cy="284" r="3" filter="url(#glow)" style="fill:var(--purple);animation-delay:1.2s"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SERVICIOS
+════════════════════════════════════════════ -->
+<section id="servicios" aria-labelledby="servicios-title">
+  <div class="container">
+    <div class="servicios-header reveal">
+      <span class="section-label">Lo que hacemos</span>
+      <h2 class="section-title" id="servicios-title"><span class="line-accent">Cómo ayudamos</span></h2>
+    </div>
+
+    <div class="servicios-grid">
+
+      <article class="service-card reveal" data-delay="0">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.77 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
+        </svg>
+        <h3 class="service-name">Soporte L3 Especializado</h3>
+        <p class="service-what">Gestión proactiva, escalamiento técnico y resolución de incidentes críticos.</p>
+        <span class="service-benefit">Tu operación continúa sin importar la complejidad del problema.</span>
+      </article>
+
+      <article class="service-card reveal" data-delay="80">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+          <path d="M2 12h2M20 12h2M12 2v2M12 20v2"/>
+        </svg>
+        <h3 class="service-name">Optimización y Tuning</h3>
+        <p class="service-what">Balanceo de recursos, evaluación de storage y ajuste de rendimiento.</p>
+        <span class="service-benefit">Máximo rendimiento con los recursos que ya tienes.</span>
+      </article>
+
+      <article class="service-card reveal" data-delay="160">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
+          <line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+        </svg>
+        <h3 class="service-name">Implementación de Clusters</h3>
+        <p class="service-what">Diseño e implementación de arquitecturas de alta disponibilidad.</p>
+        <span class="service-benefit">Infraestructura que escala sin comprometer la estabilidad.</span>
+      </article>
+
+      <article class="service-card reveal" data-delay="0">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+        <h3 class="service-name">Diseño de Disaster Recovery</h3>
+        <p class="service-what">Validación de alta disponibilidad, estrategia de continuidad y pruebas reales.</p>
+        <span class="service-benefit">Cuando ocurre una falla, ya tienes la respuesta.</span>
+      </article>
+
+      <article class="service-card reveal" data-delay="80">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>
+          <line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+        <h3 class="service-name">Estrategia Multi-Cloud</h3>
+        <p class="service-what">Movilidad de cargas, escalabilidad y reducción de CAPEX.</p>
+        <span class="service-benefit">Flexibilidad estratégica sin dependencia de un solo proveedor.</span>
+      </article>
+
+      <article class="service-card reveal" data-delay="160">
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="2" y="2" width="20" height="20" rx="2"/>
+          <path d="M8 12h8M12 8v8"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <h3 class="service-name">Red y Ciberseguridad</h3>
+        <p class="service-what">Configuración HPE, soluciones Fortinet y conectividad segura.</p>
+        <span class="service-benefit">Infraestructura conectada y protegida desde el diseño.</span>
+      </article>
+
+    </div>
+
+    <div class="partners-badge reveal">
+      <p class="partners-label">Partners certificados</p>
+      <p class="partners-names">
+        <strong>HPE</strong>
+        <span class="partners-sep">|</span>
+        <strong>Fortinet</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PROPUESTA DE VALOR
+════════════════════════════════════════════ -->
+<section id="propuesta" aria-labelledby="propuesta-title">
+  <div class="container">
+    <div class="propuesta-header reveal">
+      <span class="section-label">Por qué QUNOX</span>
+      <h2 class="section-title" id="propuesta-title"><span class="line-accent">Nuestra diferencia</span></h2>
+    </div>
+
+    <div class="pv-item reveal">
+      <div class="pv-number">01</div>
+      <div class="pv-content">
+        <h3 class="pv-title">Arquitecturas reales, no teóricas.</h3>
+        <p class="pv-desc">Cada diseño está basado en implementaciones reales, no en buenas intenciones.</p>
+      </div>
+    </div>
+
+    <div class="pv-item right reveal">
+      <div class="pv-number">02</div>
+      <div class="pv-content">
+        <h3 class="pv-title">Continuidad operativa como prioridad.</h3>
+        <p class="pv-desc">No diseñamos para que funcione hoy. Diseñamos para que funcione siempre.</p>
+      </div>
+    </div>
+
+    <div class="pv-item reveal">
+      <div class="pv-number">03</div>
+      <div class="pv-content">
+        <h3 class="pv-title">Monitoreo continuo, sin puntos ciegos.</h3>
+        <p class="pv-desc">Visibilidad completa para actuar antes de que los problemas se vuelvan crisis.</p>
+      </div>
+    </div>
+
+    <div class="pv-item right reveal">
+      <div class="pv-number">04</div>
+      <div class="pv-content">
+        <h3 class="pv-title">Acompañamiento estratégico constante.</h3>
+        <p class="pv-desc">No desaparecemos después de la implementación. Estamos en cada etapa.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CONTACTO
+════════════════════════════════════════════ -->
+<section id="contacto" aria-labelledby="contacto-title">
+  <div class="container">
+    <div class="contacto-inner">
+
+      <div class="reveal">
+        <span class="section-label">Hablemos</span>
+        <h2 class="contacto-header-text" id="contacto-title">
+          ¿Listo para recuperar el control de tu infraestructura?
+        </h2>
+        <p class="contacto-sub">Cuéntanos dónde estás y te decimos qué podemos mejorar.</p>
+
+        <div class="contacto-info">
+          <a href="mailto:hola@qunox.com" class="contact-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            hola@qunox.com
+          </a>
+          <p style="font-size:0.875rem; color:var(--text-sec); padding-left:1.75rem; line-height:1.6;">
+            Respondemos en menos de 24 horas hábiles. Evaluamos tu infraestructura sin costo inicial.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal" data-delay="150">
+        <div class="contact-form" id="contact-form-wrap">
+
+          <form id="contact-form" novalidate>
+            <div class="form-group">
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre" required autocomplete="name" />
+              <label for="nombre">Nombre</label>
+            </div>
+            <div class="form-group">
+              <input type="text" id="empresa" name="empresa" placeholder="Empresa" autocomplete="organization" />
+              <label for="empresa">Empresa</label>
+            </div>
+            <div class="form-group">
+              <input type="email" id="email" name="email" placeholder="Email" required autocomplete="email" />
+              <label for="email">Email</label>
+            </div>
+            <div class="form-group">
+              <textarea id="mensaje" name="mensaje" placeholder="Mensaje" rows="4"></textarea>
+              <label for="mensaje">Mensaje</label>
+            </div>
+            <button type="submit" class="form-submit">Evaluar mi infraestructura</button>
+          </form>
+
+          <div class="form-success" id="form-success">
+            <div class="success-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <p class="success-title">¡Mensaje recibido!</p>
+            <p class="success-msg">Un especialista QUNOX se pondrá en contacto contigo en las próximas 24 horas.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <a href="#hero" class="footer-logo">QUNOX</a>
+
+    <ul class="footer-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+
+    <p class="footer-partners">Partners: <strong>HPE</strong> | <strong>Fortinet</strong></p>
+  </div>
+  <p class="footer-copy">© 2025 QUNOX. Todos los derechos reservados.</p>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ── PARTICLE NETWORK ──────────────────────────────────────────── */
+  (function initParticles() {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let W, H, particles, mouse = { x: -999, y: -999 };
+    const COUNT = 60;
+    const CONNECT_DIST = 120;
+    const REPEL_RADIUS = 150;
+    const REPEL_FORCE = 0.04;
+
+    const COLORS = [
+      'rgba(67,97,238,',
+      'rgba(114,9,183,',
+      'rgba(76,201,240,',
+      'rgba(67,97,238,',
+    ];
+
+    function resize() {
+      const hero = document.getElementById('hero');
+      W = canvas.width = hero.offsetWidth;
+      H = canvas.height = hero.offsetHeight;
+    }
+
+    function createParticle() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2 + 1.2,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        opacity: Math.random() * 0.5 + 0.3,
+      };
+    }
+
+    function init() {
+      resize();
+      particles = Array.from({ length: COUNT }, createParticle);
+    }
+
+    function drawFrame() {
+      ctx.clearRect(0, 0, W, H);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Mouse repulsion
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < REPEL_RADIUS && dist > 0) {
+          const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
+          p.vx += (dx / dist) * force * REPEL_FORCE;
+          p.vy += (dy / dist) * force * REPEL_FORCE;
+        }
+
+        // Damping
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+
+        // Clamp speed
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (speed > 1.2) { p.vx = (p.vx / speed) * 1.2; p.vy = (p.vy / speed) * 1.2; }
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Bounce
+        if (p.x < 0) { p.x = 0; p.vx *= -1; }
+        if (p.x > W) { p.x = W; p.vx *= -1; }
+        if (p.y < 0) { p.y = 0; p.vy *= -1; }
+        if (p.y > H) { p.y = H; p.vy *= -1; }
+
+        // Draw dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + p.opacity + ')';
+        ctx.fill();
+
+        // Draw connections
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const lx = p.x - q.x;
+          const ly = p.y - q.y;
+          const ld = Math.sqrt(lx * lx + ly * ly);
+          if (ld < CONNECT_DIST) {
+            const alpha = (1 - ld / CONNECT_DIST) * 0.25;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = 'rgba(67,97,238,' + alpha + ')';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(drawFrame);
+    }
+
+    canvas.addEventListener('mousemove', function (e) {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+      mouse.x = -999;
+      mouse.y = -999;
+    });
+
+    window.addEventListener('resize', function () {
+      resize();
+    });
+
+    init();
+    drawFrame();
+  })();
+
+
+  /* ── SCROLL REVEAL ─────────────────────────────────────────────── */
+  (function initReveal() {
+    const els = document.querySelectorAll('.reveal');
+    if (!els.length) return;
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+          setTimeout(function () {
+            el.classList.add('visible');
+          }, delay);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    els.forEach(function (el) { observer.observe(el); });
+  })();
+
+
+  /* ── NAV SCROLL + ACTIVE SECTIONS ─────────────────────────────── */
+  (function initNav() {
+    const nav = document.getElementById('nav');
+    const links = document.querySelectorAll('.nav-links a[data-section]');
+    const sections = ['servicios', 'nosotros', 'contacto'];
+
+    function onScroll() {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+
+      // Active link
+      let current = '';
+      sections.forEach(function (id) {
+        const sec = document.getElementById(id);
+        if (!sec) return;
+        if (window.scrollY >= sec.offsetTop - 120) current = id;
+      });
+
+      links.forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('data-section') === current);
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+
+
+  /* ── HAMBURGER MENU ────────────────────────────────────────────── */
+  (function initHamburger() {
+    const btn = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    const links = menu.querySelectorAll('a');
+
+    function toggle() {
+      const isOpen = menu.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      btn.setAttribute('aria-expanded', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+
+    function close() {
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    btn.addEventListener('click', toggle);
+    links.forEach(function (a) { a.addEventListener('click', close); });
+  })();
+
+
+  /* ── PARALLAX HERO ─────────────────────────────────────────────── */
+  (function initParallax() {
+    const content = document.getElementById('hero-content');
+    if (!content) return;
+
+    document.addEventListener('mousemove', function (e) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const rx = (e.clientX - cx) / cx;
+      const ry = (e.clientY - cy) / cy;
+      const maxMove = 15;
+      content.style.transform = 'translate(' + (-rx * maxMove * 0.4) + 'px, ' + (-ry * maxMove * 0.4) + 'px)';
+    });
+  })();
+
+
+  /* ── FORM ──────────────────────────────────────────────────────── */
+  (function initForm() {
+    const form = document.getElementById('contact-form');
+    const success = document.getElementById('form-success');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      form.style.opacity = '0';
+      form.style.transform = 'translateY(-10px)';
+      form.style.transition = 'opacity 0.3s, transform 0.3s';
+
+      setTimeout(function () {
+        form.style.display = 'none';
+        success.classList.add('visible');
+        success.style.animation = 'fadeInUp 0.4s forwards';
+      }, 300);
+    });
+  })();
+
+})();
+</script>
+
+</body>
+</html>
