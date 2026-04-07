@@ -3,1032 +3,577 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QUNOX — Infraestructura bajo control</title>
-  <meta name="description" content="QUNOX combina experiencia técnica real con estrategia para transformar sistemas complejos en infraestructura confiable, escalable y continua." />
-  <meta property="og:title" content="QUNOX — Infraestructura bajo control" />
-  <meta property="og:description" content="QUNOX combina experiencia técnica real con estrategia para transformar sistemas complejos en infraestructura confiable, escalable y continua." />
+  <title>QUNOX — Infraestructura que obedece.</title>
+  <meta name="description" content="QUNOX transforma sistemas complejos en infraestructura confiable, escalable y bajo control total. Diagnóstico gratuito." />
+  <meta property="og:title" content="QUNOX — Infraestructura que obedece." />
+  <meta property="og:description" content="Los sistemas complejos no se caen porque son complejos. Se caen porque nadie los conoce a fondo. QUNOX sí." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://qunox.com/og-image.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
   <style>
+    /* ── RESET ─────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #030309;
-      --card-bg: rgba(10, 11, 28, 0.85);
-      --blue: #4361EE;
+      --bg:     #ffffff;
+      --bg2:    #f6f7ff;
+      --blue:   #4361EE;
       --purple: #7209B7;
-      --cyan: #4CC9F0;
-      --text: #E2E8F0;
-      --text-sec: #94A3B8;
-      --border: rgba(67, 97, 238, 0.2);
-      --gutter: clamp(1.5rem, 5vw, 5rem);
+      --cyan:   #00B4D8;
+      --red:    #EF4444;
+      --text:   #0A0A1A;
+      --text-sec: #64748B;
+      --border: rgba(67,97,238,0.12);
+      --border-s: rgba(67,97,238,0.28);
+      --gutter: clamp(1.25rem, 5vw, 4.5rem);
+      --radius: 14px;
+      --shadow: 0 4px 28px rgba(67,97,238,0.08);
+      --shadow-h: 0 12px 40px rgba(67,97,238,0.18);
     }
 
     html { scroll-behavior: smooth; font-size: 16px; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    h1, h2, h3, h4, h5 { font-family: 'Space Grotesk', sans-serif; line-height: 1.2; }
-
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; overflow-x: hidden; }
+    h1,h2,h3,h4 { font-family: 'Space Grotesk', sans-serif; line-height: 1.1; }
     a { color: inherit; text-decoration: none; }
-
     img, svg { display: block; }
 
-    /* ─── SCROLLBAR ─────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
 
-    /* ─── NAV ────────────────────────────────────── */
-    #nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      padding: 1.25rem var(--gutter);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
-      border-bottom: 1px solid transparent;
+    /* ── DOT GRID ──────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(67,97,238,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
     }
 
+    /* ── THREE.JS CANVAS ───────────────────────────────────── */
+    #three-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1; pointer-events: none;
+    }
+
+    /* ── Z-STACKING ────────────────────────────────────────── */
+    nav, section, footer, .mobile-menu { position: relative; z-index: 2; }
+
+    /* ── CONTAINER ─────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* ── LABELS & TITLES ───────────────────────────────────── */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--blue); margin-bottom: 0.875rem;
+    }
+    .section-label::before {
+      content: ''; display: block; width: 18px; height: 1px; background: var(--blue);
+    }
+    .section-title {
+      font-size: clamp(1.875rem, 3.5vw, 2.875rem);
+      font-weight: 700; color: var(--text); margin-bottom: 1.25rem;
+    }
+
+    /* ── BUTTONS ───────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      background: var(--blue); color: #fff;
+      border-radius: 8px; font-size: 0.9375rem; font-weight: 600;
+      border: none; cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: #3451d1; box-shadow: 0 8px 28px rgba(67,97,238,0.32); transform: translateY(-1px); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      border: 1.5px solid var(--border-s); color: var(--text);
+      border-radius: 8px; font-size: 0.9375rem; font-weight: 500;
+      background: transparent; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); background: rgba(67,97,238,0.04); }
+
+    /* ── REVEAL ────────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ══════════════════════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════════════════════ */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 0.875rem var(--gutter);
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.35s, border-color 0.35s, box-shadow 0.35s;
+      border-bottom: 1px solid transparent;
+    }
     #nav.scrolled {
-      background: rgba(3, 3, 9, 0.8);
+      background: rgba(255,255,255,0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-color: var(--border);
+      box-shadow: 0 1px 20px rgba(67,97,238,0.07);
     }
-
-    .nav-logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #fff;
-      text-shadow: 0 0 20px rgba(67,97,238,0.7), 0 0 40px rgba(67,97,238,0.4);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-sec);
-      transition: color 0.2s;
-      position: relative;
-    }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 0; right: 0;
-      height: 1px;
-      background: var(--blue);
-      transform: scaleX(0);
-      transition: transform 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::after { transform: scaleX(1); }
-    .nav-links a.active { color: var(--text); }
-    .nav-links a.active::after { transform: scaleX(1); }
-
+    .nav-logo-img { height: 44px; width: auto; mix-blend-mode: multiply; display: block; }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--text-sec); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--blue); }
     .nav-cta {
-      padding: 0.625rem 1.375rem;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #fff;
-      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-      white-space: nowrap;
+      padding: 0.6rem 1.25rem;
+      background: var(--blue); color: #fff;
+      border-radius: 7px; font-size: 0.875rem; font-weight: 600;
+      transition: background 0.2s, box-shadow 0.2s;
     }
+    .nav-cta:hover { background: #3451d1; box-shadow: 0 4px 16px rgba(67,97,238,0.3); }
 
-    .nav-cta:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(67,97,238,0.4);
-    }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px;
-      background: none;
-      border: none;
-    }
-
-    .hamburger span {
-      display: block;
-      width: 24px;
-      height: 2px;
-      background: var(--text);
-      border-radius: 2px;
-      transition: transform 0.3s, opacity 0.3s;
-    }
-
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.28s; }
 
     .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(3, 3, 9, 0.97);
-      z-index: 999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-
-    .mobile-menu.open {
-      display: flex;
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .mobile-menu a {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text);
-      transition: color 0.2s;
-    }
-
-    .mobile-menu a:hover { color: var(--cyan); }
-
-    /* ─── HERO ───────────────────────────────────── */
-    #hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    #particle-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .hero-fade-bottom {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 200px;
-      background: linear-gradient(to bottom, transparent, var(--bg));
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 3;
-      max-width: 860px;
-      padding: 0 var(--gutter);
-      margin: 0 auto;
-      text-align: center;
-      will-change: transform;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.375rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-bottom: 1.75rem;
-      background: rgba(76, 201, 240, 0.05);
-    }
-
-    .hero-eyebrow span {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--cyan);
-      animation: pulse-dot 2s infinite;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
-    }
-
-    .hero-title {
-      font-size: clamp(2.75rem, 7vw, 5.5rem);
-      font-weight: 700;
-      line-height: 1.08;
-      color: #fff;
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.02em;
-    }
-
-    .hero-title .accent-blue { color: var(--blue); }
-    .hero-title .accent-cyan { color: var(--cyan); }
-
-    .hero-sub {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      color: var(--text-sec);
-      max-width: 620px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.7;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      padding: 0.875rem 2rem;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-      will-change: transform;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(67,97,238,0.45);
-    }
-
-    .btn-ghost {
-      padding: 0.875rem 2rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text);
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, transform 0.2s;
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--blue);
-      background: rgba(67,97,238,0.08);
-      transform: translateY(-2px);
-    }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 2.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-sec);
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      animation: bounce-down 2s infinite;
-    }
-
-    .scroll-indicator svg { opacity: 0.5; }
-
-    @keyframes bounce-down {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(8px); }
-    }
-
-    /* ─── SECTION COMMONS ────────────────────────── */
-    section { padding: clamp(4rem, 8vw, 7rem) var(--gutter); }
-
-    .section-label {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-bottom: 0.75rem;
-    }
-
-    .section-title {
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .section-title .line-accent {
-      display: inline-block;
-      position: relative;
-    }
-
-    .section-title .line-accent::after {
-      content: '';
-      position: absolute;
-      bottom: -6px; left: 0;
-      width: 60%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--blue), transparent);
-      border-radius: 2px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* ─── REVEAL ─────────────────────────────────── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ─── PROBLEMA ───────────────────────────────── */
-    #problema {
-      background: linear-gradient(180deg, var(--bg) 0%, rgba(5,5,15,1) 100%);
-    }
-
-    .problema-header {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .problema-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .pain-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,80,50,0.15);
-      border-left: 3px solid rgba(255,100,50,0.6);
-      border-radius: 12px;
-      padding: 1.5rem;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      will-change: transform;
-    }
-
-    .pain-card:hover {
-      border-color: rgba(255,100,50,0.4);
-      border-left-color: rgba(255,100,50,0.9);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(255,80,50,0.12);
-    }
-
-    .pain-icon {
-      width: 36px; height: 36px;
-      margin-bottom: 1rem;
-      color: rgba(255,130,80,0.8);
-    }
-
-    .pain-question {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    .pain-consequence {
-      font-size: 0.85rem;
-      color: var(--text-sec);
-      line-height: 1.6;
-    }
-
-    .problema-closing {
-      text-align: center;
-      font-size: 1.05rem;
-      color: var(--text-sec);
-      font-style: italic;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 1.5rem 2rem;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(67,97,238,0.04);
-    }
-
-    /* ─── TRANSICION ─────────────────────────────── */
-    #transicion {
-      position: relative;
-      overflow: hidden;
-      text-align: center;
-      padding: clamp(5rem, 10vw, 9rem) var(--gutter);
-    }
-
-    .grid-bg {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(67,97,238,0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(67,97,238,0.06) 1px, transparent 1px);
-      background-size: 48px 48px;
-      animation: grid-shift 20s linear infinite;
-    }
-
-    @keyframes grid-shift {
-      from { background-position: 0 0; }
-      to { background-position: 48px 48px; }
-    }
-
-    .transicion-content { position: relative; z-index: 2; }
-
-    .transicion-title {
-      font-size: clamp(2rem, 5vw, 4rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 1.25rem;
-      letter-spacing: -0.02em;
-    }
-
-    .transicion-sub {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      color: var(--text-sec);
-      max-width: 500px;
-      margin: 0 auto 3rem;
-    }
-
-    /* Node animation SVG */
-    .nodes-anim {
-      width: 320px;
-      margin: 0 auto;
-      height: 120px;
-    }
-
-    .node-dot {
-      fill: var(--blue);
-      opacity: 0;
-      animation: node-appear 1s forwards;
-    }
-
-    .node-line {
-      stroke: var(--cyan);
-      stroke-width: 1;
-      opacity: 0;
-      stroke-dasharray: 100;
-      stroke-dashoffset: 100;
-      animation: line-draw 0.8s forwards;
-    }
-
-    @keyframes node-appear {
-      from { opacity: 0; transform: scale(0); }
-      to { opacity: 0.9; transform: scale(1); }
-    }
-
-    @keyframes line-draw {
-      to { stroke-dashoffset: 0; opacity: 0.4; }
-    }
-
-    /* ─── NOSOTROS ───────────────────────────────── */
-    #nosotros {
-      background: rgba(5,5,18,1);
-    }
-
-    .nosotros-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
-    }
-
-    .nosotros-body {
-      font-size: 1.05rem;
-      color: var(--text-sec);
-      line-height: 1.75;
-      margin-bottom: 2rem;
-    }
-
-    .nosotros-points {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .point-item {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      padding: 0.875rem 1.25rem;
-      background: rgba(67,97,238,0.06);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-
-    .point-icon {
-      flex-shrink: 0;
-      width: 36px; height: 36px;
-      background: rgba(67,97,238,0.15);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--cyan);
-    }
-
-    .point-text {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-
-    /* Hexagon network SVG */
-    .hex-network {
-      width: 100%;
-      max-width: 420px;
-      margin: 0 auto;
-    }
-
-    .hex-path {
-      fill: none;
-      stroke: var(--blue);
-      stroke-width: 1.2;
-      opacity: 0.35;
-    }
-
-    .hex-dot {
-      fill: var(--cyan);
-      animation: hex-pulse 3s ease-in-out infinite;
-    }
-
-    .hex-dot:nth-child(odd) { animation-delay: 0.5s; }
-    .hex-dot:nth-child(3n) { animation-delay: 1s; }
-
-    @keyframes hex-pulse {
-      0%, 100% { r: 3; opacity: 0.8; }
-      50% { r: 5; opacity: 0.3; }
-    }
-
-    /* ─── SERVICIOS ──────────────────────────────── */
-    #servicios {
-      background: var(--bg);
-    }
-
-    .servicios-header {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .servicios-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .service-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.75rem;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      will-change: transform;
-    }
-
-    .service-card:hover {
-      border-color: rgba(67,97,238,0.5);
-      transform: translateY(-6px);
-      box-shadow: 0 16px 40px rgba(67,97,238,0.18), 0 0 0 1px rgba(67,97,238,0.12);
-    }
-
-    .service-icon {
-      width: 44px; height: 44px;
-      margin-bottom: 1.25rem;
-      color: var(--cyan);
-    }
-
-    .service-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    .service-what {
-      font-size: 0.875rem;
-      color: var(--text-sec);
-      line-height: 1.6;
-      margin-bottom: 0.875rem;
-    }
-
-    .service-benefit {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--cyan);
-      padding: 0.375rem 0.75rem;
-      background: rgba(76,201,240,0.08);
-      border-radius: 6px;
-      display: inline-block;
-    }
-
-    .partners-badge {
-      text-align: center;
-      padding: 1.25rem 2rem;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      max-width: 400px;
-      margin: 0 auto;
-      background: rgba(67,97,238,0.04);
-    }
-
-    .partners-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-sec);
-      margin-bottom: 0.5rem;
-    }
-
-    .partners-names {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.05em;
-    }
-
-    .partners-sep { color: var(--border); margin: 0 0.75rem; }
-
-    /* ─── PROPUESTA DE VALOR ─────────────────────── */
-    #propuesta {
-      background: rgba(5,5,18,1);
-      overflow: hidden;
-    }
-
-    .propuesta-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    .pv-item {
-      display: grid;
-      grid-template-columns: 80px 1fr;
-      gap: 2rem;
-      align-items: center;
-      padding: 2.5rem 2rem;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-    }
-
-    .pv-item:last-child { border-bottom: none; }
-
-    .pv-item.right {
-      grid-template-columns: 1fr 80px;
-      text-align: right;
-    }
-
-    .pv-item.right .pv-number { order: 2; }
-    .pv-item.right .pv-content { order: 1; }
-
-    .pv-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: rgba(67,97,238,0.15);
-      line-height: 1;
-      user-select: none;
-    }
-
-    .pv-title {
-      font-size: clamp(1.2rem, 2.5vw, 1.75rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    .pv-desc {
-      font-size: 0.95rem;
-      color: var(--text-sec);
-      line-height: 1.65;
-      max-width: 560px;
-    }
-
-    .pv-item.right .pv-desc { margin-left: auto; }
-
-    /* ─── CONTACTO ───────────────────────────────── */
-    #contacto {
-      background: var(--bg);
-      position: relative;
-      overflow: hidden;
-    }
-
-    #contacto::before {
-      content: '';
-      position: absolute;
-      top: -200px; left: 50%;
-      transform: translateX(-50%);
-      width: 600px; height: 600px;
-      background: radial-gradient(ellipse, rgba(67,97,238,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .contacto-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-
-    .contacto-header-text {
-      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .contacto-sub {
-      font-size: 1rem;
-      color: var(--text-sec);
-      margin-bottom: 2rem;
-    }
-
-    .contacto-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .contact-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--text-sec);
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-
-    .contact-link:hover { color: var(--cyan); }
-
-    .contact-link svg { color: var(--blue); flex-shrink: 0; }
-
-    /* Form */
-    .contact-form {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .form-group {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      font-size: 0.875rem;
-      color: var(--text-sec);
-      pointer-events: none;
-      transition: transform 0.2s, font-size 0.2s, color 0.2s;
-      transform-origin: left top;
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 1rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-      resize: vertical;
-    }
-
-    .form-group textarea { min-height: 110px; }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-      border-color: var(--blue);
-      background: rgba(67,97,238,0.06);
-    }
-
-    .form-group input:focus + label,
-    .form-group input:not(:placeholder-shown) + label,
-    .form-group textarea:focus + label,
-    .form-group textarea:not(:placeholder-shown) + label {
-      transform: translateY(-1.5rem) scale(0.8);
-      color: var(--cyan);
-    }
-
-    .form-group input::placeholder,
-    .form-group textarea::placeholder { color: transparent; }
-
-    .form-submit {
-      width: 100%;
-      padding: 1rem;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-    }
-
-    .form-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(67,97,238,0.4);
-    }
-
-    .form-success {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .form-success.visible { display: block; }
-
-    .success-icon {
-      width: 64px; height: 64px;
-      background: rgba(76,201,240,0.12);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1rem;
-      color: var(--cyan);
-    }
-
-    .success-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    .success-msg {
-      font-size: 0.875rem;
-      color: var(--text-sec);
-    }
-
-    /* ─── FOOTER ─────────────────────────────────── */
-    footer {
-      border-top: 1px solid transparent;
-      padding: 2.5rem var(--gutter);
-      background: rgba(2,2,8,1);
-      position: relative;
-    }
-
-    footer::before {
-      content: '';
-      position: absolute;
-      top: -1px; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--blue), transparent);
-    }
-
-    .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-
-    .footer-logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 0 16px rgba(67,97,238,0.5);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
-      list-style: none;
-    }
-
-    .footer-links a {
-      font-size: 0.85rem;
-      color: var(--text-sec);
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover { color: var(--text); }
-
-    .footer-partners {
-      font-size: 0.8rem;
-      color: var(--text-sec);
-    }
-
-    .footer-partners strong { color: var(--text); }
-
-    .footer-copy {
-      width: 100%;
-      text-align: center;
-      font-size: 0.78rem;
-      color: rgba(148,163,184,0.5);
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      margin-top: 0.5rem;
-    }
-
-    /* ─── RESPONSIVE ─────────────────────────────── */
-    @media (max-width: 968px) {
-      .nosotros-inner { grid-template-columns: 1fr; }
-      .hex-network { max-width: 280px; }
-      .contacto-inner { grid-template-columns: 1fr; }
-      .pv-item { grid-template-columns: 60px 1fr; }
-      .pv-item.right { grid-template-columns: 1fr 60px; }
-      .pv-number { font-size: 2.5rem; }
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(255,255,255,0.97); backdrop-filter: blur(24px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-link { font-family: 'Space Grotesk', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--text); }
+    .mobile-close {
+      position: absolute; top: 1.5rem; right: var(--gutter);
+      background: none; border: none; cursor: pointer;
+      font-size: 1.5rem; color: var(--text-sec);
     }
 
     @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .nav-cta { display: none; }
+      .nav-links, .nav-cta { display: none; }
       .hamburger { display: flex; }
-
-      .problema-grid { grid-template-columns: 1fr 1fr; }
-      .servicios-grid { grid-template-columns: 1fr 1fr; }
-
-      .pv-item { grid-template-columns: 1fr; gap: 0.5rem; }
-      .pv-item.right { grid-template-columns: 1fr; text-align: left; }
-      .pv-item.right .pv-number { order: 1; }
-      .pv-item.right .pv-content { order: 2; }
-      .pv-item.right .pv-desc { margin-left: 0; }
     }
 
-    @media (max-width: 480px) {
-      .problema-grid { grid-template-columns: 1fr; }
-      .servicios-grid { grid-template-columns: 1fr; }
-      .hero-actions { flex-direction: column; align-items: center; }
-      .btn-primary, .btn-ghost { width: 100%; max-width: 280px; text-align: center; }
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 9rem var(--gutter) 5rem;
+      overflow: hidden;
+    }
+    .hero-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--blue); margin-bottom: 1.75rem;
+    }
+    .hero-eyebrow span { display: block; width: 28px; height: 1px; background: var(--blue); }
+    .hero-title {
+      font-size: clamp(3rem, 6vw, 5.25rem);
+      font-weight: 700; letter-spacing: -0.025em;
+      color: var(--text); margin-bottom: 1.5rem; line-height: 1.04;
+    }
+    .hero-title .accent { color: var(--blue); }
+    .hero-sub {
+      font-size: 1.125rem; color: var(--text-sec); line-height: 1.75;
+      margin-bottom: 2.5rem; max-width: 460px;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
-      .footer-inner { flex-direction: column; text-align: center; }
-      .footer-links { justify-content: center; }
+    /* Hero right panel */
+    .hero-panel {
+      display: flex; flex-direction: column; gap: 1rem;
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    .sys-card {
+      background: rgba(255,255,255,0.75);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.375rem 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+    .sys-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem; padding-bottom: 0.875rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sys-card-title {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-sec);
+    }
+    .status-pill {
+      display: flex; align-items: center; gap: 0.375rem;
+      font-size: 0.68rem; font-weight: 700; color: #16a34a;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .status-pill-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+      animation: pulse-g 2s ease-in-out infinite;
+    }
+    @keyframes pulse-g { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); } 50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); } }
+
+    .sys-rows { display: flex; flex-direction: column; gap: 0.625rem; }
+    .sys-row { display: flex; align-items: center; justify-content: space-between; }
+    .sys-key { font-size: 0.8rem; color: var(--text-sec); }
+    .sys-val { font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; font-weight: 700; }
+    .sys-val.green { color: #16a34a; }
+    .sys-val.blue  { color: var(--blue); }
+    .sys-val.cyan  { color: var(--cyan); }
+
+    .metrics-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
+    .metric-box {
+      background: rgba(255,255,255,0.7); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    .metric-num {
+      font-family: 'Space Grotesk', sans-serif; font-size: 1.375rem; font-weight: 700;
+      color: var(--blue); display: block;
+    }
+    .metric-lbl { font-size: 0.67rem; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .scroll-cue {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--text-sec); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      animation: scroll-bounce 2.2s ease-in-out infinite;
+    }
+    @keyframes scroll-bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(7px); } }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-panel { display: none; }
+      #hero { padding-bottom: 4rem; }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       PROBLEMA
+    ══════════════════════════════════════════════════════════ */
+    #problema { padding: 6rem 0; background: var(--bg); }
+    .problema-header { text-align: center; margin-bottom: 3.5rem; }
+
+    .alerts-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; background: var(--border); gap: 1px;
+      margin-bottom: 3rem;
+    }
+    .alert-cell {
+      background: var(--bg); padding: 1.75rem;
+      transition: background 0.25s;
+    }
+    .alert-cell:hover { background: var(--bg2); }
+    .alert-code {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.67rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--red);
+      display: flex; align-items: center; gap: 0.4rem;
+      margin-bottom: 0.875rem;
+    }
+    .alert-code::before { content: '!'; opacity: 0.5; }
+    .alert-q {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.0625rem; font-weight: 600; color: var(--text);
+      margin-bottom: 0.625rem; line-height: 1.35;
+    }
+    .alert-d { font-size: 0.875rem; color: var(--text-sec); line-height: 1.65; }
+
+    /* System log terminal */
+    .sys-log {
+      background: #0B0D1A; border-radius: var(--radius);
+      padding: 0; overflow: hidden;
+      border: 1px solid rgba(67,97,238,0.2);
+    }
+    .log-titlebar {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 1.25rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .log-btn { width: 10px; height: 10px; border-radius: 50%; }
+    .log-btn.r { background: #FF5F57; }
+    .log-btn.y { background: #FFBD2E; }
+    .log-btn.g { background: #28C840; }
+    .log-title { font-size: 0.7rem; color: rgba(255,255,255,0.25); letter-spacing: 0.08em; margin-left: 0.5rem; }
+    .log-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.375rem; }
+    .log-line {
+      display: grid; grid-template-columns: 68px 52px 1fr;
+      gap: 1rem; font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem; opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .log-line.visible { opacity: 1; }
+    .log-ts { color: rgba(67,97,238,0.55); }
+    .log-lvl-err { color: #ff4d4f; font-weight: 700; }
+    .log-lvl-warn { color: #faad14; font-weight: 700; }
+    .log-lvl-info { color: #00B4D8; font-weight: 700; }
+    .log-msg { color: rgba(255,255,255,0.65); }
+
+    .problema-closing {
+      text-align: center; font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1875rem; font-weight: 600; color: var(--text-sec);
+      font-style: italic; max-width: 600px; margin: 0 auto;
+      padding: 0 var(--gutter);
+    }
+    .problema-closing span { color: var(--text); font-style: normal; }
+
+    @media (max-width: 900px) { .alerts-grid { grid-template-columns: 1fr; } }
+
+    /* ══════════════════════════════════════════════════════════
+       TRANSICION
+    ══════════════════════════════════════════════════════════ */
+    #transicion {
+      padding: 6rem 0;
+      background: linear-gradient(140deg, rgba(67,97,238,0.045) 0%, rgba(114,9,183,0.045) 100%);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .transicion-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .transicion-title {
+      font-size: clamp(2rem, 3.75vw, 3.25rem);
+      font-weight: 700; margin-bottom: 1rem;
+    }
+    .transicion-sub {
+      font-size: 1.0625rem; color: var(--text-sec); line-height: 1.8;
+      margin-bottom: 1.75rem;
+    }
+
+    .signals { display: flex; flex-direction: column; gap: 0.625rem; }
+    .signal {
+      display: flex; align-items: center; gap: 0.875rem;
+      padding: 0.875rem 1.125rem;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 500;
+      opacity: 0; transform: translateX(-18px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      backdrop-filter: blur(8px);
+    }
+    .signal.active { opacity: 1; transform: none; }
+    .signal-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); flex-shrink: 0;
+      animation: pc 2.5s ease-in-out infinite;
+    }
+    @keyframes pc { 0%,100% { box-shadow: 0 0 0 0 rgba(0,180,216,0.5); } 50% { box-shadow: 0 0 0 5px rgba(0,180,216,0); } }
+
+    @media (max-width: 900px) { .transicion-inner { grid-template-columns: 1fr; gap: 3rem; } }
+
+    /* ══════════════════════════════════════════════════════════
+       NOSOTROS
+    ══════════════════════════════════════════════════════════ */
+    #nosotros { padding: 6rem 0; background: var(--bg); }
+    .nosotros-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .nosotros-body { font-size: 1.0625rem; color: var(--text-sec); line-height: 1.85; margin-bottom: 2rem; }
+    .nosotros-points { display: flex; flex-direction: column; gap: 0.875rem; }
+    .n-point {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 1.25rem; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 10px;
+    }
+    .n-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: rgba(67,97,238,0.08);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--blue);
+    }
+    .n-text { font-size: 0.9375rem; font-weight: 500; color: var(--text); padding-top: 0.5rem; line-height: 1.5; }
+
+    /* Hex SVG visual */
+    .hex-wrap {
+      background: rgba(255,255,255,0.5); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem;
+      backdrop-filter: blur(10px);
+    }
+    .hex-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-sec); margin-bottom: 1.25rem; }
+    .hex-path { fill: none; stroke: var(--blue); stroke-width: 0.8; opacity: 0.25; }
+    .hex-dot { animation: hex-pulse 3s ease-in-out infinite; }
+    @keyframes hex-pulse { 0%,100% { opacity: 0.4; r: 3; } 50% { opacity: 1; r: 4.5; } }
+
+    @media (max-width: 900px) { .nosotros-inner { grid-template-columns: 1fr; } }
+
+    /* ══════════════════════════════════════════════════════════
+       SERVICIOS
+    ══════════════════════════════════════════════════════════ */
+    #servicios { padding: 6rem 0; background: var(--bg2); }
+    .servicios-header { text-align: center; margin-bottom: 3.5rem; }
+    .servicios-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.375rem;
+    }
+    .svc-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+      cursor: default; position: relative; overflow: hidden;
+    }
+    .svc-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .svc-card:hover { box-shadow: var(--shadow-h); transform: translateY(-5px); border-color: var(--border-s); }
+    .svc-card:hover::after { transform: scaleX(1); }
+    .svc-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.14em; color: rgba(67,97,238,0.35); margin-bottom: 1.25rem; }
+    .svc-icon { width: 42px; height: 42px; margin-bottom: 1.25rem; color: var(--blue); }
+    .svc-name { font-size: 1.0625rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; }
+    .svc-what { font-size: 0.875rem; color: var(--text-sec); line-height: 1.7; margin-bottom: 1rem; }
+    .svc-benefit {
+      display: block; font-size: 0.8125rem; font-weight: 600; color: var(--blue);
+      padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+
+    .partners-bar {
+      display: flex; align-items: center; justify-content: center; gap: 2rem;
+      margin-top: 2.5rem; padding: 1.25rem 2rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      flex-wrap: wrap;
+    }
+    .partners-lbl { font-size: 0.72rem; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.1em; }
+    .partner-tag {
+      padding: 0.35rem 0.9rem;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.875rem; font-weight: 700;
+      color: var(--text); letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 960px) { .servicios-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 580px) { .servicios-grid { grid-template-columns: 1fr; } }
+
+    /* ══════════════════════════════════════════════════════════
+       PROPUESTA
+    ══════════════════════════════════════════════════════════ */
+    #propuesta { padding: 6rem 0; background: var(--bg); }
+    .propuesta-inner { max-width: 820px; margin: 0 auto; }
+    .propuesta-header { text-align: center; margin-bottom: 3.5rem; }
+    .pv-item {
+      display: flex; gap: 2.25rem; align-items: flex-start;
+      padding: 2rem 0; border-bottom: 1px solid var(--border);
+    }
+    .pv-item:last-child { border-bottom: none; }
+    .pv-num {
+      font-family: 'Space Grotesk', sans-serif; font-size: 3.25rem; font-weight: 700;
+      color: rgba(67,97,238,0.09); line-height: 1; min-width: 72px;
+    }
+    .pv-title { font-size: 1.1875rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .pv-desc { font-size: 0.9375rem; color: var(--text-sec); line-height: 1.75; }
+
+    /* ══════════════════════════════════════════════════════════
+       CONTACTO
+    ══════════════════════════════════════════════════════════ */
+    #contacto { padding: 6rem 0; background: var(--bg2); }
+    .contacto-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .contacto-title { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; line-height: 1.2; }
+    .contacto-sub { font-size: 1rem; color: var(--text-sec); line-height: 1.75; margin-bottom: 2rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      color: var(--blue); font-weight: 500; font-size: 0.9375rem; margin-bottom: 0.5rem;
+    }
+    .contact-link:hover { text-decoration: underline; }
+    .contact-note { font-size: 0.83rem; color: var(--text-sec); line-height: 1.65; padding-left: 1.75rem; }
+
+    .contact-form-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
+    .form-group { position: relative; margin-bottom: 1.125rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 0.9rem 1rem;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 0.9375rem;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--blue); background: #fff;
+      box-shadow: 0 0 0 3px rgba(67,97,238,0.11);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group label {
+      position: absolute; left: 1rem; top: 0.9rem;
+      color: var(--text-sec); font-size: 0.9375rem;
+      pointer-events: none; transition: all 0.2s ease;
+    }
+    .form-group input:focus ~ label,
+    .form-group input:not(:placeholder-shown) ~ label,
+    .form-group textarea:focus ~ label,
+    .form-group textarea:not(:placeholder-shown) ~ label {
+      top: -0.58rem; left: 0.75rem; font-size: 0.68rem;
+      background: var(--bg); padding: 0 0.25rem; color: var(--blue); font-weight: 700;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: transparent; }
+    .form-submit {
+      width: 100%; padding: 0.9375rem;
+      background: var(--blue); color: #fff; border: none; border-radius: 8px;
+      font-size: 0.9375rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+    }
+    .form-submit:hover { background: #3451d1; box-shadow: 0 8px 24px rgba(67,97,238,0.28); }
+    .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .form-success { display: none; text-align: center; padding: 2.5rem 1rem; }
+    .success-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(34,197,94,0.1); border: 2px solid #22c55e;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem; color: #22c55e;
+    }
+    .success-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .success-msg { font-size: 0.9375rem; color: var(--text-sec); margin-top: 0.5rem; line-height: 1.6; }
+
+    @media (max-width: 900px) { .contacto-inner { grid-template-columns: 1fr; } }
+
+    /* ══════════════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════════════ */
+    footer {
+      background: var(--text); color: rgba(255,255,255,0.6);
+      padding: 3rem var(--gutter) 1.75rem;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 1.75rem; margin-bottom: 1.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo-txt {
+      font-family: 'Space Grotesk', sans-serif; font-size: 1.375rem;
+      font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em;
+    }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a { font-size: 0.875rem; color: rgba(255,255,255,0.4); transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+    .footer-partners { font-size: 0.8125rem; color: rgba(255,255,255,0.35); }
+    .footer-copy { max-width: 1200px; margin: 0 auto; font-size: 0.8rem; color: rgba(255,255,255,0.25); }
+
+    @media (max-width: 600px) {
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-links { flex-direction: column; gap: 0.75rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════
+<!-- ── THREE.JS CANVAS (fixed background) ──────────────────── -->
+<canvas id="three-canvas" aria-hidden="true"></canvas>
+
+<!-- ══════════════════════════════════════════════════════════
      NAV
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <nav id="nav" role="navigation" aria-label="Navegación principal">
-  <a href="#hero" class="nav-logo">QUNOX</a>
+  <a href="#hero">
+    <img src="logo.jpeg" alt="QUNOX" class="nav-logo-img" />
+  </a>
 
   <ul class="nav-links" id="nav-links">
-    <li><a href="#servicios" data-section="servicios">Servicios</a></li>
-    <li><a href="#nosotros" data-section="nosotros">Nosotros</a></li>
-    <li><a href="#contacto" data-section="contacto">Contacto</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto">Contacto</a></li>
   </ul>
 
   <a href="#contacto" class="nav-cta">Hablar con un especialista</a>
@@ -1039,230 +584,242 @@
 </nav>
 
 <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú móvil">
+  <button class="mobile-close" id="mobile-close" aria-label="Cerrar menú">✕</button>
   <a href="#servicios" class="mobile-link">Servicios</a>
   <a href="#nosotros" class="mobile-link">Nosotros</a>
   <a href="#contacto" class="mobile-link">Contacto</a>
-  <a href="#contacto" class="btn-primary" style="margin-top:1rem;">Hablar con un especialista</a>
+  <a href="#contacto" class="btn-primary" style="margin-top:0.5rem">Hablar con un especialista</a>
 </div>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      HERO
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section id="hero" aria-label="Portada">
-  <canvas id="particle-canvas" aria-hidden="true"></canvas>
-  <div class="hero-fade-bottom" aria-hidden="true"></div>
+  <div class="hero-inner">
 
-  <div class="hero-content" id="hero-content">
-    <div class="hero-eyebrow">
-      <span></span>
-      Infraestructura técnica especializada
+    <!-- Left: text -->
+    <div>
+      <div class="hero-eyebrow reveal">
+        <span></span>
+        Infraestructura técnica especializada
+      </div>
+      <h1 class="hero-title reveal" style="transition-delay:0.1s">
+        Infraestructura<br><span class="accent">que obedece.</span>
+      </h1>
+      <p class="hero-sub reveal" style="transition-delay:0.2s">
+        Los sistemas complejos no se caen porque son complejos.<br>
+        Se caen porque nadie los conoce a fondo. QUNOX sí.
+      </p>
+      <div class="hero-actions reveal" style="transition-delay:0.3s">
+        <a href="#contacto" class="btn-primary">Solicita un diagnóstico gratuito</a>
+        <a href="#servicios" class="btn-ghost">Ver cómo trabajamos</a>
+      </div>
     </div>
-    <h1 class="hero-title">
-      Infraestructura<br><span class="accent-cyan">bajo control.</span>
-    </h1>
-    <p class="hero-sub">
-      QUNOX combina experiencia técnica real con estrategia para transformar sistemas complejos en infraestructura confiable, escalable y continua.
-    </p>
-    <div class="hero-actions">
-      <a href="#contacto" class="btn-primary">Hablar con un especialista</a>
-      <a href="#servicios" class="btn-ghost">Ver servicios</a>
+
+    <!-- Right: live status panel -->
+    <div class="hero-panel reveal" style="transition-delay:0.4s" aria-hidden="true">
+      <div class="sys-card">
+        <div class="sys-card-header">
+          <span class="sys-card-title">System Status</span>
+          <span class="status-pill"><span class="status-pill-dot"></span>All systems nominal</span>
+        </div>
+        <div class="sys-rows">
+          <div class="sys-row"><span class="sys-key">Infrastructure</span><span class="sys-val green">Controlled</span></div>
+          <div class="sys-row"><span class="sys-key">Control Plane</span><span class="sys-val green">Reachable</span></div>
+          <div class="sys-row"><span class="sys-key">Redundancy</span><span class="sys-val green">Active</span></div>
+          <div class="sys-row"><span class="sys-key">Config Drift</span><span class="sys-val blue">0 deviations</span></div>
+          <div class="sys-row"><span class="sys-key">Uptime</span><span class="sys-val cyan">99.97%</span></div>
+        </div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric-box"><span class="metric-num">4h</span><span class="metric-lbl">RTO garantizado</span></div>
+        <div class="metric-box"><span class="metric-num">0</span><span class="metric-lbl">SPOF activos</span></div>
+        <div class="metric-box"><span class="metric-num">24/7</span><span class="metric-lbl">Monitoreo continuo</span></div>
+      </div>
     </div>
+
   </div>
 
-  <div class="scroll-indicator" aria-hidden="true">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <div class="scroll-cue" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <polyline points="6 9 12 15 18 9"/>
     </svg>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      PROBLEMA
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section id="problema" aria-labelledby="problema-title">
   <div class="container">
+
     <div class="problema-header reveal">
-      <span class="section-label">Diagnóstico</span>
-      <h2 class="section-title" id="problema-title">
-        <span class="line-accent">¿Te suena familiar?</span>
-      </h2>
+      <span class="section-label">Diagnóstico del sistema</span>
+      <h2 class="section-title" id="problema-title">¿Te reconoces en esto?</h2>
+      <p style="color:var(--text-sec);font-size:1rem;max-width:560px;margin:0 auto;line-height:1.75">
+        Es lunes por la mañana. Hay una caída en producción y tardas 40 minutos solo en determinar en qué parte del stack está el problema.
+      </p>
     </div>
 
-    <div class="problema-grid">
+    <div class="alerts-grid reveal">
+      <div class="alert-cell">
+        <div class="alert-code">ARCHITECTURE UNVALIDATED</div>
+        <p class="alert-q">¿Tu arquitectura ha sido validada alguna vez?</p>
+        <p class="alert-d">Diseños sin prueba real que funcionan hasta que dejan de funcionar. El DR documentado y el DR ejecutado son dos cosas distintas.</p>
+      </div>
+      <div class="alert-cell">
+        <div class="alert-code">SYNC FAILURE — NODES DRIFTING</div>
+        <p class="alert-q">¿Tu infraestructura crece sin un marco de control?</p>
+        <p class="alert-d">Sistemas que escalan sin planificación generan puntos de falla invisibles. Cuando aparecen, ya es tarde para remediarlos.</p>
+      </div>
+      <div class="alert-cell">
+        <div class="alert-code">CONTROL PLANE UNREACHABLE</div>
+        <p class="alert-q">¿Tienes visibilidad total de tu infraestructura?</p>
+        <p class="alert-d">Sin monitoreo continuo, los problemas se detectan cuando el usuario ya los está sintiendo. No cuando aún puedes actuar.</p>
+      </div>
+      <div class="alert-cell">
+        <div class="alert-code">REDUNDANCY COMPROMISED</div>
+        <p class="alert-q">¿Estás preparado para una falla real?</p>
+        <p class="alert-d">Tener un plan de DR que nadie ha ejecutado no es un plan. Es una promesa. Las promesas no recuperan sistemas en producción.</p>
+      </div>
+      <div class="alert-cell">
+        <div class="alert-code">CONFIGURATION DRIFT DETECTED</div>
+        <p class="alert-q">¿Tu entorno real coincide con tu entorno declarado?</p>
+        <p class="alert-d">Capacidad desperdiciada, sobreasignada, o peor: recursos que nadie sabe que existen. La opacidad tiene un costo mensurable.</p>
+      </div>
+      <div class="alert-cell">
+        <div class="alert-code">INCIDENT ESCALATION PENDING</div>
+        <p class="alert-q">¿Tu plan de continuidad sobreviviría una crisis?</p>
+        <p class="alert-d">La continuidad operativa no puede ser teórica. Cuando el incidente ocurre, el runbook ya tiene que estar probado.</p>
+      </div>
+    </div>
 
-      <article class="pain-card reveal" data-delay="0">
-        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-        </svg>
-        <p class="pain-question">¿Tu infraestructura crece sin control?</p>
-        <p class="pain-consequence">Sistemas que escalan sin planificación generan puntos de falla invisibles.</p>
-      </article>
-
-      <article class="pain-card reveal" data-delay="80">
-        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <p class="pain-question">¿Tus recursos están realmente bien utilizados?</p>
-        <p class="pain-consequence">Capacidad desperdiciada o sobreasignada que nadie monitorea.</p>
-      </article>
-
-      <article class="pain-card reveal" data-delay="160">
-        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 12l2 2 4-4"/>
-          <path d="M21 12c-1 4.5-5 8-9 8s-8-3.5-9-8 5-8 9-8 8 3.5 9 8z"/>
-        </svg>
-        <p class="pain-question">¿Tu arquitectura ha sido validada alguna vez?</p>
-        <p class="pain-consequence">Diseños sin prueba real que funcionan hasta que dejan de funcionar.</p>
-      </article>
-
-      <article class="pain-card reveal" data-delay="0">
-        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        <p class="pain-question">¿Estás preparado para una falla real?</p>
-        <p class="pain-consequence">Sin un DR probado, una falla se convierte en crisis.</p>
-      </article>
-
-      <article class="pain-card reveal" data-delay="80">
-        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        <p class="pain-question">¿Tienes visibilidad total de tu infraestructura?</p>
-        <p class="pain-consequence">Sin monitoreo continuo, los problemas se ven cuando ya es tarde.</p>
-      </article>
-
-      <article class="pain-card reveal" data-delay="160">
-        <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
-        <p class="pain-question">¿Tu plan de continuidad sobreviviría una crisis?</p>
-        <p class="pain-consequence">La continuidad operativa no puede ser teórica.</p>
-      </article>
-
+    <!-- Terminal log -->
+    <div class="sys-log reveal" id="sys-log" style="margin-bottom:3rem">
+      <div class="log-titlebar">
+        <span class="log-btn r"></span>
+        <span class="log-btn y"></span>
+        <span class="log-btn g"></span>
+        <span class="log-title">infrastructure.monitor — live events</span>
+      </div>
+      <div class="log-body" id="log-body">
+        <div class="log-line" data-delay="0"><span class="log-ts">08:14:02</span><span class="log-lvl-err">ERR</span><span class="log-msg">ARCHITECTURE UNVALIDATED — no baseline to compare against</span></div>
+        <div class="log-line" data-delay="600"><span class="log-ts">08:14:07</span><span class="log-lvl-err">ERR</span><span class="log-msg">SYNC FAILURE — distributed nodes drifting from declared state</span></div>
+        <div class="log-line" data-delay="1200"><span class="log-ts">08:14:11</span><span class="log-lvl-warn">WARN</span><span class="log-msg">LATENCY THRESHOLD EXCEEDED — users already experiencing degradation</span></div>
+        <div class="log-line" data-delay="1800"><span class="log-ts">08:14:15</span><span class="log-lvl-err">ERR</span><span class="log-msg">REDUNDANCY COMPROMISED — single point of failure identified</span></div>
+        <div class="log-line" data-delay="2400"><span class="log-ts">08:14:22</span><span class="log-lvl-warn">WARN</span><span class="log-msg">CONTROL PLANE UNREACHABLE — governance lost on 3 nodes</span></div>
+        <div class="log-line" data-delay="3000"><span class="log-ts">08:14:29</span><span class="log-lvl-err">ERR</span><span class="log-msg">INCIDENT ESCALATION PENDING — manual intervention required</span></div>
+        <div class="log-line" data-delay="3600"><span class="log-ts">08:14:31</span><span class="log-lvl-info">INFO</span><span class="log-msg">Awaiting operator response...</span></div>
+      </div>
     </div>
 
     <p class="problema-closing reveal">
-      "Si una de estas preguntas generó incomodidad, ya sabes que hay trabajo por hacer."
+      "No es un problema de capacidad de tu equipo.<br>
+      <span>Es un problema de complejidad estructural que requiere un enfoque diferente.</span>"
     </p>
+
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     TRANSICIÓN
-════════════════════════════════════════════ -->
-<section id="transicion" aria-label="Propósito">
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="transicion-content container">
-    <div class="reveal">
-      <h2 class="transicion-title">Convertimos complejidad en control.</h2>
-      <p class="transicion-sub">Cada sistema tiene un punto de orden. Lo encontramos, lo diseñamos y lo sostenemos.</p>
-    </div>
+<!-- ══════════════════════════════════════════════════════════
+     TRANSICION
+══════════════════════════════════════════════════════════ -->
+<section id="transicion" aria-label="Solución">
+  <div class="container">
+    <div class="transicion-inner">
 
-    <!-- Animated SVG: nodes organizing into grid -->
-    <div class="reveal" data-delay="200">
-      <svg class="nodes-anim" viewBox="0 0 320 120" aria-hidden="true" id="nodes-svg">
-        <!-- scattered nodes -->
-        <circle class="node-dot" cx="30" cy="80" r="4" style="animation-delay:0.1s"/>
-        <circle class="node-dot" cx="70" cy="30" r="4" style="animation-delay:0.2s"/>
-        <circle class="node-dot" cx="120" cy="90" r="4" style="animation-delay:0.3s"/>
-        <circle class="node-dot" cx="155" cy="20" r="4" style="animation-delay:0.4s"/>
-        <circle class="node-dot" cx="200" cy="75" r="4" style="animation-delay:0.5s"/>
-        <circle class="node-dot" cx="255" cy="40" r="4" style="animation-delay:0.6s"/>
-        <circle class="node-dot" cx="290" cy="90" r="4" style="animation-delay:0.7s"/>
-        <!-- connecting lines -->
-        <line class="node-line" x1="30" y1="80" x2="70" y2="30" style="animation-delay:0.8s"/>
-        <line class="node-line" x1="70" y1="30" x2="120" y2="90" style="animation-delay:0.9s"/>
-        <line class="node-line" x1="120" y1="90" x2="155" y2="20" style="animation-delay:1.0s"/>
-        <line class="node-line" x1="155" y1="20" x2="200" y2="75" style="animation-delay:1.1s"/>
-        <line class="node-line" x1="200" y1="75" x2="255" y2="40" style="animation-delay:1.2s"/>
-        <line class="node-line" x1="255" y1="40" x2="290" y2="90" style="animation-delay:1.3s"/>
-        <line class="node-line" x1="30" y1="80" x2="120" y2="90" style="animation-delay:1.4s"/>
-        <line class="node-line" x1="70" y1="30" x2="155" y2="20" style="animation-delay:1.5s"/>
-        <line class="node-line" x1="200" y1="75" x2="290" y2="90" style="animation-delay:1.6s"/>
-      </svg>
+      <div class="reveal">
+        <span class="section-label">Intervención del sistema</span>
+        <h2 class="transicion-title">La complejidad no es el enemigo.<br><span style="color:var(--blue)">La opacidad sí.</span></h2>
+        <p class="transicion-sub">
+          Cada sistema tiene un punto de orden. Lo encontramos, lo diseñamos y lo sostenemos. No desaparecemos después de la implementación.
+        </p>
+        <a href="#contacto" class="btn-primary">Evaluar mi infraestructura</a>
+      </div>
+
+      <div class="signals reveal" style="transition-delay:0.15s" id="signals-list" aria-hidden="true">
+        <div class="signal"><span class="signal-dot"></span>Stabilizing infrastructure</div>
+        <div class="signal"><span class="signal-dot"></span>Synchronizing distributed nodes</div>
+        <div class="signal"><span class="signal-dot"></span>Validating architecture integrity</div>
+        <div class="signal"><span class="signal-dot"></span>Resolving dependency conflicts</div>
+        <div class="signal"><span class="signal-dot"></span>Restoring control plane access</div>
+        <div class="signal"><span class="signal-dot"></span>Enforcing configuration baseline</div>
+        <div class="signal" style="font-weight:700;color:var(--blue)"><span class="signal-dot" style="background:var(--blue)"></span>QUNOX protocol active — systems nominal</div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      NOSOTROS
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section id="nosotros" aria-labelledby="nosotros-title">
   <div class="container">
     <div class="nosotros-inner">
 
       <div class="reveal">
         <span class="section-label">Quiénes somos</span>
-        <h2 class="section-title" id="nosotros-title">Un aliado técnico real</h2>
+        <h2 class="section-title" id="nosotros-title">Un aliado técnico real.<br>No un proveedor.</h2>
         <p class="nosotros-body">
-          QUNOX no vende soluciones genéricas. Trabajamos desde la experiencia en centros de datos reales, migraciones complejas y arquitecturas que deben funcionar sin margen de error. Somos el equipo técnico que acompaña cada decisión de infraestructura.
+          QUNOX no vende soluciones genéricas. Trabajamos desde la experiencia en centros de datos reales, migraciones complejas y arquitecturas que deben funcionar sin margen de error. Somos el equipo técnico que acompaña cada decisión de infraestructura, antes, durante y después de la implementación.
         </p>
         <div class="nosotros-points">
-          <div class="point-item">
-            <div class="point-icon">
+          <div class="n-point">
+            <div class="n-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
               </svg>
             </div>
-            <span class="point-text">Experiencia en centros de datos reales</span>
+            <span class="n-text">Operación real en centros de datos físicos e híbridos</span>
           </div>
-          <div class="point-item">
-            <div class="point-icon">
+          <div class="n-point">
+            <div class="n-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
               </svg>
             </div>
-            <span class="point-text">Migraciones complejas resueltas</span>
+            <span class="n-text">Migraciones complejas ejecutadas, no solo diseñadas</span>
           </div>
-          <div class="point-item">
-            <div class="point-icon">
+          <div class="n-point">
+            <div class="n-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <span class="point-text">Soporte especializado continuo</span>
+            <span class="n-text">Partners certificados HPE y Fortinet</span>
           </div>
         </div>
       </div>
 
-      <!-- Hexagon network -->
-      <div class="reveal" data-delay="150">
-        <svg class="hex-network" viewBox="0 0 400 340" aria-hidden="true">
+      <div class="hex-wrap reveal" style="transition-delay:0.15s">
+        <p class="hex-label">// System topology</p>
+        <svg viewBox="0 0 400 340" aria-hidden="true" style="width:100%;height:auto">
           <defs>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="blur"/>
+            <filter id="glow2">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
               <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-
-          <!-- Hexagons -->
-          <polygon class="hex-path" points="200,30 240,52 240,96 200,118 160,96 160,52" filter="url(#glow)"/>
-          <polygon class="hex-path" points="120,100 160,122 160,166 120,188 80,166 80,122" filter="url(#glow)" style="stroke:var(--purple);opacity:0.25"/>
-          <polygon class="hex-path" points="280,100 320,122 320,166 280,188 240,166 240,122" filter="url(#glow)" style="stroke:var(--cyan);opacity:0.2"/>
-          <polygon class="hex-path" points="200,170 240,192 240,236 200,258 160,236 160,192" filter="url(#glow)" style="stroke:var(--purple);opacity:0.3"/>
-          <polygon class="hex-path" points="80,240 120,262 120,306 80,328 40,306 40,262" filter="url(#glow)" style="opacity:0.15"/>
-          <polygon class="hex-path" points="320,240 360,262 360,306 320,328 280,306 280,262" filter="url(#glow)" style="stroke:var(--cyan);opacity:0.15"/>
-
-          <!-- Connection lines -->
-          <line x1="200" y1="118" x2="120" y2="122" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
-          <line x1="200" y1="118" x2="280" y2="122" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
-          <line x1="120" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
-          <line x1="280" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.8" opacity="0.2"/>
-          <line x1="120" y1="188" x2="80" y2="262" stroke="var(--purple)" stroke-width="0.8" opacity="0.15"/>
-          <line x1="280" y1="188" x2="320" y2="262" stroke="var(--purple)" stroke-width="0.8" opacity="0.15"/>
-
-          <!-- Pulse dots -->
-          <circle class="hex-dot" cx="200" cy="74" r="3" filter="url(#glow)" style="fill:var(--cyan)"/>
-          <circle class="hex-dot" cx="120" cy="144" r="3" filter="url(#glow)" style="fill:var(--blue);animation-delay:0.5s"/>
-          <circle class="hex-dot" cx="280" cy="144" r="3" filter="url(#glow)" style="fill:var(--purple);animation-delay:1s"/>
-          <circle class="hex-dot" cx="200" cy="214" r="3" filter="url(#glow)" style="fill:var(--blue);animation-delay:1.5s"/>
-          <circle class="hex-dot" cx="80" cy="284" r="3" filter="url(#glow)" style="fill:var(--cyan);animation-delay:0.7s"/>
-          <circle class="hex-dot" cx="320" cy="284" r="3" filter="url(#glow)" style="fill:var(--purple);animation-delay:1.2s"/>
+          <polygon class="hex-path" points="200,30 240,52 240,96 200,118 160,96 160,52" filter="url(#glow2)" style="stroke:var(--blue);opacity:0.35"/>
+          <polygon class="hex-path" points="120,100 160,122 160,166 120,188 80,166 80,122" filter="url(#glow2)" style="stroke:var(--purple);opacity:0.22"/>
+          <polygon class="hex-path" points="280,100 320,122 320,166 280,188 240,166 240,122" filter="url(#glow2)" style="stroke:var(--cyan);opacity:0.22"/>
+          <polygon class="hex-path" points="200,170 240,192 240,236 200,258 160,236 160,192" filter="url(#glow2)" style="stroke:var(--blue);opacity:0.28"/>
+          <polygon class="hex-path" points="80,240 120,262 120,306 80,328 40,306 40,262" filter="url(#glow2)" style="opacity:0.14"/>
+          <polygon class="hex-path" points="320,240 360,262 360,306 320,328 280,306 280,262" filter="url(#glow2)" style="stroke:var(--cyan);opacity:0.14"/>
+          <line x1="200" y1="118" x2="120" y2="122" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
+          <line x1="200" y1="118" x2="280" y2="122" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
+          <line x1="120" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
+          <line x1="280" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
+          <line x1="120" y1="188" x2="80" y2="262" stroke="var(--purple)" stroke-width="0.7" opacity="0.14"/>
+          <line x1="280" y1="188" x2="320" y2="262" stroke="var(--purple)" stroke-width="0.7" opacity="0.14"/>
+          <circle class="hex-dot" cx="200" cy="74" r="3.5" filter="url(#glow2)" style="fill:var(--cyan)"/>
+          <circle class="hex-dot" cx="120" cy="144" r="3.5" filter="url(#glow2)" style="fill:var(--blue);animation-delay:0.6s"/>
+          <circle class="hex-dot" cx="280" cy="144" r="3.5" filter="url(#glow2)" style="fill:var(--purple);animation-delay:1.2s"/>
+          <circle class="hex-dot" cx="200" cy="214" r="3.5" filter="url(#glow2)" style="fill:var(--blue);animation-delay:1.8s"/>
+          <circle class="hex-dot" cx="80" cy="284" r="3" filter="url(#glow2)" style="fill:var(--cyan);animation-delay:0.8s"/>
+          <circle class="hex-dot" cx="320" cy="284" r="3" filter="url(#glow2)" style="fill:var(--purple);animation-delay:1.4s"/>
         </svg>
       </div>
 
@@ -1270,167 +827,175 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      SERVICIOS
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section id="servicios" aria-labelledby="servicios-title">
   <div class="container">
+
     <div class="servicios-header reveal">
       <span class="section-label">Lo que hacemos</span>
-      <h2 class="section-title" id="servicios-title"><span class="line-accent">Cómo ayudamos</span></h2>
+      <h2 class="section-title" id="servicios-title">Cómo tomamos control de tu infraestructura</h2>
+      <p style="color:var(--text-sec);font-size:1rem;max-width:540px;margin:0 auto;line-height:1.75">
+        Cada servicio existe porque vimos el mismo problema en producción, no en un whitepaper.
+      </p>
     </div>
 
     <div class="servicios-grid">
 
-      <article class="service-card reveal" data-delay="0">
-        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.77 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
+      <article class="svc-card reveal" data-delay="0">
+        <div class="svc-num">01 / SOPORTE</div>
+        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.77 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
         </svg>
-        <h3 class="service-name">Soporte L3 Especializado</h3>
-        <p class="service-what">Gestión proactiva, escalamiento técnico y resolución de incidentes críticos.</p>
-        <span class="service-benefit">Tu operación continúa sin importar la complejidad del problema.</span>
+        <h3 class="svc-name">Soporte L3 Especializado</h3>
+        <p class="svc-what">Gestión proactiva, escalamiento técnico y resolución de incidentes críticos. Reducimos tu MTTR antes de que el usuario note el problema.</p>
+        <span class="svc-benefit">Tu operación continúa sin importar la complejidad del incidente.</span>
       </article>
 
-      <article class="service-card reveal" data-delay="80">
-        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <article class="svc-card reveal" data-delay="80">
+        <div class="svc-num">02 / OPTIMIZACIÓN</div>
+        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
           <circle cx="12" cy="12" r="10"/>
           <polyline points="12 6 12 12 16 14"/>
           <path d="M2 12h2M20 12h2M12 2v2M12 20v2"/>
         </svg>
-        <h3 class="service-name">Optimización y Tuning</h3>
-        <p class="service-what">Balanceo de recursos, evaluación de storage y ajuste de rendimiento.</p>
-        <span class="service-benefit">Máximo rendimiento con los recursos que ya tienes.</span>
+        <h3 class="svc-name">Optimización y Tuning</h3>
+        <p class="svc-what">Rightsizing de recursos, evaluación de storage y ajuste de rendimiento. Identificamos el costo real de cada workload y lo reducimos.</p>
+        <span class="svc-benefit">Máximo rendimiento con los recursos que ya tienes. Sin CAPEX adicional.</span>
       </article>
 
-      <article class="service-card reveal" data-delay="160">
-        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <article class="svc-card reveal" data-delay="160">
+        <div class="svc-num">03 / CLUSTERS</div>
+        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
           <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
           <line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
         </svg>
-        <h3 class="service-name">Implementación de Clusters</h3>
-        <p class="service-what">Diseño e implementación de arquitecturas de alta disponibilidad.</p>
-        <span class="service-benefit">Infraestructura que escala sin comprometer la estabilidad.</span>
+        <h3 class="svc-name">Implementación de Clusters</h3>
+        <p class="svc-what">Diseño e implementación de arquitecturas de alta disponibilidad. Sin SPOF, con failover probado y degradación graceful ante incidentes.</p>
+        <span class="svc-benefit">Infraestructura que escala sin comprometer la estabilidad operacional.</span>
       </article>
 
-      <article class="service-card reveal" data-delay="0">
-        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <article class="svc-card reveal" data-delay="0">
+        <div class="svc-num">04 / DISASTER RECOVERY</div>
+        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <polyline points="9 12 11 14 15 10"/>
         </svg>
-        <h3 class="service-name">Diseño de Disaster Recovery</h3>
-        <p class="service-what">Validación de alta disponibilidad, estrategia de continuidad y pruebas reales.</p>
-        <span class="service-benefit">Cuando ocurre una falla, ya tienes la respuesta.</span>
+        <h3 class="svc-name">Diseño de Disaster Recovery</h3>
+        <p class="svc-what">RTO y RPO como compromisos medibles, no como objetivos teóricos. Diseñamos, documentamos y ejecutamos DR drills reales con resultados verificables.</p>
+        <span class="svc-benefit">Cuando ocurre una falla, el runbook ya fue ejecutado antes.</span>
       </article>
 
-      <article class="service-card reveal" data-delay="80">
-        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <article class="svc-card reveal" data-delay="80">
+        <div class="svc-num">05 / MULTI-CLOUD</div>
+        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
           <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>
           <line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>
         </svg>
-        <h3 class="service-name">Estrategia Multi-Cloud</h3>
-        <p class="service-what">Movilidad de cargas, escalabilidad y reducción de CAPEX.</p>
-        <span class="service-benefit">Flexibilidad estratégica sin dependencia de un solo proveedor.</span>
+        <h3 class="svc-name">Estrategia Multi-Cloud</h3>
+        <p class="svc-what">Movilidad de cargas, FinOps y eliminación de vendor lock-in técnico. Tres nubes no son tres veces más control si nadie las gestiona de forma unificada.</p>
+        <span class="svc-benefit">Flexibilidad estratégica. Sin dependencia de un solo proveedor.</span>
       </article>
 
-      <article class="service-card reveal" data-delay="160">
-        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <rect x="2" y="2" width="20" height="20" rx="2"/>
-          <path d="M8 12h8M12 8v8"/>
-          <circle cx="12" cy="12" r="3"/>
+      <article class="svc-card reveal" data-delay="160">
+        <div class="svc-num">06 / SEGURIDAD</div>
+        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
         </svg>
-        <h3 class="service-name">Red y Ciberseguridad</h3>
-        <p class="service-what">Configuración HPE, soluciones Fortinet y conectividad segura.</p>
-        <span class="service-benefit">Infraestructura conectada y protegida desde el diseño.</span>
+        <h3 class="svc-name">Red y Ciberseguridad</h3>
+        <p class="svc-what">Hardening de configuración HPE, soluciones Fortinet y segmentación de workloads. Remediación priorizada por riesgo operacional real, no por severidad teórica.</p>
+        <span class="svc-benefit">Infraestructura conectada y protegida desde el diseño, no como parche.</span>
       </article>
 
     </div>
 
-    <div class="partners-badge reveal">
-      <p class="partners-label">Partners certificados</p>
-      <p class="partners-names">
-        <strong>HPE</strong>
-        <span class="partners-sep">|</span>
-        <strong>Fortinet</strong>
-      </p>
+    <div class="partners-bar reveal">
+      <span class="partners-lbl">Partners certificados</span>
+      <div style="display:flex;gap:0.75rem">
+        <span class="partner-tag">HPE</span>
+        <span class="partner-tag">Fortinet</span>
+      </div>
     </div>
+
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      PROPUESTA DE VALOR
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section id="propuesta" aria-labelledby="propuesta-title">
   <div class="container">
-    <div class="propuesta-header reveal">
-      <span class="section-label">Por qué QUNOX</span>
-      <h2 class="section-title" id="propuesta-title"><span class="line-accent">Nuestra diferencia</span></h2>
-    </div>
+    <div class="propuesta-inner">
 
-    <div class="pv-item reveal">
-      <div class="pv-number">01</div>
-      <div class="pv-content">
-        <h3 class="pv-title">Arquitecturas reales, no teóricas.</h3>
-        <p class="pv-desc">Cada diseño está basado en implementaciones reales, no en buenas intenciones.</p>
+      <div class="propuesta-header reveal">
+        <span class="section-label">Por qué QUNOX</span>
+        <h2 class="section-title" id="propuesta-title">Lo que nos diferencia</h2>
       </div>
-    </div>
 
-    <div class="pv-item right reveal">
-      <div class="pv-number">02</div>
-      <div class="pv-content">
-        <h3 class="pv-title">Continuidad operativa como prioridad.</h3>
-        <p class="pv-desc">No diseñamos para que funcione hoy. Diseñamos para que funcione siempre.</p>
+      <div class="pv-item reveal">
+        <div class="pv-num">01</div>
+        <div>
+          <h3 class="pv-title">Arquitecturas reales, no documentos Word.</h3>
+          <p class="pv-desc">Cada diseño está basado en implementaciones ejecutadas bajo condiciones reales. El DR que te entregamos ya fue probado antes de que lo necesites.</p>
+        </div>
       </div>
-    </div>
 
-    <div class="pv-item reveal">
-      <div class="pv-number">03</div>
-      <div class="pv-content">
-        <h3 class="pv-title">Monitoreo continuo, sin puntos ciegos.</h3>
-        <p class="pv-desc">Visibilidad completa para actuar antes de que los problemas se vuelvan crisis.</p>
+      <div class="pv-item reveal">
+        <div class="pv-num">02</div>
+        <div>
+          <h3 class="pv-title">Continuidad operativa como compromiso, no como promesa.</h3>
+          <p class="pv-desc">No diseñamos para que funcione hoy. Diseñamos para que funcione cuando nadie está mirando, a las 3am del domingo.</p>
+        </div>
       </div>
-    </div>
 
-    <div class="pv-item right reveal">
-      <div class="pv-number">04</div>
-      <div class="pv-content">
-        <h3 class="pv-title">Acompañamiento estratégico constante.</h3>
-        <p class="pv-desc">No desaparecemos después de la implementación. Estamos en cada etapa.</p>
+      <div class="pv-item reveal">
+        <div class="pv-num">03</div>
+        <div>
+          <h3 class="pv-title">Visibilidad total. Sin puntos ciegos.</h3>
+          <p class="pv-desc">Observabilidad completa del stack para actuar antes de que los problemas se vuelvan incidentes. Los golden signals de tu infraestructura siempre en una sola vista.</p>
+        </div>
       </div>
-    </div>
 
+      <div class="pv-item reveal">
+        <div class="pv-num">04</div>
+        <div>
+          <h3 class="pv-title">Presentes en cada etapa. No solo en el cierre.</h3>
+          <p class="pv-desc">No desaparecemos después de la implementación. El acompañamiento continuo es parte del servicio, no un costo adicional.</p>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      CONTACTO
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section id="contacto" aria-labelledby="contacto-title">
   <div class="container">
     <div class="contacto-inner">
 
       <div class="reveal">
         <span class="section-label">Hablemos</span>
-        <h2 class="contacto-header-text" id="contacto-title">
-          ¿Listo para recuperar el control de tu infraestructura?
+        <h2 class="contacto-title" id="contacto-title">
+          ¿Tu infraestructura está<br>realmente bajo control?
         </h2>
-        <p class="contacto-sub">Cuéntanos dónde estás y te decimos qué podemos mejorar.</p>
-
-        <div class="contacto-info">
-          <a href="mailto:hola@qunox.com" class="contact-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-            </svg>
-            hola@qunox.com
-          </a>
-          <p style="font-size:0.875rem; color:var(--text-sec); padding-left:1.75rem; line-height:1.6;">
-            Respondemos en menos de 24 horas hábiles. Evaluamos tu infraestructura sin costo inicial.
-          </p>
-        </div>
+        <p class="contacto-sub">
+          Cuéntanos cómo es tu stack hoy. En 30 minutos te decimos dónde están los mayores riesgos operacionales. Sin costo, sin compromiso.
+        </p>
+        <a href="mailto:daesgaar@gmail.com" class="contact-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          daesgaar@gmail.com
+        </a>
+        <p class="contact-note">Respondemos en menos de 24 horas hábiles.</p>
       </div>
 
-      <div class="reveal" data-delay="150">
-        <div class="contact-form" id="contact-form-wrap">
-
+      <div class="reveal" style="transition-delay:0.15s">
+        <div class="contact-form-wrap">
           <form id="contact-form" novalidate>
             <div class="form-group">
               <input type="text" id="nombre" name="nombre" placeholder="Nombre" required autocomplete="name" />
@@ -1446,21 +1011,20 @@
             </div>
             <div class="form-group">
               <textarea id="mensaje" name="mensaje" placeholder="Mensaje" rows="4"></textarea>
-              <label for="mensaje">Mensaje</label>
+              <label for="mensaje">Cuéntanos sobre tu infraestructura</label>
             </div>
-            <button type="submit" class="form-submit">Evaluar mi infraestructura</button>
+            <button type="submit" class="form-submit" id="form-btn">Solicita evaluación técnica</button>
           </form>
 
           <div class="form-success" id="form-success">
             <div class="success-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
-            <p class="success-title">¡Mensaje recibido!</p>
-            <p class="success-msg">Un especialista QUNOX se pondrá en contacto contigo en las próximas 24 horas.</p>
+            <p class="success-title">Mensaje recibido.</p>
+            <p class="success-msg">Un especialista QUNOX se pondrá en contacto contigo en las próximas 24 horas hábiles.</p>
           </div>
-
         </div>
       </div>
 
@@ -1468,269 +1032,360 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════
      FOOTER
-════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <footer role="contentinfo">
   <div class="footer-inner">
-    <a href="#hero" class="footer-logo">QUNOX</a>
-
+    <span class="footer-logo-txt">QUNOX</span>
     <ul class="footer-links">
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#nosotros">Nosotros</a></li>
       <li><a href="#contacto">Contacto</a></li>
     </ul>
-
-    <p class="footer-partners">Partners: <strong>HPE</strong> | <strong>Fortinet</strong></p>
+    <p class="footer-partners">Partners: <strong>HPE</strong> &nbsp;|&nbsp; <strong>Fortinet</strong></p>
   </div>
   <p class="footer-copy">© 2025 QUNOX. Todos los derechos reservados.</p>
 </footer>
 
-<!-- ═══════════════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════════════
+     LIBS
+══════════════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
 <script>
 (function () {
   'use strict';
 
-  /* ── PARTICLE NETWORK ──────────────────────────────────────────── */
-  (function initParticles() {
-    const canvas = document.getElementById('particle-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+  /* ══════════════════════════════════════════════════════════
+     GOOGLE APPS SCRIPT — CONTACT FORM
 
-    let W, H, particles, mouse = { x: -999, y: -999 };
-    const COUNT = 60;
-    const CONNECT_DIST = 120;
-    const REPEL_RADIUS = 150;
-    const REPEL_FORCE = 0.04;
+     Para activar el formulario:
+     1. Ve a script.google.com → Nuevo proyecto
+     2. Pega este código en el editor:
 
-    const COLORS = [
-      'rgba(67,97,238,',
-      'rgba(114,9,183,',
-      'rgba(76,201,240,',
-      'rgba(67,97,238,',
-    ];
+       function doPost(e) {
+         try {
+           var d = JSON.parse(e.postData.contents);
+           GmailApp.sendEmail(
+             'daesgaar@gmail.com',
+             'QUNOX | Nuevo contacto: ' + d.nombre,
+             'Nombre: '  + d.nombre  + '\n' +
+             'Empresa: ' + (d.empresa || '—') + '\n' +
+             'Email: '   + d.email   + '\n\n' +
+             'Mensaje:\n' + d.mensaje
+           );
+           return ContentService
+             .createTextOutput(JSON.stringify({status:'ok'}))
+             .setMimeType(ContentService.MimeType.JSON);
+         } catch(err) {
+           return ContentService
+             .createTextOutput(JSON.stringify({status:'error',msg:err.toString()}))
+             .setMimeType(ContentService.MimeType.JSON);
+         }
+       }
 
-    function resize() {
-      const hero = document.getElementById('hero');
-      W = canvas.width = hero.offsetWidth;
-      H = canvas.height = hero.offsetHeight;
-    }
+     3. Guardar → Implementar → Nueva implementación
+        Tipo: Aplicación web
+        Ejecutar como: Yo (tu cuenta Gmail)
+        Acceso: Cualquier usuario
+     4. Copia la URL de implementación y reemplaza APPS_SCRIPT_URL abajo.
+  ══════════════════════════════════════════════════════════ */
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
-    function createParticle() {
-      return {
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        r: Math.random() * 2 + 1.2,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        opacity: Math.random() * 0.5 + 0.3,
-      };
-    }
-
-    function init() {
-      resize();
-      particles = Array.from({ length: COUNT }, createParticle);
-    }
-
-    function drawFrame() {
-      ctx.clearRect(0, 0, W, H);
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-
-        // Mouse repulsion
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < REPEL_RADIUS && dist > 0) {
-          const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
-          p.vx += (dx / dist) * force * REPEL_FORCE;
-          p.vy += (dy / dist) * force * REPEL_FORCE;
-        }
-
-        // Damping
-        p.vx *= 0.99;
-        p.vy *= 0.99;
-
-        // Clamp speed
-        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        if (speed > 1.2) { p.vx = (p.vx / speed) * 1.2; p.vy = (p.vy / speed) * 1.2; }
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Bounce
-        if (p.x < 0) { p.x = 0; p.vx *= -1; }
-        if (p.x > W) { p.x = W; p.vx *= -1; }
-        if (p.y < 0) { p.y = 0; p.vy *= -1; }
-        if (p.y > H) { p.y = H; p.vy *= -1; }
-
-        // Draw dot
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + p.opacity + ')';
-        ctx.fill();
-
-        // Draw connections
-        for (let j = i + 1; j < particles.length; j++) {
-          const q = particles[j];
-          const lx = p.x - q.x;
-          const ly = p.y - q.y;
-          const ld = Math.sqrt(lx * lx + ly * ly);
-          if (ld < CONNECT_DIST) {
-            const alpha = (1 - ld / CONNECT_DIST) * 0.25;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(q.x, q.y);
-            ctx.strokeStyle = 'rgba(67,97,238,' + alpha + ')';
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        }
-      }
-
-      requestAnimationFrame(drawFrame);
-    }
-
-    canvas.addEventListener('mousemove', function (e) {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-    });
-
-    canvas.addEventListener('mouseleave', function () {
-      mouse.x = -999;
-      mouse.y = -999;
-    });
-
-    window.addEventListener('resize', function () {
-      resize();
-    });
-
-    init();
-    drawFrame();
-  })();
-
-
-  /* ── SCROLL REVEAL ─────────────────────────────────────────────── */
-  (function initReveal() {
-    const els = document.querySelectorAll('.reveal');
-    if (!els.length) return;
-
-    const observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          const el = entry.target;
-          const delay = parseInt(el.getAttribute('data-delay') || '0', 10);
-          setTimeout(function () {
-            el.classList.add('visible');
-          }, delay);
-          observer.unobserve(el);
-        }
-      });
-    }, { threshold: 0.15 });
-
-    els.forEach(function (el) { observer.observe(el); });
-  })();
-
-
-  /* ── NAV SCROLL + ACTIVE SECTIONS ─────────────────────────────── */
+  /* ── NAV SCROLL ─────────────────────────────────────────── */
   (function initNav() {
     const nav = document.getElementById('nav');
-    const links = document.querySelectorAll('.nav-links a[data-section]');
-    const sections = ['servicios', 'nosotros', 'contacto'];
-
-    function onScroll() {
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
-
-      // Active link
-      let current = '';
-      sections.forEach(function (id) {
-        const sec = document.getElementById(id);
-        if (!sec) return;
-        if (window.scrollY >= sec.offsetTop - 120) current = id;
-      });
-
-      links.forEach(function (a) {
-        a.classList.toggle('active', a.getAttribute('data-section') === current);
-      });
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  })();
-
-
-  /* ── HAMBURGER MENU ────────────────────────────────────────────── */
-  (function initHamburger() {
-    const btn = document.getElementById('hamburger');
+    const toggle = document.getElementById('hamburger');
     const menu = document.getElementById('mobile-menu');
-    const links = menu.querySelectorAll('a');
+    const closeBtn = document.getElementById('mobile-close');
 
-    function toggle() {
-      const isOpen = menu.classList.toggle('open');
-      btn.classList.toggle('open', isOpen);
-      btn.setAttribute('aria-expanded', isOpen);
-      document.body.style.overflow = isOpen ? 'hidden' : '';
-    }
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
 
-    function close() {
-      menu.classList.remove('open');
-      btn.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    }
+    function openMenu() { menu.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
+    function closeMenu() { menu.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
 
-    btn.addEventListener('click', toggle);
-    links.forEach(function (a) { a.addEventListener('click', close); });
+    toggle.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
   })();
 
-
-  /* ── PARALLAX HERO ─────────────────────────────────────────────── */
-  (function initParallax() {
-    const content = document.getElementById('hero-content');
-    if (!content) return;
-
-    document.addEventListener('mousemove', function (e) {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      const rx = (e.clientX - cx) / cx;
-      const ry = (e.clientY - cy) / cy;
-      const maxMove = 15;
-      content.style.transform = 'translate(' + (-rx * maxMove * 0.4) + 'px, ' + (-ry * maxMove * 0.4) + 'px)';
+  /* ── SCROLL REVEAL ──────────────────────────────────────── */
+  (function initReveal() {
+    const items = document.querySelectorAll('.reveal');
+    const delays = [];
+    items.forEach(el => {
+      const d = parseFloat(el.getAttribute('data-delay') || el.style.transitionDelay || 0);
+      delays.push(d);
     });
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    items.forEach(el => obs.observe(el));
   })();
 
+  /* ── TERMINAL LOG ANIMATION ─────────────────────────────── */
+  (function initLog() {
+    const lines = document.querySelectorAll('#log-body .log-line');
+    let started = false;
 
-  /* ── FORM ──────────────────────────────────────────────────────── */
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !started) {
+        started = true;
+        lines.forEach(line => {
+          const delay = parseInt(line.getAttribute('data-delay') || 0);
+          setTimeout(() => line.classList.add('visible'), delay);
+        });
+        obs.disconnect();
+      }
+    }, { threshold: 0.4 });
+
+    const log = document.getElementById('sys-log');
+    if (log) obs.observe(log);
+  })();
+
+  /* ── CONTROL SIGNALS ANIMATION ──────────────────────────── */
+  (function initSignals() {
+    const signals = document.querySelectorAll('#signals-list .signal');
+    let started = false;
+
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !started) {
+        started = true;
+        signals.forEach((s, i) => {
+          setTimeout(() => s.classList.add('active'), i * 280);
+        });
+        obs.disconnect();
+      }
+    }, { threshold: 0.3 });
+
+    const list = document.getElementById('signals-list');
+    if (list) obs.observe(list);
+  })();
+
+  /* ── CONTACT FORM ───────────────────────────────────────── */
   (function initForm() {
-    const form = document.getElementById('contact-form');
+    const form   = document.getElementById('contact-form');
+    const btn    = document.getElementById('form-btn');
     const success = document.getElementById('form-success');
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      form.style.opacity = '0';
-      form.style.transform = 'translateY(-10px)';
-      form.style.transition = 'opacity 0.3s, transform 0.3s';
+      const nombre  = form.nombre.value.trim();
+      const empresa = form.empresa.value.trim();
+      const email   = form.email.value.trim();
+      const mensaje = form.mensaje.value.trim();
 
-      setTimeout(function () {
+      if (!nombre || !email) {
+        alert('Por favor completa nombre y email.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      try {
+        if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+          // Demo mode: simulate success
+          await new Promise(r => setTimeout(r, 900));
+        } else {
+          await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, empresa, email, mensaje })
+          });
+        }
         form.style.display = 'none';
-        success.classList.add('visible');
-        success.style.animation = 'fadeInUp 0.4s forwards';
-      }, 300);
+        success.style.display = 'block';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Solicita evaluación técnica';
+        alert('Hubo un error. Por favor escríbenos directamente a daesgaar@gmail.com');
+      }
+    });
+  })();
+
+  /* ══════════════════════════════════════════════════════════
+     THREE.JS — CORE SYSTEM
+  ══════════════════════════════════════════════════════════ */
+  (function initThree() {
+    if (typeof THREE === 'undefined') return;
+    if (window.innerWidth < 768) return; // skip on mobile
+
+    const canvas = document.getElementById('three-canvas');
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(W, H);
+    renderer.setClearColor(0xffffff, 0);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 100);
+    camera.position.set(0, 0, 6);
+
+    // ── Core: outer icosahedron
+    const coreGeo = new THREE.IcosahedronGeometry(2, 1);
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0x4361EE, wireframe: true, transparent: true, opacity: 0.22
+    });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    core.position.set(2.2, 0, 0);
+    scene.add(core);
+
+    // ── Inner sphere
+    const innerGeo = new THREE.IcosahedronGeometry(1.1, 0);
+    const innerMat = new THREE.MeshBasicMaterial({
+      color: 0x7209B7, wireframe: true, transparent: true, opacity: 0.15
+    });
+    const inner = new THREE.Mesh(innerGeo, innerMat);
+    inner.position.set(2.2, 0, 0);
+    scene.add(inner);
+
+    // ── Orbit ring
+    const ringGeo = new THREE.TorusGeometry(2.8, 0.008, 2, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00B4D8, transparent: true, opacity: 0.18 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.set(2.2, 0, 0);
+    ring.rotation.x = Math.PI / 2.5;
+    scene.add(ring);
+
+    // ── Particles
+    const COUNT = 120;
+    const posArr = new Float32Array(COUNT * 3);
+    for (let i = 0; i < COUNT; i++) {
+      posArr[i*3]   = (Math.random() - 0.5) * 18;
+      posArr[i*3+1] = (Math.random() - 0.5) * 12;
+      posArr[i*3+2] = (Math.random() - 0.5) * 8 - 3;
+    }
+    const ptGeo = new THREE.BufferGeometry();
+    ptGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+    const ptMat = new THREE.PointsMaterial({ color: 0x4361EE, size: 0.045, transparent: true, opacity: 0.35 });
+    const particles = new THREE.Points(ptGeo, ptMat);
+    scene.add(particles);
+
+    // ── Mouse
+    let mx = 0, my = 0;
+    document.addEventListener('mousemove', e => {
+      mx = (e.clientX / window.innerWidth  - 0.5) * 2;
+      my = -(e.clientY / window.innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    // ── State driven by scroll
+    let chaos = 0;
+
+    // GSAP ScrollTrigger
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Chaos builds during problem section
+      ScrollTrigger.create({
+        trigger: '#problema',
+        start: 'top 70%',
+        end: 'bottom 30%',
+        scrub: 1.5,
+        onUpdate: self => { chaos = self.progress; }
+      });
+
+      // Chaos resolves during transition
+      ScrollTrigger.create({
+        trigger: '#transicion',
+        start: 'top 70%',
+        end: 'bottom 30%',
+        scrub: 1.5,
+        onUpdate: self => { chaos = 1 - self.progress; }
+      });
+
+      // Core fades in hero, shrinks as page scrolls
+      gsap.to(core.scale, {
+        x: 0.6, y: 0.6, z: 0.6,
+        scrollTrigger: {
+          trigger: '#nosotros',
+          start: 'top bottom',
+          end: 'top top',
+          scrub: 2
+        }
+      });
+    }
+
+    // ── Animate
+    const clock = new THREE.Clock();
+    let camX = 0, camY = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      // Base rotation
+      core.rotation.y  += 0.004;
+      core.rotation.x  += 0.001;
+      inner.rotation.y -= 0.006;
+      inner.rotation.z += 0.002;
+      ring.rotation.z  += 0.002;
+      particles.rotation.y += 0.0005;
+
+      // Float
+      const floatY = Math.sin(t * 0.6) * 0.18;
+      core.position.y  = floatY;
+      inner.position.y = floatY;
+      ring.position.y  = floatY;
+
+      // Mouse parallax
+      camX += (mx * 0.25 - camX) * 0.04;
+      camY += (my * 0.15 - camY) * 0.04;
+      camera.position.x = camX;
+      camera.position.y = camY;
+      camera.lookAt(0, 0, 0);
+
+      // Chaos effect
+      if (chaos > 0.05) {
+        const positions = ptGeo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) {
+          positions[i*3]   += (Math.random() - 0.5) * 0.025 * chaos;
+          positions[i*3+1] += (Math.random() - 0.5) * 0.025 * chaos;
+        }
+        ptGeo.attributes.position.needsUpdate = true;
+
+        // Glitch core color
+        if (Math.random() > 0.96) {
+          coreMat.color.setHex(0xff4d4f);
+        } else {
+          coreMat.color.setHex(0x4361EE);
+        }
+        coreMat.opacity = 0.22 + Math.sin(t * 12) * 0.07 * chaos;
+      } else {
+        coreMat.color.setHex(0x4361EE);
+        coreMat.opacity = 0.22;
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
     });
   })();
 
 })();
 </script>
-
 </body>
 </html>
