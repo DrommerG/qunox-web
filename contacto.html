@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Contacto — QUNOX</title>
+  <meta name="description" content="Habla con un especialista QUNOX. Diagnóstico gratuito de tu infraestructura."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+<nav id="nav" role="navigation">
+  <div class="nav-inner">
+    <a href="index.html"><img src="logo.jpeg" alt="QUNOX" class="nav-logo-img"/></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="index.html#servicios-preview">Servicios</a></li>
+      <li><a href="contacto.html" class="active">Contacto</a></li>
+    </ul>
+    <a href="contacto.html" class="btn btn-primary nav-cta">Hablar con un especialista</a>
+    <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html" class="mobile-link">Inicio</a>
+  <a href="index.html#servicios-preview" class="mobile-link">Servicios</a>
+  <a href="contacto.html" class="mobile-link">Contacto</a>
+</div>
+
+<div class="page-wrap contact-page" role="main">
+
+  <!-- LEFT PANEL -->
+  <div class="contact-left">
+    <div class="contact-left-top">
+      <span class="label">Hablemos</span>
+      <h1>¿Tu infraestructura está realmente bajo control?</h1>
+      <p>Cuéntanos cómo es tu stack hoy. En 30 minutos te decimos dónde están los mayores riesgos operacionales. Sin costo, sin compromiso.</p>
+
+      <div class="contact-info-items">
+        <div class="contact-info-item">
+          <div class="ci-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ci-label">Email</div>
+            <div class="ci-value"><a href="mailto:daesgaar@gmail.com">daesgaar@gmail.com</a></div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="ci-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ci-label">Tiempo de respuesta</div>
+            <div class="ci-value">Menos de 24 horas hábiles</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="ci-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ci-label">Primera evaluación</div>
+            <div class="ci-value">Gratuita y sin compromiso</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-visual"></div>
+  </div>
+
+  <!-- RIGHT PANEL (FORM) -->
+  <div class="contact-right">
+    <h2>Envíanos un mensaje</h2>
+    <p class="subtitle">Cuéntanos sobre tu infraestructura y te contactamos para una evaluación técnica.</p>
+
+    <form class="form" id="contact-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre *</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label for="empresa">Empresa</label>
+          <input type="text" id="empresa" name="empresa" placeholder="Tu empresa" autocomplete="organization"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" placeholder="tu@empresa.com" required autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label for="rol">Rol / Cargo</label>
+        <input type="text" id="rol" name="rol" placeholder="CTO, Director IT, etc."/>
+      </div>
+      <div class="form-group">
+        <label for="mensaje">Cuéntanos sobre tu infraestructura</label>
+        <textarea id="mensaje" name="mensaje" placeholder="¿Qué tipo de infraestructura tienen? ¿Cuáles son los principales desafíos?"></textarea>
+      </div>
+      <button type="submit" class="form-submit" id="form-btn">Solicita evaluación técnica</button>
+    </form>
+
+    <div class="form-success" id="form-success">
+      <div class="success-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p class="success-title">Mensaje recibido.</p>
+      <p class="success-msg">Un especialista QUNOX se pondrá en contacto contigo en las próximas 24 horas hábiles.</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

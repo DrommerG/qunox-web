@@ -1,1390 +1,278 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>QUNOX — Infraestructura que obedece.</title>
-  <meta name="description" content="QUNOX transforma sistemas complejos en infraestructura confiable, escalable y bajo control total. Diagnóstico gratuito." />
-  <meta property="og:title" content="QUNOX — Infraestructura que obedece." />
-  <meta property="og:description" content="Los sistemas complejos no se caen porque son complejos. Se caen porque nadie los conoce a fondo. QUNOX sí." />
-  <meta property="og:type" content="website" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
-  <style>
-    /* ── RESET ─────────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:     #ffffff;
-      --bg2:    #f6f7ff;
-      --blue:   #4361EE;
-      --purple: #7209B7;
-      --cyan:   #00B4D8;
-      --red:    #EF4444;
-      --text:   #0A0A1A;
-      --text-sec: #64748B;
-      --border: rgba(67,97,238,0.12);
-      --border-s: rgba(67,97,238,0.28);
-      --gutter: clamp(1.25rem, 5vw, 4.5rem);
-      --radius: 14px;
-      --shadow: 0 4px 28px rgba(67,97,238,0.08);
-      --shadow-h: 0 12px 40px rgba(67,97,238,0.18);
-    }
-
-    html { scroll-behavior: smooth; font-size: 16px; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; overflow-x: hidden; }
-    h1,h2,h3,h4 { font-family: 'Space Grotesk', sans-serif; line-height: 1.1; }
-    a { color: inherit; text-decoration: none; }
-    img, svg { display: block; }
-
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
-
-    /* ── DOT GRID ──────────────────────────────────────────── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image: radial-gradient(circle, rgba(67,97,238,0.07) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-
-    /* ── THREE.JS CANVAS ───────────────────────────────────── */
-    #three-canvas {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1; pointer-events: none;
-    }
-
-    /* ── Z-STACKING ────────────────────────────────────────── */
-    nav, section, footer, .mobile-menu { position: relative; z-index: 2; }
-
-    /* ── CONTAINER ─────────────────────────────────────────── */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--gutter); }
-
-    /* ── LABELS & TITLES ───────────────────────────────────── */
-    .section-label {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--blue); margin-bottom: 0.875rem;
-    }
-    .section-label::before {
-      content: ''; display: block; width: 18px; height: 1px; background: var(--blue);
-    }
-    .section-title {
-      font-size: clamp(1.875rem, 3.5vw, 2.875rem);
-      font-weight: 700; color: var(--text); margin-bottom: 1.25rem;
-    }
-
-    /* ── BUTTONS ───────────────────────────────────────────── */
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.875rem 1.75rem;
-      background: var(--blue); color: #fff;
-      border-radius: 8px; font-size: 0.9375rem; font-weight: 600;
-      border: none; cursor: pointer;
-      transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
-    }
-    .btn-primary:hover { background: #3451d1; box-shadow: 0 8px 28px rgba(67,97,238,0.32); transform: translateY(-1px); }
-
-    .btn-ghost {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.875rem 1.75rem;
-      border: 1.5px solid var(--border-s); color: var(--text);
-      border-radius: 8px; font-size: 0.9375rem; font-weight: 500;
-      background: transparent; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); background: rgba(67,97,238,0.04); }
-
-    /* ── REVEAL ────────────────────────────────────────────── */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: none; }
-
-    /* ══════════════════════════════════════════════════════════
-       NAV
-    ══════════════════════════════════════════════════════════ */
-    #nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      padding: 0.875rem var(--gutter);
-      display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.35s, border-color 0.35s, box-shadow 0.35s;
-      border-bottom: 1px solid transparent;
-    }
-    #nav.scrolled {
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-color: var(--border);
-      box-shadow: 0 1px 20px rgba(67,97,238,0.07);
-    }
-    .nav-logo-img { height: 44px; width: auto; mix-blend-mode: multiply; display: block; }
-    .nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
-    .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--text-sec); transition: color 0.2s; }
-    .nav-links a:hover { color: var(--blue); }
-    .nav-cta {
-      padding: 0.6rem 1.25rem;
-      background: var(--blue); color: #fff;
-      border-radius: 7px; font-size: 0.875rem; font-weight: 600;
-      transition: background 0.2s, box-shadow 0.2s;
-    }
-    .nav-cta:hover { background: #3451d1; box-shadow: 0 4px 16px rgba(67,97,238,0.3); }
-
-    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
-    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.28s; }
-
-    .mobile-menu {
-      display: none; position: fixed; inset: 0; z-index: 999;
-      background: rgba(255,255,255,0.97); backdrop-filter: blur(24px);
-      flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
-    }
-    .mobile-menu.open { display: flex; }
-    .mobile-link { font-family: 'Space Grotesk', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--text); }
-    .mobile-close {
-      position: absolute; top: 1.5rem; right: var(--gutter);
-      background: none; border: none; cursor: pointer;
-      font-size: 1.5rem; color: var(--text-sec);
-    }
-
-    @media (max-width: 768px) {
-      .nav-links, .nav-cta { display: none; }
-      .hamburger { display: flex; }
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       HERO
-    ══════════════════════════════════════════════════════════ */
-    #hero {
-      min-height: 100vh;
-      display: flex; align-items: center;
-      padding: 9rem var(--gutter) 5rem;
-      overflow: hidden;
-    }
-    .hero-inner {
-      max-width: 1200px; margin: 0 auto; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 0.75rem;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--blue); margin-bottom: 1.75rem;
-    }
-    .hero-eyebrow span { display: block; width: 28px; height: 1px; background: var(--blue); }
-    .hero-title {
-      font-size: clamp(3rem, 6vw, 5.25rem);
-      font-weight: 700; letter-spacing: -0.025em;
-      color: var(--text); margin-bottom: 1.5rem; line-height: 1.04;
-    }
-    .hero-title .accent { color: var(--blue); }
-    .hero-sub {
-      font-size: 1.125rem; color: var(--text-sec); line-height: 1.75;
-      margin-bottom: 2.5rem; max-width: 460px;
-    }
-    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    /* Hero right panel */
-    .hero-panel {
-      display: flex; flex-direction: column; gap: 1rem;
-      animation: float 5s ease-in-out infinite;
-    }
-    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-    .sys-card {
-      background: rgba(255,255,255,0.75);
-      border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.375rem 1.5rem;
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-    }
-    .sys-card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1rem; padding-bottom: 0.875rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .sys-card-title {
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--text-sec);
-    }
-    .status-pill {
-      display: flex; align-items: center; gap: 0.375rem;
-      font-size: 0.68rem; font-weight: 700; color: #16a34a;
-      text-transform: uppercase; letter-spacing: 0.1em;
-    }
-    .status-pill-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
-      animation: pulse-g 2s ease-in-out infinite;
-    }
-    @keyframes pulse-g { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); } 50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); } }
-
-    .sys-rows { display: flex; flex-direction: column; gap: 0.625rem; }
-    .sys-row { display: flex; align-items: center; justify-content: space-between; }
-    .sys-key { font-size: 0.8rem; color: var(--text-sec); }
-    .sys-val { font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; font-weight: 700; }
-    .sys-val.green { color: #16a34a; }
-    .sys-val.blue  { color: var(--blue); }
-    .sys-val.cyan  { color: var(--cyan); }
-
-    .metrics-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
-    .metric-box {
-      background: rgba(255,255,255,0.7); border: 1px solid var(--border);
-      border-radius: 10px; padding: 1rem; text-align: center;
-      backdrop-filter: blur(10px);
-    }
-    .metric-num {
-      font-family: 'Space Grotesk', sans-serif; font-size: 1.375rem; font-weight: 700;
-      color: var(--blue); display: block;
-    }
-    .metric-lbl { font-size: 0.67rem; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.08em; }
-
-    .scroll-cue {
-      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-      color: var(--text-sec); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
-      animation: scroll-bounce 2.2s ease-in-out infinite;
-    }
-    @keyframes scroll-bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(7px); } }
-
-    @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-panel { display: none; }
-      #hero { padding-bottom: 4rem; }
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       PROBLEMA
-    ══════════════════════════════════════════════════════════ */
-    #problema { padding: 6rem 0; background: var(--bg); }
-    .problema-header { text-align: center; margin-bottom: 3.5rem; }
-
-    .alerts-grid {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden; background: var(--border); gap: 1px;
-      margin-bottom: 3rem;
-    }
-    .alert-cell {
-      background: var(--bg); padding: 1.75rem;
-      transition: background 0.25s;
-    }
-    .alert-cell:hover { background: var(--bg2); }
-    .alert-code {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.67rem; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--red);
-      display: flex; align-items: center; gap: 0.4rem;
-      margin-bottom: 0.875rem;
-    }
-    .alert-code::before { content: '!'; opacity: 0.5; }
-    .alert-q {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.0625rem; font-weight: 600; color: var(--text);
-      margin-bottom: 0.625rem; line-height: 1.35;
-    }
-    .alert-d { font-size: 0.875rem; color: var(--text-sec); line-height: 1.65; }
-
-    /* System log terminal */
-    .sys-log {
-      background: #0B0D1A; border-radius: var(--radius);
-      padding: 0; overflow: hidden;
-      border: 1px solid rgba(67,97,238,0.2);
-    }
-    .log-titlebar {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.875rem 1.25rem;
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .log-btn { width: 10px; height: 10px; border-radius: 50%; }
-    .log-btn.r { background: #FF5F57; }
-    .log-btn.y { background: #FFBD2E; }
-    .log-btn.g { background: #28C840; }
-    .log-title { font-size: 0.7rem; color: rgba(255,255,255,0.25); letter-spacing: 0.08em; margin-left: 0.5rem; }
-    .log-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.375rem; }
-    .log-line {
-      display: grid; grid-template-columns: 68px 52px 1fr;
-      gap: 1rem; font-family: 'Space Grotesk', monospace;
-      font-size: 0.78rem; opacity: 0;
-      transition: opacity 0.4s;
-    }
-    .log-line.visible { opacity: 1; }
-    .log-ts { color: rgba(67,97,238,0.55); }
-    .log-lvl-err { color: #ff4d4f; font-weight: 700; }
-    .log-lvl-warn { color: #faad14; font-weight: 700; }
-    .log-lvl-info { color: #00B4D8; font-weight: 700; }
-    .log-msg { color: rgba(255,255,255,0.65); }
-
-    .problema-closing {
-      text-align: center; font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1875rem; font-weight: 600; color: var(--text-sec);
-      font-style: italic; max-width: 600px; margin: 0 auto;
-      padding: 0 var(--gutter);
-    }
-    .problema-closing span { color: var(--text); font-style: normal; }
-
-    @media (max-width: 900px) { .alerts-grid { grid-template-columns: 1fr; } }
-
-    /* ══════════════════════════════════════════════════════════
-       TRANSICION
-    ══════════════════════════════════════════════════════════ */
-    #transicion {
-      padding: 6rem 0;
-      background: linear-gradient(140deg, rgba(67,97,238,0.045) 0%, rgba(114,9,183,0.045) 100%);
-      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    }
-    .transicion-inner {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 5rem; align-items: center;
-    }
-    .transicion-title {
-      font-size: clamp(2rem, 3.75vw, 3.25rem);
-      font-weight: 700; margin-bottom: 1rem;
-    }
-    .transicion-sub {
-      font-size: 1.0625rem; color: var(--text-sec); line-height: 1.8;
-      margin-bottom: 1.75rem;
-    }
-
-    .signals { display: flex; flex-direction: column; gap: 0.625rem; }
-    .signal {
-      display: flex; align-items: center; gap: 0.875rem;
-      padding: 0.875rem 1.125rem;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid var(--border); border-radius: 8px;
-      font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 500;
-      opacity: 0; transform: translateX(-18px);
-      transition: opacity 0.45s ease, transform 0.45s ease;
-      backdrop-filter: blur(8px);
-    }
-    .signal.active { opacity: 1; transform: none; }
-    .signal-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); flex-shrink: 0;
-      animation: pc 2.5s ease-in-out infinite;
-    }
-    @keyframes pc { 0%,100% { box-shadow: 0 0 0 0 rgba(0,180,216,0.5); } 50% { box-shadow: 0 0 0 5px rgba(0,180,216,0); } }
-
-    @media (max-width: 900px) { .transicion-inner { grid-template-columns: 1fr; gap: 3rem; } }
-
-    /* ══════════════════════════════════════════════════════════
-       NOSOTROS
-    ══════════════════════════════════════════════════════════ */
-    #nosotros { padding: 6rem 0; background: var(--bg); }
-    .nosotros-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
-    .nosotros-body { font-size: 1.0625rem; color: var(--text-sec); line-height: 1.85; margin-bottom: 2rem; }
-    .nosotros-points { display: flex; flex-direction: column; gap: 0.875rem; }
-    .n-point {
-      display: flex; align-items: flex-start; gap: 1rem;
-      padding: 1rem 1.25rem; background: var(--bg2);
-      border: 1px solid var(--border); border-radius: 10px;
-    }
-    .n-icon {
-      width: 38px; height: 38px; border-radius: 8px;
-      background: rgba(67,97,238,0.08);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; color: var(--blue);
-    }
-    .n-text { font-size: 0.9375rem; font-weight: 500; color: var(--text); padding-top: 0.5rem; line-height: 1.5; }
-
-    /* Hex SVG visual */
-    .hex-wrap {
-      background: rgba(255,255,255,0.5); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.75rem;
-      backdrop-filter: blur(10px);
-    }
-    .hex-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-sec); margin-bottom: 1.25rem; }
-    .hex-path { fill: none; stroke: var(--blue); stroke-width: 0.8; opacity: 0.25; }
-    .hex-dot { animation: hex-pulse 3s ease-in-out infinite; }
-    @keyframes hex-pulse { 0%,100% { opacity: 0.4; r: 3; } 50% { opacity: 1; r: 4.5; } }
-
-    @media (max-width: 900px) { .nosotros-inner { grid-template-columns: 1fr; } }
-
-    /* ══════════════════════════════════════════════════════════
-       SERVICIOS
-    ══════════════════════════════════════════════════════════ */
-    #servicios { padding: 6rem 0; background: var(--bg2); }
-    .servicios-header { text-align: center; margin-bottom: 3.5rem; }
-    .servicios-grid {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.375rem;
-    }
-    .svc-card {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 2rem;
-      transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
-      cursor: default; position: relative; overflow: hidden;
-    }
-    .svc-card::after {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      transform: scaleX(0); transform-origin: left;
-      transition: transform 0.3s ease;
-    }
-    .svc-card:hover { box-shadow: var(--shadow-h); transform: translateY(-5px); border-color: var(--border-s); }
-    .svc-card:hover::after { transform: scaleX(1); }
-    .svc-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.14em; color: rgba(67,97,238,0.35); margin-bottom: 1.25rem; }
-    .svc-icon { width: 42px; height: 42px; margin-bottom: 1.25rem; color: var(--blue); }
-    .svc-name { font-size: 1.0625rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; }
-    .svc-what { font-size: 0.875rem; color: var(--text-sec); line-height: 1.7; margin-bottom: 1rem; }
-    .svc-benefit {
-      display: block; font-size: 0.8125rem; font-weight: 600; color: var(--blue);
-      padding-top: 1rem; border-top: 1px solid var(--border);
-    }
-
-    .partners-bar {
-      display: flex; align-items: center; justify-content: center; gap: 2rem;
-      margin-top: 2.5rem; padding: 1.25rem 2rem;
-      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-      flex-wrap: wrap;
-    }
-    .partners-lbl { font-size: 0.72rem; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.1em; }
-    .partner-tag {
-      padding: 0.35rem 0.9rem;
-      background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
-      font-family: 'Space Grotesk', sans-serif; font-size: 0.875rem; font-weight: 700;
-      color: var(--text); letter-spacing: 0.05em;
-    }
-
-    @media (max-width: 960px) { .servicios-grid { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 580px) { .servicios-grid { grid-template-columns: 1fr; } }
-
-    /* ══════════════════════════════════════════════════════════
-       PROPUESTA
-    ══════════════════════════════════════════════════════════ */
-    #propuesta { padding: 6rem 0; background: var(--bg); }
-    .propuesta-inner { max-width: 820px; margin: 0 auto; }
-    .propuesta-header { text-align: center; margin-bottom: 3.5rem; }
-    .pv-item {
-      display: flex; gap: 2.25rem; align-items: flex-start;
-      padding: 2rem 0; border-bottom: 1px solid var(--border);
-    }
-    .pv-item:last-child { border-bottom: none; }
-    .pv-num {
-      font-family: 'Space Grotesk', sans-serif; font-size: 3.25rem; font-weight: 700;
-      color: rgba(67,97,238,0.09); line-height: 1; min-width: 72px;
-    }
-    .pv-title { font-size: 1.1875rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
-    .pv-desc { font-size: 0.9375rem; color: var(--text-sec); line-height: 1.75; }
-
-    /* ══════════════════════════════════════════════════════════
-       CONTACTO
-    ══════════════════════════════════════════════════════════ */
-    #contacto { padding: 6rem 0; background: var(--bg2); }
-    .contacto-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
-    .contacto-title { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; line-height: 1.2; }
-    .contacto-sub { font-size: 1rem; color: var(--text-sec); line-height: 1.75; margin-bottom: 2rem; }
-    .contact-link {
-      display: flex; align-items: center; gap: 0.75rem;
-      color: var(--blue); font-weight: 500; font-size: 0.9375rem; margin-bottom: 0.5rem;
-    }
-    .contact-link:hover { text-decoration: underline; }
-    .contact-note { font-size: 0.83rem; color: var(--text-sec); line-height: 1.65; padding-left: 1.75rem; }
-
-    .contact-form-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
-    .form-group { position: relative; margin-bottom: 1.125rem; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 0.9rem 1rem;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text);
-      font-family: 'Inter', sans-serif; font-size: 0.9375rem;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; outline: none;
-    }
-    .form-group input:focus, .form-group textarea:focus {
-      border-color: var(--blue); background: #fff;
-      box-shadow: 0 0 0 3px rgba(67,97,238,0.11);
-    }
-    .form-group textarea { resize: vertical; min-height: 100px; }
-    .form-group label {
-      position: absolute; left: 1rem; top: 0.9rem;
-      color: var(--text-sec); font-size: 0.9375rem;
-      pointer-events: none; transition: all 0.2s ease;
-    }
-    .form-group input:focus ~ label,
-    .form-group input:not(:placeholder-shown) ~ label,
-    .form-group textarea:focus ~ label,
-    .form-group textarea:not(:placeholder-shown) ~ label {
-      top: -0.58rem; left: 0.75rem; font-size: 0.68rem;
-      background: var(--bg); padding: 0 0.25rem; color: var(--blue); font-weight: 700;
-    }
-    .form-group input::placeholder, .form-group textarea::placeholder { color: transparent; }
-    .form-submit {
-      width: 100%; padding: 0.9375rem;
-      background: var(--blue); color: #fff; border: none; border-radius: 8px;
-      font-size: 0.9375rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif;
-      cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
-    }
-    .form-submit:hover { background: #3451d1; box-shadow: 0 8px 24px rgba(67,97,238,0.28); }
-    .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .form-success { display: none; text-align: center; padding: 2.5rem 1rem; }
-    .success-icon {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: rgba(34,197,94,0.1); border: 2px solid #22c55e;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem; color: #22c55e;
-    }
-    .success-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
-    .success-msg { font-size: 0.9375rem; color: var(--text-sec); margin-top: 0.5rem; line-height: 1.6; }
-
-    @media (max-width: 900px) { .contacto-inner { grid-template-columns: 1fr; } }
-
-    /* ══════════════════════════════════════════════════════════
-       FOOTER
-    ══════════════════════════════════════════════════════════ */
-    footer {
-      background: var(--text); color: rgba(255,255,255,0.6);
-      padding: 3rem var(--gutter) 1.75rem;
-    }
-    .footer-inner {
-      max-width: 1200px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      padding-bottom: 1.75rem; margin-bottom: 1.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      flex-wrap: wrap; gap: 1.5rem;
-    }
-    .footer-logo-txt {
-      font-family: 'Space Grotesk', sans-serif; font-size: 1.375rem;
-      font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em;
-    }
-    .footer-links { display: flex; gap: 2rem; list-style: none; }
-    .footer-links a { font-size: 0.875rem; color: rgba(255,255,255,0.4); transition: color 0.2s; }
-    .footer-links a:hover { color: rgba(255,255,255,0.8); }
-    .footer-partners { font-size: 0.8125rem; color: rgba(255,255,255,0.35); }
-    .footer-copy { max-width: 1200px; margin: 0 auto; font-size: 0.8rem; color: rgba(255,255,255,0.25); }
-
-    @media (max-width: 600px) {
-      .footer-inner { flex-direction: column; align-items: flex-start; }
-      .footer-links { flex-direction: column; gap: 0.75rem; }
-    }
-  </style>
+  <meta name="description" content="QUNOX transforma sistemas complejos en infraestructura confiable, escalable y bajo control total."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-
-<!-- ── THREE.JS CANVAS (fixed background) ──────────────────── -->
 <canvas id="three-canvas" aria-hidden="true"></canvas>
 
-<!-- ══════════════════════════════════════════════════════════
-     NAV
-══════════════════════════════════════════════════════════ -->
-<nav id="nav" role="navigation" aria-label="Navegación principal">
-  <a href="#hero">
-    <img src="logo.jpeg" alt="QUNOX" class="nav-logo-img" />
-  </a>
-
-  <ul class="nav-links" id="nav-links">
-    <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#nosotros">Nosotros</a></li>
-    <li><a href="#contacto">Contacto</a></li>
-  </ul>
-
-  <a href="#contacto" class="nav-cta">Hablar con un especialista</a>
-
-  <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
+<!-- NAV -->
+<nav id="nav" role="navigation">
+  <div class="nav-inner">
+    <a href="index.html"><img src="logo.jpeg" alt="QUNOX" class="nav-logo-img"/></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Inicio</a></li>
+      <li><a href="index.html#servicios-preview">Servicios</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+    <a href="contacto.html" class="btn btn-primary nav-cta">Hablar con un especialista</a>
+    <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
-
-<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú móvil">
-  <button class="mobile-close" id="mobile-close" aria-label="Cerrar menú">✕</button>
-  <a href="#servicios" class="mobile-link">Servicios</a>
-  <a href="#nosotros" class="mobile-link">Nosotros</a>
-  <a href="#contacto" class="mobile-link">Contacto</a>
-  <a href="#contacto" class="btn-primary" style="margin-top:0.5rem">Hablar con un especialista</a>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html" class="mobile-link">Inicio</a>
+  <a href="index.html#servicios-preview" class="mobile-link">Servicios</a>
+  <a href="contacto.html" class="mobile-link">Contacto</a>
+  <a href="contacto.html" class="btn btn-primary mobile-cta">Hablar con un especialista</a>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     HERO
-══════════════════════════════════════════════════════════ -->
+<!-- HERO -->
 <section id="hero" aria-label="Portada">
   <div class="hero-inner">
-
-    <!-- Left: text -->
     <div>
-      <div class="hero-eyebrow reveal">
-        <span></span>
-        Infraestructura técnica especializada
-      </div>
-      <h1 class="hero-title reveal" style="transition-delay:0.1s">
-        Infraestructura<br><span class="accent">que obedece.</span>
+      <div class="hero-eyebrow reveal"><span></span>Infraestructura técnica especializada</div>
+      <h1 class="hero-h1 reveal" style="transition-delay:.1s">
+        Infraestructura<br><span class="grad-text">que obedece.</span>
       </h1>
-      <p class="hero-sub reveal" style="transition-delay:0.2s">
-        Los sistemas complejos no se caen porque son complejos.<br>
-        Se caen porque nadie los conoce a fondo. QUNOX sí.
+      <p class="hero-sub reveal" style="transition-delay:.2s">
+        En un mundo cada vez más digitalizado, el equipo de TI desempeña un papel crucial. Transformación, escalabilidad y seguridad son esenciales para el éxito empresarial.
       </p>
-      <div class="hero-actions reveal" style="transition-delay:0.3s">
-        <a href="#contacto" class="btn-primary">Solicita un diagnóstico gratuito</a>
-        <a href="#servicios" class="btn-ghost">Ver cómo trabajamos</a>
+      <div class="hero-actions reveal" style="transition-delay:.3s">
+        <a href="contacto.html" class="btn btn-primary">Solicita un diagnóstico gratuito</a>
+        <a href="#servicios-preview" class="btn btn-ghost">Ver servicios</a>
       </div>
     </div>
-
-    <!-- Right: live status panel -->
-    <div class="hero-panel reveal" style="transition-delay:0.4s" aria-hidden="true">
+    <div class="hero-panel reveal" style="transition-delay:.4s" aria-hidden="true">
       <div class="sys-card">
-        <div class="sys-card-header">
-          <span class="sys-card-title">System Status</span>
-          <span class="status-pill"><span class="status-pill-dot"></span>All systems nominal</span>
+        <div class="sys-head">
+          <span class="sys-title">System Status</span>
+          <span class="status-pill"><span class="status-dot"></span>All systems nominal</span>
         </div>
         <div class="sys-rows">
-          <div class="sys-row"><span class="sys-key">Infrastructure</span><span class="sys-val green">Controlled</span></div>
-          <div class="sys-row"><span class="sys-key">Control Plane</span><span class="sys-val green">Reachable</span></div>
-          <div class="sys-row"><span class="sys-key">Redundancy</span><span class="sys-val green">Active</span></div>
-          <div class="sys-row"><span class="sys-key">Config Drift</span><span class="sys-val blue">0 deviations</span></div>
-          <div class="sys-row"><span class="sys-key">Uptime</span><span class="sys-val cyan">99.97%</span></div>
+          <div class="sys-row"><span class="sys-k">Infrastructure</span><span class="sys-v g">Controlled</span></div>
+          <div class="sys-row"><span class="sys-k">Control Plane</span><span class="sys-v g">Reachable</span></div>
+          <div class="sys-row"><span class="sys-k">Redundancy</span><span class="sys-v g">Active</span></div>
+          <div class="sys-row"><span class="sys-k">Config Drift</span><span class="sys-v b">0 deviations</span></div>
+          <div class="sys-row"><span class="sys-k">Uptime</span><span class="sys-v c">99.97%</span></div>
         </div>
       </div>
-
       <div class="metrics-row">
         <div class="metric-box"><span class="metric-num">4h</span><span class="metric-lbl">RTO garantizado</span></div>
         <div class="metric-box"><span class="metric-num">0</span><span class="metric-lbl">SPOF activos</span></div>
-        <div class="metric-box"><span class="metric-num">24/7</span><span class="metric-lbl">Monitoreo continuo</span></div>
+        <div class="metric-box"><span class="metric-num">24/7</span><span class="metric-lbl">Monitoreo</span></div>
       </div>
     </div>
-
   </div>
-
   <div class="scroll-cue" aria-hidden="true">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="6 9 12 15 18 9"/>
-    </svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     PROBLEMA
-══════════════════════════════════════════════════════════ -->
-<section id="problema" aria-labelledby="problema-title">
+<!-- PAIN POINTS -->
+<section id="pain" aria-label="Diagnóstico">
   <div class="container">
-
-    <div class="problema-header reveal">
-      <span class="section-label">Diagnóstico del sistema</span>
-      <h2 class="section-title" id="problema-title">¿Te reconoces en esto?</h2>
-      <p style="color:var(--text-sec);font-size:1rem;max-width:560px;margin:0 auto;line-height:1.75">
-        Es lunes por la mañana. Hay una caída en producción y tardas 40 minutos solo en determinar en qué parte del stack está el problema.
-      </p>
+    <div style="text-align:center;margin-bottom:40px" class="reveal">
+      <span class="label">Evolución del rol de TI</span>
+      <h2 style="font-size:clamp(1.75rem,3vw,2.5rem);font-weight:700;letter-spacing:-0.025em;margin-bottom:12px">El nuevo rol del equipo de TI</h2>
+      <p style="font-size:16px;color:var(--sub);max-width:560px;margin:0 auto;line-height:1.75">A medida que la tecnología avanza, los profesionales de TI deben adaptarse, asegurando continuidad operativa e integrando soluciones en la nube para fomentar la innovación.</p>
     </div>
-
-    <div class="alerts-grid reveal">
-      <div class="alert-cell">
-        <div class="alert-code">ARCHITECTURE UNVALIDATED</div>
-        <p class="alert-q">¿Tu arquitectura ha sido validada alguna vez?</p>
-        <p class="alert-d">Diseños sin prueba real que funcionan hasta que dejan de funcionar. El DR documentado y el DR ejecutado son dos cosas distintas.</p>
+    <div class="pain-grid reveal" style="transition-delay:.1s">
+      <div class="pain-item">
+        <div class="pain-tag">Configuraciones</div>
+        <div class="pain-title">Estado sin optimización continua</div>
+        <p class="pain-desc">Estado inicial sin optimización continua en los sistemas y configuraciones de infraestructura.</p>
       </div>
-      <div class="alert-cell">
-        <div class="alert-code">SYNC FAILURE — NODES DRIFTING</div>
-        <p class="alert-q">¿Tu infraestructura crece sin un marco de control?</p>
-        <p class="alert-d">Sistemas que escalan sin planificación generan puntos de falla invisibles. Cuando aparecen, ya es tarde para remediarlos.</p>
+      <div class="pain-item">
+        <div class="pain-tag">Recursos</div>
+        <div class="pain-title">Consumo no optimizado</div>
+        <p class="pain-desc">Consumo no optimizado en la infraestructura que impacta costos operativos y rendimiento.</p>
       </div>
-      <div class="alert-cell">
-        <div class="alert-code">CONTROL PLANE UNREACHABLE</div>
-        <p class="alert-q">¿Tienes visibilidad total de tu infraestructura?</p>
-        <p class="alert-d">Sin monitoreo continuo, los problemas se detectan cuando el usuario ya los está sintiendo. No cuando aún puedes actuar.</p>
+      <div class="pain-item">
+        <div class="pain-tag">Arquitectura</div>
+        <div class="pain-title">Crecimiento sin revisión</div>
+        <p class="pain-desc">Crecimiento sin revisión y validación que genera deuda técnica acumulada.</p>
       </div>
-      <div class="alert-cell">
-        <div class="alert-code">REDUNDANCY COMPROMISED</div>
-        <p class="alert-q">¿Estás preparado para una falla real?</p>
-        <p class="alert-d">Tener un plan de DR que nadie ha ejecutado no es un plan. Es una promesa. Las promesas no recuperan sistemas en producción.</p>
+      <div class="pain-item">
+        <div class="pain-tag">Resiliencia</div>
+        <div class="pain-title">Fallas no validadas</div>
+        <p class="pain-desc">Fallas no validadas en entornos reales que ponen en riesgo la continuidad operativa.</p>
       </div>
-      <div class="alert-cell">
-        <div class="alert-code">CONFIGURATION DRIFT DETECTED</div>
-        <p class="alert-q">¿Tu entorno real coincide con tu entorno declarado?</p>
-        <p class="alert-d">Capacidad desperdiciada, sobreasignada, o peor: recursos que nadie sabe que existen. La opacidad tiene un costo mensurable.</p>
-      </div>
-      <div class="alert-cell">
-        <div class="alert-code">INCIDENT ESCALATION PENDING</div>
-        <p class="alert-q">¿Tu plan de continuidad sobreviviría una crisis?</p>
-        <p class="alert-d">La continuidad operativa no puede ser teórica. Cuando el incidente ocurre, el runbook ya tiene que estar probado.</p>
-      </div>
-    </div>
-
-    <!-- Terminal log -->
-    <div class="sys-log reveal" id="sys-log" style="margin-bottom:3rem">
-      <div class="log-titlebar">
-        <span class="log-btn r"></span>
-        <span class="log-btn y"></span>
-        <span class="log-btn g"></span>
-        <span class="log-title">infrastructure.monitor — live events</span>
-      </div>
-      <div class="log-body" id="log-body">
-        <div class="log-line" data-delay="0"><span class="log-ts">08:14:02</span><span class="log-lvl-err">ERR</span><span class="log-msg">ARCHITECTURE UNVALIDATED — no baseline to compare against</span></div>
-        <div class="log-line" data-delay="600"><span class="log-ts">08:14:07</span><span class="log-lvl-err">ERR</span><span class="log-msg">SYNC FAILURE — distributed nodes drifting from declared state</span></div>
-        <div class="log-line" data-delay="1200"><span class="log-ts">08:14:11</span><span class="log-lvl-warn">WARN</span><span class="log-msg">LATENCY THRESHOLD EXCEEDED — users already experiencing degradation</span></div>
-        <div class="log-line" data-delay="1800"><span class="log-ts">08:14:15</span><span class="log-lvl-err">ERR</span><span class="log-msg">REDUNDANCY COMPROMISED — single point of failure identified</span></div>
-        <div class="log-line" data-delay="2400"><span class="log-ts">08:14:22</span><span class="log-lvl-warn">WARN</span><span class="log-msg">CONTROL PLANE UNREACHABLE — governance lost on 3 nodes</span></div>
-        <div class="log-line" data-delay="3000"><span class="log-ts">08:14:29</span><span class="log-lvl-err">ERR</span><span class="log-msg">INCIDENT ESCALATION PENDING — manual intervention required</span></div>
-        <div class="log-line" data-delay="3600"><span class="log-ts">08:14:31</span><span class="log-lvl-info">INFO</span><span class="log-msg">Awaiting operator response...</span></div>
-      </div>
-    </div>
-
-    <p class="problema-closing reveal">
-      "No es un problema de capacidad de tu equipo.<br>
-      <span>Es un problema de complejidad estructural que requiere un enfoque diferente.</span>"
-    </p>
-
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════
-     TRANSICION
-══════════════════════════════════════════════════════════ -->
-<section id="transicion" aria-label="Solución">
-  <div class="container">
-    <div class="transicion-inner">
-
-      <div class="reveal">
-        <span class="section-label">Intervención del sistema</span>
-        <h2 class="transicion-title">La complejidad no es el enemigo.<br><span style="color:var(--blue)">La opacidad sí.</span></h2>
-        <p class="transicion-sub">
-          Cada sistema tiene un punto de orden. Lo encontramos, lo diseñamos y lo sostenemos. No desaparecemos después de la implementación.
-        </p>
-        <a href="#contacto" class="btn-primary">Evaluar mi infraestructura</a>
-      </div>
-
-      <div class="signals reveal" style="transition-delay:0.15s" id="signals-list" aria-hidden="true">
-        <div class="signal"><span class="signal-dot"></span>Stabilizing infrastructure</div>
-        <div class="signal"><span class="signal-dot"></span>Synchronizing distributed nodes</div>
-        <div class="signal"><span class="signal-dot"></span>Validating architecture integrity</div>
-        <div class="signal"><span class="signal-dot"></span>Resolving dependency conflicts</div>
-        <div class="signal"><span class="signal-dot"></span>Restoring control plane access</div>
-        <div class="signal"><span class="signal-dot"></span>Enforcing configuration baseline</div>
-        <div class="signal" style="font-weight:700;color:var(--blue)"><span class="signal-dot" style="background:var(--blue)"></span>QUNOX protocol active — systems nominal</div>
-      </div>
-
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     NOSOTROS
-══════════════════════════════════════════════════════════ -->
-<section id="nosotros" aria-labelledby="nosotros-title">
+<!-- SERVICES PREVIEW -->
+<section id="servicios-preview" aria-labelledby="svc-title">
   <div class="container">
-    <div class="nosotros-inner">
-
-      <div class="reveal">
-        <span class="section-label">Quiénes somos</span>
-        <h2 class="section-title" id="nosotros-title">Un aliado técnico real.<br>No un proveedor.</h2>
-        <p class="nosotros-body">
-          QUNOX no vende soluciones genéricas. Trabajamos desde la experiencia en centros de datos reales, migraciones complejas y arquitecturas que deben funcionar sin margen de error. Somos el equipo técnico que acompaña cada decisión de infraestructura, antes, durante y después de la implementación.
-        </p>
-        <div class="nosotros-points">
-          <div class="n-point">
-            <div class="n-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <span class="n-text">Operación real en centros de datos físicos e híbridos</span>
-          </div>
-          <div class="n-point">
-            <div class="n-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
-              </svg>
-            </div>
-            <span class="n-text">Migraciones complejas ejecutadas, no solo diseñadas</span>
-          </div>
-          <div class="n-point">
-            <div class="n-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-            </div>
-            <span class="n-text">Partners certificados HPE y Fortinet</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hex-wrap reveal" style="transition-delay:0.15s">
-        <p class="hex-label">// System topology</p>
-        <svg viewBox="0 0 400 340" aria-hidden="true" style="width:100%;height:auto">
-          <defs>
-            <filter id="glow2">
-              <feGaussianBlur stdDeviation="2.5" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <polygon class="hex-path" points="200,30 240,52 240,96 200,118 160,96 160,52" filter="url(#glow2)" style="stroke:var(--blue);opacity:0.35"/>
-          <polygon class="hex-path" points="120,100 160,122 160,166 120,188 80,166 80,122" filter="url(#glow2)" style="stroke:var(--purple);opacity:0.22"/>
-          <polygon class="hex-path" points="280,100 320,122 320,166 280,188 240,166 240,122" filter="url(#glow2)" style="stroke:var(--cyan);opacity:0.22"/>
-          <polygon class="hex-path" points="200,170 240,192 240,236 200,258 160,236 160,192" filter="url(#glow2)" style="stroke:var(--blue);opacity:0.28"/>
-          <polygon class="hex-path" points="80,240 120,262 120,306 80,328 40,306 40,262" filter="url(#glow2)" style="opacity:0.14"/>
-          <polygon class="hex-path" points="320,240 360,262 360,306 320,328 280,306 280,262" filter="url(#glow2)" style="stroke:var(--cyan);opacity:0.14"/>
-          <line x1="200" y1="118" x2="120" y2="122" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
-          <line x1="200" y1="118" x2="280" y2="122" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
-          <line x1="120" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
-          <line x1="280" y1="188" x2="200" y2="192" stroke="var(--blue)" stroke-width="0.7" opacity="0.18"/>
-          <line x1="120" y1="188" x2="80" y2="262" stroke="var(--purple)" stroke-width="0.7" opacity="0.14"/>
-          <line x1="280" y1="188" x2="320" y2="262" stroke="var(--purple)" stroke-width="0.7" opacity="0.14"/>
-          <circle class="hex-dot" cx="200" cy="74" r="3.5" filter="url(#glow2)" style="fill:var(--cyan)"/>
-          <circle class="hex-dot" cx="120" cy="144" r="3.5" filter="url(#glow2)" style="fill:var(--blue);animation-delay:0.6s"/>
-          <circle class="hex-dot" cx="280" cy="144" r="3.5" filter="url(#glow2)" style="fill:var(--purple);animation-delay:1.2s"/>
-          <circle class="hex-dot" cx="200" cy="214" r="3.5" filter="url(#glow2)" style="fill:var(--blue);animation-delay:1.8s"/>
-          <circle class="hex-dot" cx="80" cy="284" r="3" filter="url(#glow2)" style="fill:var(--cyan);animation-delay:0.8s"/>
-          <circle class="hex-dot" cx="320" cy="284" r="3" filter="url(#glow2)" style="fill:var(--purple);animation-delay:1.4s"/>
-        </svg>
-      </div>
-
+    <div class="svc-header reveal">
+      <span class="label">Nuestra Especialidad</span>
+      <h2 id="svc-title">Cómo tomamos control<br>de tu infraestructura</h2>
+      <p>Cada servicio existe porque vimos el mismo problema en producción, no en un whitepaper.</p>
     </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════
-     SERVICIOS
-══════════════════════════════════════════════════════════ -->
-<section id="servicios" aria-labelledby="servicios-title">
-  <div class="container">
-
-    <div class="servicios-header reveal">
-      <span class="section-label">Lo que hacemos</span>
-      <h2 class="section-title" id="servicios-title">Cómo tomamos control de tu infraestructura</h2>
-      <p style="color:var(--text-sec);font-size:1rem;max-width:540px;margin:0 auto;line-height:1.75">
-        Cada servicio existe porque vimos el mismo problema en producción, no en un whitepaper.
-      </p>
-    </div>
-
-    <div class="servicios-grid">
+    <div class="svc-grid">
 
       <article class="svc-card reveal" data-delay="0">
-        <div class="svc-num">01 / SOPORTE</div>
-        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.77 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
-        </svg>
-        <h3 class="svc-name">Soporte L3 Especializado</h3>
-        <p class="svc-what">Gestión proactiva, escalamiento técnico y resolución de incidentes críticos. Reducimos tu MTTR antes de que el usuario note el problema.</p>
-        <span class="svc-benefit">Tu operación continúa sin importar la complejidad del incidente.</span>
+        <div class="svc-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.77 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+        </div>
+        <h3 class="svc-name">Soporte Especializado</h3>
+        <p class="svc-desc">Proporcionamos soporte L3 especializado que garantiza la resolución efectiva de problemas complejos y un acompañamiento continuo en todas las fases del proyecto.</p>
+        <a href="servicios/soporte-especializado.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </article>
 
       <article class="svc-card reveal" data-delay="80">
-        <div class="svc-num">02 / OPTIMIZACIÓN</div>
-        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-          <path d="M2 12h2M20 12h2M12 2v2M12 20v2"/>
-        </svg>
-        <h3 class="svc-name">Optimización y Tuning</h3>
-        <p class="svc-what">Rightsizing de recursos, evaluación de storage y ajuste de rendimiento. Identificamos el costo real de cada workload y lo reducimos.</p>
-        <span class="svc-benefit">Máximo rendimiento con los recursos que ya tienes. Sin CAPEX adicional.</span>
+        <div class="svc-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3 class="svc-name">Optimización Estratégica</h3>
+        <p class="svc-desc">Realizamos optimización y tuning de sistemas para maximizar el rendimiento y garantizar la eficiencia en el uso de recursos tecnológicos.</p>
+        <a href="servicios/optimizacion-estrategica.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </article>
 
       <article class="svc-card reveal" data-delay="160">
-        <div class="svc-num">03 / CLUSTERS</div>
-        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
-          <line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
-        </svg>
-        <h3 class="svc-name">Implementación de Clusters</h3>
-        <p class="svc-what">Diseño e implementación de arquitecturas de alta disponibilidad. Sin SPOF, con failover probado y degradación graceful ante incidentes.</p>
-        <span class="svc-benefit">Infraestructura que escala sin comprometer la estabilidad operacional.</span>
+        <div class="svc-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <h3 class="svc-name">Implementación Avanzada</h3>
+        <p class="svc-desc">Ofrecemos implementación avanzada de clusters que optimizan la infraestructura para satisfacer las demandas tecnológicas en continuo crecimiento de las organizaciones.</p>
+        <a href="servicios/implementacion-avanzada.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </article>
 
       <article class="svc-card reveal" data-delay="0">
-        <div class="svc-num">04 / DISASTER RECOVERY</div>
-        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <polyline points="9 12 11 14 15 10"/>
-        </svg>
-        <h3 class="svc-name">Diseño de Disaster Recovery</h3>
-        <p class="svc-what">RTO y RPO como compromisos medibles, no como objetivos teóricos. Diseñamos, documentamos y ejecutamos DR drills reales con resultados verificables.</p>
-        <span class="svc-benefit">Cuando ocurre una falla, el runbook ya fue ejecutado antes.</span>
+        <div class="svc-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <h3 class="svc-name">Diseño de DR</h3>
+        <p class="svc-desc">Creamos diseños de DR funcional que aseguran la continuidad del negocio y la recuperación ante desastres, alineados con los objetivos estratégicos.</p>
+        <a href="servicios/diseno-dr.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </article>
 
       <article class="svc-card reveal" data-delay="80">
-        <div class="svc-num">05 / MULTI-CLOUD</div>
-        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>
-          <line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>
-        </svg>
+        <div class="svc-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+        </div>
         <h3 class="svc-name">Estrategia Multi-Cloud</h3>
-        <p class="svc-what">Movilidad de cargas, FinOps y eliminación de vendor lock-in técnico. Tres nubes no son tres veces más control si nadie las gestiona de forma unificada.</p>
-        <span class="svc-benefit">Flexibilidad estratégica. Sin dependencia de un solo proveedor.</span>
+        <p class="svc-desc">Desarrollamos estrategias multi-cloud que permiten a las empresas integrar diferentes entornos de nube, mejorando su flexibilidad y eficiencia operativa.</p>
+        <a href="servicios/multi-cloud.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </article>
 
       <article class="svc-card reveal" data-delay="160">
-        <div class="svc-num">06 / SEGURIDAD</div>
-        <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-        </svg>
+        <div class="svc-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
         <h3 class="svc-name">Red y Ciberseguridad</h3>
-        <p class="svc-what">Hardening de configuración HPE, soluciones Fortinet y segmentación de workloads. Remediación priorizada por riesgo operacional real, no por severidad teórica.</p>
-        <span class="svc-benefit">Infraestructura conectada y protegida desde el diseño, no como parche.</span>
+        <p class="svc-desc">Experiencia en diseño de infraestructuras de red y estrategias de ciberseguridad que garantizan conectividad segura, estabilidad operativa y protección de los entornos tecnológicos.</p>
+        <a href="servicios/red-ciberseguridad.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
       </article>
 
     </div>
-
-    <div class="partners-bar reveal">
-      <span class="partners-lbl">Partners certificados</span>
-      <div style="display:flex;gap:0.75rem">
-        <span class="partner-tag">HPE</span>
-        <span class="partner-tag">Fortinet</span>
-      </div>
-    </div>
-
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     PROPUESTA DE VALOR
-══════════════════════════════════════════════════════════ -->
-<section id="propuesta" aria-labelledby="propuesta-title">
+<!-- VALOR -->
+<section id="valor" aria-labelledby="valor-title">
   <div class="container">
-    <div class="propuesta-inner">
-
-      <div class="propuesta-header reveal">
-        <span class="section-label">Por qué QUNOX</span>
-        <h2 class="section-title" id="propuesta-title">Lo que nos diferencia</h2>
-      </div>
-
-      <div class="pv-item reveal">
-        <div class="pv-num">01</div>
-        <div>
-          <h3 class="pv-title">Arquitecturas reales, no documentos Word.</h3>
-          <p class="pv-desc">Cada diseño está basado en implementaciones ejecutadas bajo condiciones reales. El DR que te entregamos ya fue probado antes de que lo necesites.</p>
-        </div>
-      </div>
-
-      <div class="pv-item reveal">
-        <div class="pv-num">02</div>
-        <div>
-          <h3 class="pv-title">Continuidad operativa como compromiso, no como promesa.</h3>
-          <p class="pv-desc">No diseñamos para que funcione hoy. Diseñamos para que funcione cuando nadie está mirando, a las 3am del domingo.</p>
-        </div>
-      </div>
-
-      <div class="pv-item reveal">
-        <div class="pv-num">03</div>
-        <div>
-          <h3 class="pv-title">Visibilidad total. Sin puntos ciegos.</h3>
-          <p class="pv-desc">Observabilidad completa del stack para actuar antes de que los problemas se vuelvan incidentes. Los golden signals de tu infraestructura siempre en una sola vista.</p>
-        </div>
-      </div>
-
-      <div class="pv-item reveal">
-        <div class="pv-num">04</div>
-        <div>
-          <h3 class="pv-title">Presentes en cada etapa. No solo en el cierre.</h3>
-          <p class="pv-desc">No desaparecemos después de la implementación. El acompañamiento continuo es parte del servicio, no un costo adicional.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════
-     CONTACTO
-══════════════════════════════════════════════════════════ -->
-<section id="contacto" aria-labelledby="contacto-title">
-  <div class="container">
-    <div class="contacto-inner">
-
+    <div class="valor-inner">
       <div class="reveal">
-        <span class="section-label">Hablemos</span>
-        <h2 class="contacto-title" id="contacto-title">
-          ¿Tu infraestructura está<br>realmente bajo control?
-        </h2>
-        <p class="contacto-sub">
-          Cuéntanos cómo es tu stack hoy. En 30 minutos te decimos dónde están los mayores riesgos operacionales. Sin costo, sin compromiso.
-        </p>
-        <a href="mailto:daesgaar@gmail.com" class="contact-link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-          daesgaar@gmail.com
-        </a>
-        <p class="contact-note">Respondemos en menos de 24 horas hábiles.</p>
+        <span class="label" style="color:rgba(255,255,255,0.5)">Nuestra propuesta de valor</span>
+        <h2 id="valor-title" style="font-size:clamp(2rem,3.5vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-0.025em;margin-bottom:20px">Por qué QUNOX</h2>
+        <p style="font-size:16px;color:rgba(255,255,255,0.5);line-height:1.8;margin-bottom:32px">Contamos con una trayectoria sólida en arquitecturas reales de centro de datos, migraciones complejas y soporte especializado, ofreciendo acompañamiento estratégico para optimizar su infraestructura tecnológica.</p>
+        <a href="contacto.html" class="btn btn-white">Hablar con un especialista</a>
       </div>
-
-      <div class="reveal" style="transition-delay:0.15s">
-        <div class="contact-form-wrap">
-          <form id="contact-form" novalidate>
-            <div class="form-group">
-              <input type="text" id="nombre" name="nombre" placeholder="Nombre" required autocomplete="name" />
-              <label for="nombre">Nombre</label>
-            </div>
-            <div class="form-group">
-              <input type="text" id="empresa" name="empresa" placeholder="Empresa" autocomplete="organization" />
-              <label for="empresa">Empresa</label>
-            </div>
-            <div class="form-group">
-              <input type="email" id="email" name="email" placeholder="Email" required autocomplete="email" />
-              <label for="email">Email</label>
-            </div>
-            <div class="form-group">
-              <textarea id="mensaje" name="mensaje" placeholder="Mensaje" rows="4"></textarea>
-              <label for="mensaje">Cuéntanos sobre tu infraestructura</label>
-            </div>
-            <button type="submit" class="form-submit" id="form-btn">Solicita evaluación técnica</button>
-          </form>
-
-          <div class="form-success" id="form-success">
-            <div class="success-icon">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </div>
-            <p class="success-title">Mensaje recibido.</p>
-            <p class="success-msg">Un especialista QUNOX se pondrá en contacto contigo en las próximas 24 horas hábiles.</p>
-          </div>
+      <div class="valor-items reveal" style="transition-delay:.15s">
+        <div class="valor-item">
+          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div><div class="valor-item-title">Arquitecturas reales</div><div class="valor-item-desc">Experiencia en centros de datos físicos e infraestructura híbrida real.</div></div>
+        </div>
+        <div class="valor-item">
+          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
+          <div><div class="valor-item-title">Migraciones complejas</div><div class="valor-item-desc">Migraciones ejecutadas con resultados verificables, no solo diseñadas.</div></div>
+        </div>
+        <div class="valor-item">
+          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div class="valor-item-title">Partners certificados</div><div class="valor-item-desc">HPE y Fortinet — respaldo técnico directo con fabricante.</div></div>
+        </div>
+        <div class="valor-item">
+          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="valor-item-title">Acompañamiento continuo</div><div class="valor-item-desc">Presentes en cada etapa, no solo en el cierre del proyecto.</div></div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════════════════════ -->
-<footer role="contentinfo">
+<!-- FOOTER -->
+<footer>
   <div class="footer-inner">
-    <span class="footer-logo-txt">QUNOX</span>
+    <span class="footer-logo">QUNOX</span>
     <ul class="footer-links">
-      <li><a href="#servicios">Servicios</a></li>
-      <li><a href="#nosotros">Nosotros</a></li>
-      <li><a href="#contacto">Contacto</a></li>
+      <li><a href="index.html#servicios-preview">Servicios</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
     </ul>
     <p class="footer-partners">Partners: <strong>HPE</strong> &nbsp;|&nbsp; <strong>Fortinet</strong></p>
   </div>
   <p class="footer-copy">© 2025 QUNOX. Todos los derechos reservados.</p>
 </footer>
 
-<!-- ══════════════════════════════════════════════════════════
-     LIBS
-══════════════════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
+<script src="js/main.js"></script>
 <script>
-(function () {
-  'use strict';
-
-  /* ══════════════════════════════════════════════════════════
-     GOOGLE APPS SCRIPT — CONTACT FORM
-
-     Para activar el formulario:
-     1. Ve a script.google.com → Nuevo proyecto
-     2. Pega este código en el editor:
-
-       function doPost(e) {
-         try {
-           var d = JSON.parse(e.postData.contents);
-           GmailApp.sendEmail(
-             'daesgaar@gmail.com',
-             'QUNOX | Nuevo contacto: ' + d.nombre,
-             'Nombre: '  + d.nombre  + '\n' +
-             'Empresa: ' + (d.empresa || '—') + '\n' +
-             'Email: '   + d.email   + '\n\n' +
-             'Mensaje:\n' + d.mensaje
-           );
-           return ContentService
-             .createTextOutput(JSON.stringify({status:'ok'}))
-             .setMimeType(ContentService.MimeType.JSON);
-         } catch(err) {
-           return ContentService
-             .createTextOutput(JSON.stringify({status:'error',msg:err.toString()}))
-             .setMimeType(ContentService.MimeType.JSON);
-         }
-       }
-
-     3. Guardar → Implementar → Nueva implementación
-        Tipo: Aplicación web
-        Ejecutar como: Yo (tu cuenta Gmail)
-        Acceso: Cualquier usuario
-     4. Copia la URL de implementación y reemplaza APPS_SCRIPT_URL abajo.
-  ══════════════════════════════════════════════════════════ */
-  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
-
-  /* ── NAV SCROLL ─────────────────────────────────────────── */
-  (function initNav() {
-    const nav = document.getElementById('nav');
-    const toggle = document.getElementById('hamburger');
-    const menu = document.getElementById('mobile-menu');
-    const closeBtn = document.getElementById('mobile-close');
-
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-
-    function openMenu() { menu.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
-    function closeMenu() { menu.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
-
-    toggle.addEventListener('click', openMenu);
-    closeBtn.addEventListener('click', closeMenu);
-    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-  })();
-
-  /* ── SCROLL REVEAL ──────────────────────────────────────── */
-  (function initReveal() {
-    const items = document.querySelectorAll('.reveal');
-    const delays = [];
-    items.forEach(el => {
-      const d = parseFloat(el.getAttribute('data-delay') || el.style.transitionDelay || 0);
-      delays.push(d);
-    });
-
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    items.forEach(el => obs.observe(el));
-  })();
-
-  /* ── TERMINAL LOG ANIMATION ─────────────────────────────── */
-  (function initLog() {
-    const lines = document.querySelectorAll('#log-body .log-line');
-    let started = false;
-
-    const obs = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !started) {
-        started = true;
-        lines.forEach(line => {
-          const delay = parseInt(line.getAttribute('data-delay') || 0);
-          setTimeout(() => line.classList.add('visible'), delay);
-        });
-        obs.disconnect();
-      }
-    }, { threshold: 0.4 });
-
-    const log = document.getElementById('sys-log');
-    if (log) obs.observe(log);
-  })();
-
-  /* ── CONTROL SIGNALS ANIMATION ──────────────────────────── */
-  (function initSignals() {
-    const signals = document.querySelectorAll('#signals-list .signal');
-    let started = false;
-
-    const obs = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !started) {
-        started = true;
-        signals.forEach((s, i) => {
-          setTimeout(() => s.classList.add('active'), i * 280);
-        });
-        obs.disconnect();
-      }
-    }, { threshold: 0.3 });
-
-    const list = document.getElementById('signals-list');
-    if (list) obs.observe(list);
-  })();
-
-  /* ── CONTACT FORM ───────────────────────────────────────── */
-  (function initForm() {
-    const form   = document.getElementById('contact-form');
-    const btn    = document.getElementById('form-btn');
-    const success = document.getElementById('form-success');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nombre  = form.nombre.value.trim();
-      const empresa = form.empresa.value.trim();
-      const email   = form.email.value.trim();
-      const mensaje = form.mensaje.value.trim();
-
-      if (!nombre || !email) {
-        alert('Por favor completa nombre y email.');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Enviando...';
-
-      try {
-        if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-          // Demo mode: simulate success
-          await new Promise(r => setTimeout(r, 900));
-        } else {
-          await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, empresa, email, mensaje })
-          });
-        }
-        form.style.display = 'none';
-        success.style.display = 'block';
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = 'Solicita evaluación técnica';
-        alert('Hubo un error. Por favor escríbenos directamente a daesgaar@gmail.com');
-      }
-    });
-  })();
-
-  /* ══════════════════════════════════════════════════════════
-     THREE.JS — CORE SYSTEM
-  ══════════════════════════════════════════════════════════ */
-  (function initThree() {
-    if (typeof THREE === 'undefined') return;
-    if (window.innerWidth < 768) return; // skip on mobile
-
-    const canvas = document.getElementById('three-canvas');
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(W, H);
-    renderer.setClearColor(0xffffff, 0);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 100);
-    camera.position.set(0, 0, 6);
-
-    // ── Core: outer icosahedron
-    const coreGeo = new THREE.IcosahedronGeometry(2, 1);
-    const coreMat = new THREE.MeshBasicMaterial({
-      color: 0x4361EE, wireframe: true, transparent: true, opacity: 0.22
-    });
-    const core = new THREE.Mesh(coreGeo, coreMat);
-    core.position.set(2.2, 0, 0);
-    scene.add(core);
-
-    // ── Inner sphere
-    const innerGeo = new THREE.IcosahedronGeometry(1.1, 0);
-    const innerMat = new THREE.MeshBasicMaterial({
-      color: 0x7209B7, wireframe: true, transparent: true, opacity: 0.15
-    });
-    const inner = new THREE.Mesh(innerGeo, innerMat);
-    inner.position.set(2.2, 0, 0);
-    scene.add(inner);
-
-    // ── Orbit ring
-    const ringGeo = new THREE.TorusGeometry(2.8, 0.008, 2, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00B4D8, transparent: true, opacity: 0.18 });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.position.set(2.2, 0, 0);
-    ring.rotation.x = Math.PI / 2.5;
-    scene.add(ring);
-
-    // ── Particles
-    const COUNT = 120;
-    const posArr = new Float32Array(COUNT * 3);
-    for (let i = 0; i < COUNT; i++) {
-      posArr[i*3]   = (Math.random() - 0.5) * 18;
-      posArr[i*3+1] = (Math.random() - 0.5) * 12;
-      posArr[i*3+2] = (Math.random() - 0.5) * 8 - 3;
-    }
-    const ptGeo = new THREE.BufferGeometry();
-    ptGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-    const ptMat = new THREE.PointsMaterial({ color: 0x4361EE, size: 0.045, transparent: true, opacity: 0.35 });
-    const particles = new THREE.Points(ptGeo, ptMat);
-    scene.add(particles);
-
-    // ── Mouse
-    let mx = 0, my = 0;
-    document.addEventListener('mousemove', e => {
-      mx = (e.clientX / window.innerWidth  - 0.5) * 2;
-      my = -(e.clientY / window.innerHeight - 0.5) * 2;
-    }, { passive: true });
-
-    // ── State driven by scroll
-    let chaos = 0;
-
-    // GSAP ScrollTrigger
-    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-
-      // Chaos builds during problem section
-      ScrollTrigger.create({
-        trigger: '#problema',
-        start: 'top 70%',
-        end: 'bottom 30%',
-        scrub: 1.5,
-        onUpdate: self => { chaos = self.progress; }
-      });
-
-      // Chaos resolves during transition
-      ScrollTrigger.create({
-        trigger: '#transicion',
-        start: 'top 70%',
-        end: 'bottom 30%',
-        scrub: 1.5,
-        onUpdate: self => { chaos = 1 - self.progress; }
-      });
-
-      // Core fades in hero, shrinks as page scrolls
-      gsap.to(core.scale, {
-        x: 0.6, y: 0.6, z: 0.6,
-        scrollTrigger: {
-          trigger: '#nosotros',
-          start: 'top bottom',
-          end: 'top top',
-          scrub: 2
-        }
-      });
-    }
-
-    // ── Animate
-    const clock = new THREE.Clock();
-    let camX = 0, camY = 0;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-
-      // Base rotation
-      core.rotation.y  += 0.004;
-      core.rotation.x  += 0.001;
-      inner.rotation.y -= 0.006;
-      inner.rotation.z += 0.002;
-      ring.rotation.z  += 0.002;
-      particles.rotation.y += 0.0005;
-
-      // Float
-      const floatY = Math.sin(t * 0.6) * 0.18;
-      core.position.y  = floatY;
-      inner.position.y = floatY;
-      ring.position.y  = floatY;
-
-      // Mouse parallax
-      camX += (mx * 0.25 - camX) * 0.04;
-      camY += (my * 0.15 - camY) * 0.04;
-      camera.position.x = camX;
-      camera.position.y = camY;
-      camera.lookAt(0, 0, 0);
-
-      // Chaos effect
-      if (chaos > 0.05) {
-        const positions = ptGeo.attributes.position.array;
-        for (let i = 0; i < COUNT; i++) {
-          positions[i*3]   += (Math.random() - 0.5) * 0.025 * chaos;
-          positions[i*3+1] += (Math.random() - 0.5) * 0.025 * chaos;
-        }
-        ptGeo.attributes.position.needsUpdate = true;
-
-        // Glitch core color
-        if (Math.random() > 0.96) {
-          coreMat.color.setHex(0xff4d4f);
-        } else {
-          coreMat.color.setHex(0x4361EE);
-        }
-        coreMat.opacity = 0.22 + Math.sin(t * 12) * 0.07 * chaos;
-      } else {
-        coreMat.color.setHex(0x4361EE);
-        coreMat.opacity = 0.22;
-      }
-
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    // Resize
-    window.addEventListener('resize', () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
-  })();
-
+(function(){
+  if(typeof THREE==='undefined'||window.innerWidth<768)return;
+  const canvas=document.getElementById('three-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setClearColor(0xffffff,0);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight,0.1,100);
+  camera.position.set(0,0,6);
+  const coreGeo=new THREE.IcosahedronGeometry(2,1);
+  const coreMat=new THREE.MeshBasicMaterial({color:0x4361EE,wireframe:true,transparent:true,opacity:0.2});
+  const core=new THREE.Mesh(coreGeo,coreMat);
+  core.position.set(2.5,0,0);scene.add(core);
+  const innerGeo=new THREE.IcosahedronGeometry(1.1,0);
+  const innerMat=new THREE.MeshBasicMaterial({color:0x7209B7,wireframe:true,transparent:true,opacity:0.13});
+  const inner=new THREE.Mesh(innerGeo,innerMat);
+  inner.position.set(2.5,0,0);scene.add(inner);
+  const ringGeo=new THREE.TorusGeometry(3,0.008,2,100);
+  const ringMat=new THREE.MeshBasicMaterial({color:0x00B4D8,transparent:true,opacity:0.14});
+  const ring=new THREE.Mesh(ringGeo,ringMat);
+  ring.position.set(2.5,0,0);ring.rotation.x=Math.PI/2.5;scene.add(ring);
+  const COUNT=100;const pos=new Float32Array(COUNT*3);
+  for(let i=0;i<COUNT;i++){pos[i*3]=(Math.random()-.5)*18;pos[i*3+1]=(Math.random()-.5)*12;pos[i*3+2]=(Math.random()-.5)*8-3;}
+  const ptGeo=new THREE.BufferGeometry();ptGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const ptMat=new THREE.PointsMaterial({color:0x4361EE,size:0.04,transparent:true,opacity:0.3});
+  scene.add(new THREE.Points(ptGeo,ptMat));
+  let mx=0,my=0,cx=0,cy=0;
+  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*2;my=-(e.clientY/window.innerHeight-.5)*2;},{passive:true});
+  function animate(){
+    requestAnimationFrame(animate);
+    const t=Date.now()*.001;
+    core.rotation.y+=.003;core.rotation.x+=.001;
+    inner.rotation.y-=.005;inner.rotation.z+=.002;ring.rotation.z+=.002;
+    const fy=Math.sin(t*.6)*.15;core.position.y=fy;inner.position.y=fy;ring.position.y=fy;
+    cx+=(mx*.25-cx)*.04;cy+=(my*.15-cy)*.04;
+    camera.position.x=cx;camera.position.y=cy;camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+  }
+  animate();
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
 })();
 </script>
 </body>
