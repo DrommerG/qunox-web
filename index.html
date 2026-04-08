@@ -2,16 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>QUNOX — Infraestructura que obedece.</title>
-  <meta name="description" content="QUNOX transforma sistemas complejos en infraestructura confiable, escalable y bajo control total."/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QUNOX — Infraestructura que obedece</title>
+  <meta name="description" content="Infraestructura IT crítica: soporte especializado, optimización estratégica, multi-cloud, disaster recovery y ciberseguridad para empresas en crecimiento."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/home.css"/>
 </head>
 <body>
-<canvas id="three-canvas" aria-hidden="true"></canvas>
 
 <!-- NAV -->
 <nav id="nav" role="navigation">
@@ -19,7 +19,7 @@
     <a href="index.html"><img src="logo.jpeg" alt="QUNOX" class="nav-logo-img"/></a>
     <ul class="nav-links">
       <li><a href="index.html" class="active">Inicio</a></li>
-      <li><a href="index.html#servicios-preview">Servicios</a></li>
+      <li><a href="index.html#scene-services">Servicios</a></li>
       <li><a href="contacto.html">Contacto</a></li>
     </ul>
     <a href="contacto.html" class="btn btn-primary nav-cta">Hablar con un especialista</a>
@@ -30,250 +30,261 @@
 </nav>
 <div class="mobile-menu" id="mobile-menu">
   <a href="index.html" class="mobile-link">Inicio</a>
-  <a href="index.html#servicios-preview" class="mobile-link">Servicios</a>
+  <a href="index.html#scene-services" class="mobile-link">Servicios</a>
   <a href="contacto.html" class="mobile-link">Contacto</a>
   <a href="contacto.html" class="btn btn-primary mobile-cta">Hablar con un especialista</a>
 </div>
 
-<!-- HERO -->
-<section id="hero" aria-label="Portada">
-  <div class="hero-inner">
-    <div>
-      <div class="hero-eyebrow reveal"><span></span>Infraestructura técnica especializada</div>
-      <h1 class="hero-h1 reveal" style="transition-delay:.1s">
-        Infraestructura<br><span class="grad-text">que obedece.</span>
+<div class="page-wrap">
+
+  <!-- ============================================
+       SCENE 1 — HERO  (200vh)
+  ============================================ -->
+  <section id="scene-hero" class="scene scene--hero">
+
+    <!-- Three.js canvas — fixed, sits behind everything -->
+    <canvas id="qnx-canvas" class="qnx-canvas"></canvas>
+
+    <!-- Dot grid -->
+    <div class="hero__grid-bg"></div>
+
+    <!-- Logo mark floats above canvas -->
+    <div class="hero__logo-mark">
+      <img src="logo.jpeg" alt="QUNOX"/>
+    </div>
+
+    <!-- Hero copy — sticky inside the scroll buffer -->
+    <div class="hero__copy">
+      <h1 class="hero__headline" id="hero-headline">
+        <span class="word">Infraestructura</span>
+        <br>
+        <span class="word">que</span>
+        <span class="word">obedece.</span>
       </h1>
-      <p class="hero-sub reveal" style="transition-delay:.2s">
-        En un mundo cada vez más digitalizado, el equipo de TI desempeña un papel crucial. Transformación, escalabilidad y seguridad son esenciales para el éxito empresarial.
+      <p class="hero__sub" id="hero-sub">
+        Sistemas que responden. Control que escala.<br>
+        Infraestructura diseñada para exigir más.
       </p>
-      <div class="hero-actions reveal" style="transition-delay:.3s">
-        <a href="contacto.html" class="btn btn-primary">Solicita un diagnóstico gratuito</a>
-        <a href="#servicios-preview" class="btn btn-ghost">Ver servicios</a>
+      <div class="hero__scroll-hint" id="hero-scroll-hint">
+        <span class="scroll-hint__line"></span>
+        <span class="scroll-hint__text">Scroll</span>
       </div>
     </div>
-    <div class="hero-panel reveal" style="transition-delay:.4s" aria-hidden="true">
-      <div class="sys-card">
-        <div class="sys-head">
-          <span class="sys-title">System Status</span>
-          <span class="status-pill"><span class="status-dot"></span>All systems nominal</span>
+
+    <!-- Scroll buffer — drives camera push animation -->
+    <div class="hero__scroll-buffer"></div>
+
+  </section>
+
+  <!-- ============================================
+       SCENE 2 — DIAGNOSTIC
+  ============================================ -->
+  <section id="scene-diagnostic" class="scene scene--diagnostic">
+    <div class="diagnostic__container">
+
+      <div class="diagnostic__header">
+        <span class="diagnostic__label">// SYSTEM.SCAN</span>
+        <span class="diagnostic__status" id="diag-status">ANALYZING</span>
+      </div>
+
+      <div class="diagnostic__grid">
+        <div class="diag-item" data-index="0">
+          <div class="diag-item__scanline"></div>
+          <div class="diag-item__content">
+            <span class="diag-item__num">01</span>
+            <span class="diag-item__label">Configuraciones</span>
+            <span class="diag-item__status diag-item__status--warn">INCONSISTENT</span>
+          </div>
         </div>
-        <div class="sys-rows">
-          <div class="sys-row"><span class="sys-k">Infrastructure</span><span class="sys-v g">Controlled</span></div>
-          <div class="sys-row"><span class="sys-k">Control Plane</span><span class="sys-v g">Reachable</span></div>
-          <div class="sys-row"><span class="sys-k">Redundancy</span><span class="sys-v g">Active</span></div>
-          <div class="sys-row"><span class="sys-k">Config Drift</span><span class="sys-v b">0 deviations</span></div>
-          <div class="sys-row"><span class="sys-k">Uptime</span><span class="sys-v c">99.97%</span></div>
+        <div class="diag-item" data-index="1">
+          <div class="diag-item__scanline"></div>
+          <div class="diag-item__content">
+            <span class="diag-item__num">02</span>
+            <span class="diag-item__label">Recursos</span>
+            <span class="diag-item__status diag-item__status--warn">UNDERUTILIZED</span>
+          </div>
+        </div>
+        <div class="diag-item" data-index="2">
+          <div class="diag-item__scanline"></div>
+          <div class="diag-item__content">
+            <span class="diag-item__num">03</span>
+            <span class="diag-item__label">Arquitectura</span>
+            <span class="diag-item__status diag-item__status--err">FRAGILE</span>
+          </div>
+        </div>
+        <div class="diag-item" data-index="3">
+          <div class="diag-item__scanline"></div>
+          <div class="diag-item__content">
+            <span class="diag-item__num">04</span>
+            <span class="diag-item__label">Resiliencia</span>
+            <span class="diag-item__status diag-item__status--err">UNDEFINED</span>
+          </div>
         </div>
       </div>
-      <div class="metrics-row">
-        <div class="metric-box"><span class="metric-num">4h</span><span class="metric-lbl">RTO garantizado</span></div>
-        <div class="metric-box"><span class="metric-num">0</span><span class="metric-lbl">SPOF activos</span></div>
-        <div class="metric-box"><span class="metric-num">24/7</span><span class="metric-lbl">Monitoreo</span></div>
+
+      <div class="diagnostic__footer">
+        <div class="diagnostic__progress-bar">
+          <div class="diagnostic__progress-fill" id="diag-progress"></div>
+        </div>
+        <span class="diagnostic__footer-text">QUNOX INFRASTRUCTURE AUDIT</span>
       </div>
-    </div>
-  </div>
-  <div class="scroll-cue" aria-hidden="true">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-</section>
-
-<!-- PAIN POINTS -->
-<section id="pain" aria-label="Diagnóstico">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:40px" class="reveal">
-      <span class="label">Evolución del rol de TI</span>
-      <h2 style="font-size:clamp(1.75rem,3vw,2.5rem);font-weight:700;letter-spacing:-0.025em;margin-bottom:12px">El nuevo rol del equipo de TI</h2>
-      <p style="font-size:16px;color:var(--sub);max-width:560px;margin:0 auto;line-height:1.75">A medida que la tecnología avanza, los profesionales de TI deben adaptarse, asegurando continuidad operativa e integrando soluciones en la nube para fomentar la innovación.</p>
-    </div>
-    <div class="pain-grid reveal" style="transition-delay:.1s">
-      <div class="pain-item">
-        <div class="pain-tag">Configuraciones</div>
-        <div class="pain-title">Estado sin optimización continua</div>
-        <p class="pain-desc">Estado inicial sin optimización continua en los sistemas y configuraciones de infraestructura.</p>
-      </div>
-      <div class="pain-item">
-        <div class="pain-tag">Recursos</div>
-        <div class="pain-title">Consumo no optimizado</div>
-        <p class="pain-desc">Consumo no optimizado en la infraestructura que impacta costos operativos y rendimiento.</p>
-      </div>
-      <div class="pain-item">
-        <div class="pain-tag">Arquitectura</div>
-        <div class="pain-title">Crecimiento sin revisión</div>
-        <p class="pain-desc">Crecimiento sin revisión y validación que genera deuda técnica acumulada.</p>
-      </div>
-      <div class="pain-item">
-        <div class="pain-tag">Resiliencia</div>
-        <div class="pain-title">Fallas no validadas</div>
-        <p class="pain-desc">Fallas no validadas en entornos reales que ponen en riesgo la continuidad operativa.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SERVICES PREVIEW -->
-<section id="servicios-preview" aria-labelledby="svc-title">
-  <div class="container">
-    <div class="svc-header reveal">
-      <span class="label">Nuestra Especialidad</span>
-      <h2 id="svc-title">Cómo tomamos control<br>de tu infraestructura</h2>
-      <p>Cada servicio existe porque vimos el mismo problema en producción, no en un whitepaper.</p>
-    </div>
-    <div class="svc-grid">
-
-      <article class="svc-card reveal" data-delay="0">
-        <div class="svc-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.77 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
-        </div>
-        <h3 class="svc-name">Soporte Especializado</h3>
-        <p class="svc-desc">Proporcionamos soporte L3 especializado que garantiza la resolución efectiva de problemas complejos y un acompañamiento continuo en todas las fases del proyecto.</p>
-        <a href="servicios/soporte-especializado.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-      </article>
-
-      <article class="svc-card reveal" data-delay="80">
-        <div class="svc-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <h3 class="svc-name">Optimización Estratégica</h3>
-        <p class="svc-desc">Realizamos optimización y tuning de sistemas para maximizar el rendimiento y garantizar la eficiencia en el uso de recursos tecnológicos.</p>
-        <a href="servicios/optimizacion-estrategica.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-      </article>
-
-      <article class="svc-card reveal" data-delay="160">
-        <div class="svc-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-        </div>
-        <h3 class="svc-name">Implementación Avanzada</h3>
-        <p class="svc-desc">Ofrecemos implementación avanzada de clusters que optimizan la infraestructura para satisfacer las demandas tecnológicas en continuo crecimiento de las organizaciones.</p>
-        <a href="servicios/implementacion-avanzada.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-      </article>
-
-      <article class="svc-card reveal" data-delay="0">
-        <div class="svc-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-        </div>
-        <h3 class="svc-name">Diseño de DR</h3>
-        <p class="svc-desc">Creamos diseños de DR funcional que aseguran la continuidad del negocio y la recuperación ante desastres, alineados con los objetivos estratégicos.</p>
-        <a href="servicios/diseno-dr.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-      </article>
-
-      <article class="svc-card reveal" data-delay="80">
-        <div class="svc-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
-        </div>
-        <h3 class="svc-name">Estrategia Multi-Cloud</h3>
-        <p class="svc-desc">Desarrollamos estrategias multi-cloud que permiten a las empresas integrar diferentes entornos de nube, mejorando su flexibilidad y eficiencia operativa.</p>
-        <a href="servicios/multi-cloud.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-      </article>
-
-      <article class="svc-card reveal" data-delay="160">
-        <div class="svc-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        </div>
-        <h3 class="svc-name">Red y Ciberseguridad</h3>
-        <p class="svc-desc">Experiencia en diseño de infraestructuras de red y estrategias de ciberseguridad que garantizan conectividad segura, estabilidad operativa y protección de los entornos tecnológicos.</p>
-        <a href="servicios/red-ciberseguridad.html" class="svc-link">Ver más <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-      </article>
 
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- VALOR -->
-<section id="valor" aria-labelledby="valor-title">
-  <div class="container">
-    <div class="valor-inner">
-      <div class="reveal">
-        <span class="label" style="color:rgba(255,255,255,0.5)">Nuestra propuesta de valor</span>
-        <h2 id="valor-title" style="font-size:clamp(2rem,3.5vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-0.025em;margin-bottom:20px">Por qué QUNOX</h2>
-        <p style="font-size:16px;color:rgba(255,255,255,0.5);line-height:1.8;margin-bottom:32px">Contamos con una trayectoria sólida en arquitecturas reales de centro de datos, migraciones complejas y soporte especializado, ofreciendo acompañamiento estratégico para optimizar su infraestructura tecnológica.</p>
-        <a href="contacto.html" class="btn btn-white">Hablar con un especialista</a>
+  <!-- ============================================
+       SCENE 3-8 — SERVICES  (700vh)
+  ============================================ -->
+  <section id="scene-services" class="scene scene--services">
+
+    <!-- Thin progress line, right edge -->
+    <div class="services__progress-track">
+      <div class="services__progress-fill" id="services-progress"></div>
+    </div>
+
+    <!-- STICKY PANEL — pinned by GSAP -->
+    <div id="services-sticky-panel" class="services__sticky-panel">
+
+      <!-- Counter -->
+      <div class="services__counter">
+        <span id="svc-current">01</span>
+        <span class="services__counter-sep">—</span>
+        <span class="services__counter-total">06</span>
       </div>
-      <div class="valor-items reveal" style="transition-delay:.15s">
-        <div class="valor-item">
-          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-          <div><div class="valor-item-title">Arquitecturas reales</div><div class="valor-item-desc">Experiencia en centros de datos físicos e infraestructura híbrida real.</div></div>
+
+      <!-- LEFT: huge architectural typography -->
+      <div class="services__title-area">
+        <div class="services__title-wrapper" id="services-title-wrapper">
+          <div class="svc-title" data-svc="0">
+            <span class="svc-title__line">Soporte</span>
+            <span class="svc-title__line svc-title__line--indent">Especializado</span>
+          </div>
+          <div class="svc-title" data-svc="1">
+            <span class="svc-title__line">Optimización</span>
+            <span class="svc-title__line svc-title__line--indent">Estratégica</span>
+          </div>
+          <div class="svc-title" data-svc="2">
+            <span class="svc-title__line">Implementación</span>
+            <span class="svc-title__line svc-title__line--indent">Avanzada</span>
+          </div>
+          <div class="svc-title" data-svc="3">
+            <span class="svc-title__line">Diseño</span>
+            <span class="svc-title__line svc-title__line--indent">de DR</span>
+          </div>
+          <div class="svc-title" data-svc="4">
+            <span class="svc-title__line">Estrategia</span>
+            <span class="svc-title__line svc-title__line--indent">Multi-Cloud</span>
+          </div>
+          <div class="svc-title" data-svc="5">
+            <span class="svc-title__line">Red y</span>
+            <span class="svc-title__line svc-title__line--indent">Ciberseguridad</span>
+          </div>
         </div>
-        <div class="valor-item">
-          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
-          <div><div class="valor-item-title">Migraciones complejas</div><div class="valor-item-desc">Migraciones ejecutadas con resultados verificables, no solo diseñadas.</div></div>
+      </div>
+
+      <!-- RIGHT: image + copy -->
+      <div class="services__detail-area">
+
+        <div class="services__image-frame" id="services-image-frame">
+          <div class="services__image-inner" id="services-image-inner">
+            <img src="images/home/soporte-3d.jpg"      alt="Soporte Especializado"    class="svc-img active" data-svc="0"/>
+            <img src="images/home/optimizacion-3d.jpg" alt="Optimización Estratégica" class="svc-img"        data-svc="1"/>
+            <img src="images/home/clusters-3d.jpg"     alt="Implementación Avanzada"  class="svc-img"        data-svc="2"/>
+            <img src="images/home/dr-3d.jpg"           alt="Diseño de DR"             class="svc-img"        data-svc="3"/>
+            <img src="images/home/multicloud-3d.jpg"   alt="Estrategia Multi-Cloud"   class="svc-img"        data-svc="4"/>
+            <img src="images/home/seguridad-3d.jpg"    alt="Red y Ciberseguridad"     class="svc-img"        data-svc="5"/>
+          </div>
         </div>
-        <div class="valor-item">
-          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div><div class="valor-item-title">Partners certificados</div><div class="valor-item-desc">HPE y Fortinet — respaldo técnico directo con fabricante.</div></div>
+
+        <div class="services__copy-slot" id="services-copy-slot">
+          <p class="services__copy-text" id="services-copy-text">
+            Soporte técnico especializado con tiempos de respuesta garantizados. Equipos certificados disponibles para entornos críticos.
+          </p>
+          <a href="servicios/soporte-especializado.html" class="services__link" id="services-link">
+            <span>Ver más</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </a>
         </div>
-        <div class="valor-item">
-          <div class="valor-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div><div class="valor-item-title">Acompañamiento continuo</div><div class="valor-item-desc">Presentes en cada etapa, no solo en el cierre del proyecto.</div></div>
-        </div>
+
+        <div class="services__accent-bar" id="services-accent-bar"></div>
+
       </div>
     </div>
-  </div>
-</section>
+    <!-- END sticky panel -->
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <span class="footer-logo">QUNOX</span>
-    <ul class="footer-links">
-      <li><a href="index.html#servicios-preview">Servicios</a></li>
-      <li><a href="contacto.html">Contacto</a></li>
-    </ul>
-    <p class="footer-partners">Partners: <strong>HPE</strong> &nbsp;|&nbsp; <strong>Fortinet</strong></p>
-  </div>
-  <p class="footer-copy">© 2025 QUNOX. Todos los derechos reservados.</p>
-</footer>
+    <!-- SCROLL TRACK: 6 invisible segments -->
+    <div class="services__scroll-track" id="services-scroll-track">
+      <div class="svc-scroll-seg" data-svc="0"></div>
+      <div class="svc-scroll-seg" data-svc="1"></div>
+      <div class="svc-scroll-seg" data-svc="2"></div>
+      <div class="svc-scroll-seg" data-svc="3"></div>
+      <div class="svc-scroll-seg" data-svc="4"></div>
+      <div class="svc-scroll-seg" data-svc="5"></div>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  </section>
+
+  <!-- ============================================
+       SCENE 9 — CLOSING
+  ============================================ -->
+  <section id="scene-closing" class="scene scene--closing">
+    <div class="closing__container">
+
+      <div class="closing__eyebrow">Nuestra Propuesta de Valor</div>
+
+      <h2 class="closing__headline">
+        Su infraestructura,<br>
+        <span class="closing__headline-accent">bajo control total.</span>
+      </h2>
+
+      <p class="closing__body">
+        No vendemos herramientas. Construimos sistemas que permanecen.<br>
+        Cada decisión arquitectónica tiene un propósito. Cada componente, una razón.
+      </p>
+
+      <div class="closing__actions">
+        <a href="contacto.html" class="btn-closing-primary">Hablar con un especialista</a>
+        <a href="index.html#scene-services" class="btn-closing-ghost">Ver todos los servicios</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-logo">QUNOX</span>
+      <ul class="footer-links">
+        <li><a href="index.html#scene-services">Servicios</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+      <p class="footer-partners">Partners: <strong>HPE</strong> &nbsp;|&nbsp; <strong>Fortinet</strong></p>
+    </div>
+    <p class="footer-copy">© 2025 QUNOX. Todos los derechos reservados.</p>
+  </footer>
+
+</div><!-- end page-wrap -->
+
+<!-- GSAP (global, before module script) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Shared nav / hamburger / form JS -->
 <script src="js/main.js"></script>
-<script>
-(function(){
-  if(typeof THREE==='undefined'||window.innerWidth<768)return;
-  const canvas=document.getElementById('three-canvas');
-  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  renderer.setClearColor(0xffffff,0);
-  const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight,0.1,100);
-  camera.position.set(0,0,6);
-  const coreGeo=new THREE.IcosahedronGeometry(2,1);
-  const coreMat=new THREE.MeshBasicMaterial({color:0x4361EE,wireframe:true,transparent:true,opacity:0.2});
-  const core=new THREE.Mesh(coreGeo,coreMat);
-  core.position.set(2.5,0,0);scene.add(core);
-  const innerGeo=new THREE.IcosahedronGeometry(1.1,0);
-  const innerMat=new THREE.MeshBasicMaterial({color:0x7209B7,wireframe:true,transparent:true,opacity:0.13});
-  const inner=new THREE.Mesh(innerGeo,innerMat);
-  inner.position.set(2.5,0,0);scene.add(inner);
-  const ringGeo=new THREE.TorusGeometry(3,0.008,2,100);
-  const ringMat=new THREE.MeshBasicMaterial({color:0x00B4D8,transparent:true,opacity:0.14});
-  const ring=new THREE.Mesh(ringGeo,ringMat);
-  ring.position.set(2.5,0,0);ring.rotation.x=Math.PI/2.5;scene.add(ring);
-  const COUNT=100;const pos=new Float32Array(COUNT*3);
-  for(let i=0;i<COUNT;i++){pos[i*3]=(Math.random()-.5)*18;pos[i*3+1]=(Math.random()-.5)*12;pos[i*3+2]=(Math.random()-.5)*8-3;}
-  const ptGeo=new THREE.BufferGeometry();ptGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  const ptMat=new THREE.PointsMaterial({color:0x4361EE,size:0.04,transparent:true,opacity:0.3});
-  scene.add(new THREE.Points(ptGeo,ptMat));
-  let mx=0,my=0,cx=0,cy=0;
-  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*2;my=-(e.clientY/window.innerHeight-.5)*2;},{passive:true});
-  function animate(){
-    requestAnimationFrame(animate);
-    const t=Date.now()*.001;
-    core.rotation.y+=.003;core.rotation.x+=.001;
-    inner.rotation.y-=.005;inner.rotation.z+=.002;ring.rotation.z+=.002;
-    const fy=Math.sin(t*.6)*.15;core.position.y=fy;inner.position.y=fy;ring.position.y=fy;
-    cx+=(mx*.25-cx)*.04;cy+=(my*.15-cy)*.04;
-    camera.position.x=cx;camera.position.y=cy;camera.lookAt(0,0,0);
-    renderer.render(scene,camera);
-  }
-  animate();
-  window.addEventListener('resize',()=>{
-    camera.aspect=window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);
+
+<!-- Home cinematic JS — ES module -->
+<script type="module">
+  import { QunoxScene }           from './js/home-scene.js';
+  import { initScrollAnimations } from './js/home-scroll.js';
+
+  window.addEventListener('load', () => {
+    const scene = new QunoxScene('qnx-canvas');
+    initScrollAnimations(scene);
+    setTimeout(() => document.body.classList.add('ready'), 80);
   });
-})();
 </script>
+
 </body>
 </html>
