@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QUNOX — Infraestructura que obedece</title>
-  <meta name="description" content="Infraestructura IT crítica: soporte especializado, optimización estratégica, multi-cloud, disaster recovery y ciberseguridad para empresas en crecimiento."/>
+  <title>QUNOX — Precisión Estratégica</title>
+  <meta name="description" content="Especialistas en TI. Infraestructura crítica: soporte, optimización estratégica, multi-cloud, disaster recovery y ciberseguridad."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -41,43 +41,27 @@
        SCENE 1 — HERO  (200vh)
   ============================================ -->
   <section id="scene-hero" class="scene scene--hero">
-
-    <!-- Three.js canvas — fixed, sits behind everything -->
     <canvas id="qnx-canvas" class="qnx-canvas"></canvas>
-
-    <!-- Dot grid -->
     <div class="hero__grid-bg"></div>
 
-    <!-- Logo mark floats above canvas -->
-    <div class="hero__logo-mark">
-      <img src="logo.jpeg" alt="QUNOX"/>
-    </div>
-
-    <!-- Hero copy — sticky inside the scroll buffer -->
     <div class="hero__copy">
       <h1 class="hero__headline" id="hero-headline">
-        <span class="word">Infraestructura</span>
+        <span class="word">Precisión</span>
         <br>
-        <span class="word">que</span>
-        <span class="word">obedece.</span>
+        <span class="word">Estratégica</span>
       </h1>
-      <p class="hero__sub" id="hero-sub">
-        Sistemas que responden. Control que escala.<br>
-        Infraestructura diseñada para exigir más.
-      </p>
+      <p class="hero__sub" id="hero-sub">Especialistas en TI</p>
       <div class="hero__scroll-hint" id="hero-scroll-hint">
         <span class="scroll-hint__line"></span>
         <span class="scroll-hint__text">Scroll</span>
       </div>
     </div>
 
-    <!-- Scroll buffer — drives camera push animation -->
     <div class="hero__scroll-buffer"></div>
-
   </section>
 
   <!-- ============================================
-       SCENE 2 — DIAGNOSTIC
+       SCENE 2 — DIAGNOSTIC / SYSTEM SCAN
   ============================================ -->
   <section id="scene-diagnostic" class="scene scene--diagnostic">
     <div class="diagnostic__container">
@@ -87,39 +71,64 @@
         <span class="diagnostic__status" id="diag-status">ANALYZING</span>
       </div>
 
-      <div class="diagnostic__grid">
-        <div class="diag-item" data-index="0">
-          <div class="diag-item__scanline"></div>
-          <div class="diag-item__content">
-            <span class="diag-item__num">01</span>
-            <span class="diag-item__label">Configuraciones</span>
-            <span class="diag-item__status diag-item__status--warn">INCONSISTENT</span>
+      <!-- Strategic title + description -->
+      <div class="diagnostic__intro">
+        <h2 class="diagnostic__title">Fallos detectados en su infraestructura</h2>
+        <p class="diagnostic__desc">Cada entorno crítico tiene puntos de quiebre invisibles que afectan directamente la operación, el rendimiento y la estabilidad del negocio.</p>
+      </div>
+
+      <!-- 2-column layout: items left, image right -->
+      <div class="diagnostic__layout">
+
+        <div class="diagnostic__items">
+          <div class="diag-item" data-index="0">
+            <div class="diag-item__scanline"></div>
+            <div class="diag-item__content">
+              <span class="diag-item__num">01</span>
+              <span class="diag-item__label">Configuraciones</span>
+              <span class="diag-item__status diag-item__status--warn">INCONSISTENT</span>
+            </div>
+          </div>
+          <div class="diag-item" data-index="1">
+            <div class="diag-item__scanline"></div>
+            <div class="diag-item__content">
+              <span class="diag-item__num">02</span>
+              <span class="diag-item__label">Recursos</span>
+              <span class="diag-item__status diag-item__status--warn">UNDERUTILIZED</span>
+            </div>
+          </div>
+          <div class="diag-item" data-index="2">
+            <div class="diag-item__scanline"></div>
+            <div class="diag-item__content">
+              <span class="diag-item__num">03</span>
+              <span class="diag-item__label">Arquitectura</span>
+              <span class="diag-item__status diag-item__status--err">FRAGILE</span>
+            </div>
+          </div>
+          <div class="diag-item" data-index="3">
+            <div class="diag-item__scanline"></div>
+            <div class="diag-item__content">
+              <span class="diag-item__num">04</span>
+              <span class="diag-item__label">Resiliencia</span>
+              <span class="diag-item__status diag-item__status--err">UNDEFINED</span>
+            </div>
           </div>
         </div>
-        <div class="diag-item" data-index="1">
-          <div class="diag-item__scanline"></div>
-          <div class="diag-item__content">
-            <span class="diag-item__num">02</span>
-            <span class="diag-item__label">Recursos</span>
-            <span class="diag-item__status diag-item__status--warn">UNDERUTILIZED</span>
+
+        <!-- Right: image panel changes per item -->
+        <div class="diagnostic__visual">
+          <div class="diagnostic__visual-frame" id="diag-visual-frame">
+            <img src="images/scan/scan-config.jpg"       alt="Configuraciones"  class="diag-img active" data-idx="0"/>
+            <img src="images/scan/scan-recursos.jpg"     alt="Recursos"         class="diag-img"        data-idx="1"/>
+            <img src="images/scan/scan-arquitectura.jpg" alt="Arquitectura"     class="diag-img"        data-idx="2"/>
+            <img src="images/scan/scan-resiliencia.jpg"  alt="Resiliencia"      class="diag-img"        data-idx="3"/>
+          </div>
+          <div class="diagnostic__visual-label" id="diag-visual-label">
+            <span class="diag-vl-num">01</span>
+            <span class="diag-vl-text">Conflicto de configuración activo</span>
           </div>
         </div>
-        <div class="diag-item" data-index="2">
-          <div class="diag-item__scanline"></div>
-          <div class="diag-item__content">
-            <span class="diag-item__num">03</span>
-            <span class="diag-item__label">Arquitectura</span>
-            <span class="diag-item__status diag-item__status--err">FRAGILE</span>
-          </div>
-        </div>
-        <div class="diag-item" data-index="3">
-          <div class="diag-item__scanline"></div>
-          <div class="diag-item__content">
-            <span class="diag-item__num">04</span>
-            <span class="diag-item__label">Resiliencia</span>
-            <span class="diag-item__status diag-item__status--err">UNDEFINED</span>
-          </div>
-        </div>
+
       </div>
 
       <div class="diagnostic__footer">
@@ -137,15 +146,12 @@
   ============================================ -->
   <section id="scene-services" class="scene scene--services">
 
-    <!-- Thin progress line, right edge -->
     <div class="services__progress-track">
       <div class="services__progress-fill" id="services-progress"></div>
     </div>
 
-    <!-- STICKY PANEL — pinned by GSAP -->
     <div id="services-sticky-panel" class="services__sticky-panel">
 
-      <!-- Counter -->
       <div class="services__counter">
         <span id="svc-current">01</span>
         <span class="services__counter-sep">—</span>
@@ -187,12 +193,12 @@
 
         <div class="services__image-frame" id="services-image-frame">
           <div class="services__image-inner" id="services-image-inner">
-            <img src="images/home/soporte-3d.jpg"      alt="Soporte Especializado"    class="svc-img active" data-svc="0"/>
-            <img src="images/home/optimizacion-3d.jpg" alt="Optimización Estratégica" class="svc-img"        data-svc="1"/>
-            <img src="images/home/clusters-3d.jpg"     alt="Implementación Avanzada"  class="svc-img"        data-svc="2"/>
-            <img src="images/home/dr-3d.jpg"           alt="Diseño de DR"             class="svc-img"        data-svc="3"/>
-            <img src="images/home/multicloud-3d.jpg"   alt="Estrategia Multi-Cloud"   class="svc-img"        data-svc="4"/>
-            <img src="images/home/seguridad-3d.jpg"    alt="Red y Ciberseguridad"     class="svc-img"        data-svc="5"/>
+            <img src="images/services/svc-soporte.jpg"       alt="Soporte Especializado"    class="svc-img active" data-svc="0"/>
+            <img src="images/services/svc-optimizacion.jpg"  alt="Optimización Estratégica" class="svc-img"        data-svc="1"/>
+            <img src="images/services/svc-implementacion.jpg" alt="Implementación Avanzada" class="svc-img"        data-svc="2"/>
+            <img src="images/services/svc-dr.jpg"            alt="Diseño de DR"             class="svc-img"        data-svc="3"/>
+            <img src="images/services/svc-multicloud.jpg"    alt="Estrategia Multi-Cloud"   class="svc-img"        data-svc="4"/>
+            <img src="images/services/svc-seguridad.jpg"     alt="Red y Ciberseguridad"     class="svc-img"        data-svc="5"/>
           </div>
         </div>
 
@@ -209,12 +215,9 @@
         </div>
 
         <div class="services__accent-bar" id="services-accent-bar"></div>
-
       </div>
     </div>
-    <!-- END sticky panel -->
 
-    <!-- SCROLL TRACK: 6 invisible segments -->
     <div class="services__scroll-track" id="services-scroll-track">
       <div class="svc-scroll-seg" data-svc="0"></div>
       <div class="svc-scroll-seg" data-svc="1"></div>
@@ -227,26 +230,72 @@
   </section>
 
   <!-- ============================================
-       SCENE 9 — CLOSING
+       SCENE 9 — CLOSING CTA
   ============================================ -->
   <section id="scene-closing" class="scene scene--closing">
     <div class="closing__container">
-
       <div class="closing__eyebrow">Nuestra Propuesta de Valor</div>
-
       <h2 class="closing__headline">
         Su infraestructura,<br>
         <span class="closing__headline-accent">bajo control total.</span>
       </h2>
-
       <p class="closing__body">
         No vendemos herramientas. Construimos sistemas que permanecen.<br>
         Cada decisión arquitectónica tiene un propósito. Cada componente, una razón.
       </p>
-
       <div class="closing__actions">
         <a href="contacto.html" class="btn-closing-primary">Hablar con un especialista</a>
         <a href="index.html#scene-services" class="btn-closing-ghost">Ver todos los servicios</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ACERCA DE NOSOTROS
+  ============================================ -->
+  <section id="scene-about" class="scene scene--about">
+    <div class="about__container">
+
+      <div class="about__eyebrow reveal">Acerca de Nosotros</div>
+
+      <h2 class="about__headline reveal" data-delay="80">
+        La infraestructura no falla<br>
+        <span class="about__headline-accent">por accidente.</span>
+      </h2>
+
+      <div class="about__body">
+        <p class="about__lead reveal" data-delay="160">
+          La infraestructura tecnológica no falla por accidente, falla por falta de precisión.
+        </p>
+        <p class="about__text reveal" data-delay="240">
+          En QUNOX intervenimos entornos críticos donde cada decisión impacta directamente en la continuidad del negocio. Analizamos, diagnosticamos y optimizamos sistemas con una lectura real de su estado operativo, identificando fallas estructurales, recursos subutilizados y riesgos invisibles antes de que se conviertan en problemas.
+        </p>
+        <p class="about__text reveal" data-delay="320">
+          Nuestro enfoque no es implementar por implementar, es intervenir con criterio técnico, asegurando estabilidad, control y resiliencia en cada capa de la infraestructura.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================
+       CLIENTES
+  ============================================ -->
+  <section id="scene-clients" class="scene scene--clients">
+    <div class="clients__container">
+
+      <p class="clients__label reveal">Empresas que confían en QUNOX</p>
+
+      <div class="clients__grid">
+        <div class="clients__item reveal" data-delay="0">
+          <img src="images/clients/cacspmec.png" alt="CACSPMEC"/>
+        </div>
+        <div class="clients__item reveal" data-delay="100">
+          <img src="images/clients/carseg.png" alt="Carseg"/>
+        </div>
+        <div class="clients__item reveal" data-delay="200">
+          <img src="images/clients/fiberplus.jpg" alt="FiberPlus"/>
+        </div>
       </div>
 
     </div>
@@ -267,11 +316,11 @@
 
 </div><!-- end page-wrap -->
 
-<!-- GSAP (global, before module script) -->
+<!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-<!-- Shared nav / hamburger / form JS -->
+<!-- Shared nav/hamburger/reveal JS -->
 <script src="js/main.js"></script>
 
 <!-- Home cinematic JS — ES module -->

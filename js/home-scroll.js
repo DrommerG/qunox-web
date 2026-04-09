@@ -84,7 +84,6 @@ export function initScrollAnimations(qunoxScene) {
   const heroTL = gsap.timeline({ delay: 0.3 });
 
   heroTL
-    .to('.hero__logo-mark', { opacity: 1, duration: 1.2, ease: 'power2.out' })
     .from('.hero__headline .word-inner', {
       y: '110%', duration: 1.0, stagger: 0.12, ease: 'power4.out'
     }, '-=0.6')
@@ -113,6 +112,13 @@ export function initScrollAnimations(qunoxScene) {
     opacity: 0, y: 20, duration: 0.6, ease: 'power3.out'
   });
 
+  const diagImageLabels = [
+    'Conflicto de configuración activo',
+    'Recursos críticos al límite',
+    'Arquitectura sin redundancia detectada',
+    'Sin plan de recuperación definido'
+  ];
+
   document.querySelectorAll('.diag-item').forEach((item, i) => {
     const scanline = item.querySelector('.diag-item__scanline');
     gsap.to(scanline, {
@@ -125,7 +131,18 @@ export function initScrollAnimations(qunoxScene) {
       duration: 0.9,
       delay: i * 0.18,
       ease: 'power4.inOut',
-      transformOrigin: 'right'
+      transformOrigin: 'right',
+      onComplete: () => {
+        // Switch diagnostic image
+        document.querySelectorAll('.diag-img').forEach(img => img.classList.remove('active'));
+        const activeImg = document.querySelector(`.diag-img[data-idx="${i}"]`);
+        if (activeImg) activeImg.classList.add('active');
+        // Update label
+        const numEl  = document.querySelector('.diag-vl-num');
+        const textEl = document.querySelector('.diag-vl-text');
+        if (numEl)  numEl.textContent  = String(i + 1).padStart(2, '0');
+        if (textEl) textEl.textContent = diagImageLabels[i];
+      }
     });
     const badge = item.querySelector('.diag-item__status');
     if (badge) {

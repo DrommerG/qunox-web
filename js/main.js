@@ -67,7 +67,7 @@
          try {
            var d = JSON.parse(e.postData.contents);
            GmailApp.sendEmail(
-             'daesgaar@gmail.com',
+             'soluciones@qunox.net',
              'QUNOX | Contacto: ' + d.nombre,
              'Nombre: '  + d.nombre  + '\n' +
              'Empresa: ' + (d.empresa||'—') + '\n' +
@@ -125,7 +125,7 @@
       } catch {
         formBtn.disabled = false;
         formBtn.textContent = 'Enviar mensaje';
-        alert('Error al enviar. Escríbenos a daesgaar@gmail.com');
+        alert('Error al enviar. Escríbenos a soluciones@qunox.net');
       }
     });
   }
