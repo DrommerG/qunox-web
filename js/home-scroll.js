@@ -225,9 +225,14 @@ export function initScrollAnimations(qunoxScene) {
     const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
 
     if (oldTitle) {
+      // Remove from normal flow immediately to prevent overlap with incoming title
+      gsap.set(oldTitle, { position: 'absolute', top: 0, left: 0 });
       gsap.to(oldTitle, {
         y: dir * -60, opacity: 0, duration: 0.5, ease: 'power3.in',
-        onComplete: () => { oldTitle.classList.remove('active'); gsap.set(oldTitle, { y: 0 }); }
+        onComplete: () => {
+          oldTitle.classList.remove('active');
+          gsap.set(oldTitle, { clearProps: 'all' });
+        }
       });
     }
 

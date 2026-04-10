@@ -100,6 +100,7 @@
       const nombre  = form.nombre.value.trim();
       const empresa = form.empresa ? form.empresa.value.trim() : '';
       const email   = form.email.value.trim();
+      const rol     = form.rol ? form.rol.value.trim() : '';
       const mensaje = form.mensaje.value.trim();
 
       if (!nombre || !email) {
@@ -117,7 +118,7 @@
           await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, empresa, email, mensaje })
+            body: JSON.stringify({ nombre, empresa, email, rol, mensaje })
           });
         }
         form.style.display = 'none';

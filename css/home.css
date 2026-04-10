@@ -592,7 +592,7 @@ body.ready .page-wrap { opacity: 1; }
     padding: 5rem 1.5rem; gap: 2rem;
   }
   .svc-title { position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
-  .svc-title:not(.mobile-active) { display: none; }
+  .svc-title:not(.active) { display: none; }
   .svc-title__line { font-size: clamp(2.5rem, 12vw, 4rem); }
   .services__progress-track { display: none; }
   .services__counter { top: 2rem; left: 1.5rem; }
