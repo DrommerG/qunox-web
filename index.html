@@ -111,6 +111,7 @@
               <span class="diag-item__label">Configuraciones</span>
               <span class="diag-item__status diag-item__status--warn">INCONSISTENT</span>
             </div>
+            <div class="diag-item__panel"><div class="diag-item__panel-inner"></div></div>
           </div>
           <div class="diag-item" data-index="1">
             <div class="diag-item__scanline"></div>
@@ -119,6 +120,7 @@
               <span class="diag-item__label">Recursos</span>
               <span class="diag-item__status diag-item__status--warn">UNDERUTILIZED</span>
             </div>
+            <div class="diag-item__panel"><div class="diag-item__panel-inner"></div></div>
           </div>
           <div class="diag-item" data-index="2">
             <div class="diag-item__scanline"></div>
@@ -127,6 +129,7 @@
               <span class="diag-item__label">Arquitectura</span>
               <span class="diag-item__status diag-item__status--err">FRAGILE</span>
             </div>
+            <div class="diag-item__panel"><div class="diag-item__panel-inner"></div></div>
           </div>
           <div class="diag-item" data-index="3">
             <div class="diag-item__scanline"></div>
@@ -135,6 +138,7 @@
               <span class="diag-item__label">Resiliencia</span>
               <span class="diag-item__status diag-item__status--err">UNDEFINED</span>
             </div>
+            <div class="diag-item__panel"><div class="diag-item__panel-inner"></div></div>
           </div>
         </div>
 
@@ -151,28 +155,6 @@
           <div class="diagnostic__visual-label" id="diag-visual-label">
             <span class="diag-vl-num">01</span>
             <span class="diag-vl-text">Conflicto de configuración activo</span>
-          </div>
-
-          <!-- Info panel — shown on item click -->
-          <div class="diag-info-panel" id="diag-info-panel">
-            <button class="diag-info-close" id="diag-info-close" aria-label="Cerrar">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </button>
-            <div class="diag-info-inner">
-              <div class="diag-info-header">
-                <span class="diag-info-num" id="diag-info-num">01</span>
-                <span class="diag-info-badge" id="diag-info-badge">INCONSISTENT</span>
-              </div>
-              <h3 class="diag-info-title" id="diag-info-title">Configuraciones</h3>
-              <div class="diag-info-block">
-                <span class="diag-info-section-label">El problema</span>
-                <p class="diag-info-text" id="diag-info-problem"></p>
-              </div>
-              <div class="diag-info-block">
-                <span class="diag-info-section-label diag-info-section-label--blue">Cómo QUNOX lo resuelve</span>
-                <p class="diag-info-text" id="diag-info-solution"></p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -208,6 +190,7 @@
       <!-- LEFT: huge architectural typography -->
       <div class="services__title-area">
         <div class="services__title-wrapper" id="services-title-wrapper">
+
           <div class="svc-title" data-svc="0">
             <span class="svc-title__line">Soporte</span>
             <span class="svc-title__line svc-title__line--indent">Especializado</span>
@@ -233,6 +216,7 @@
             <span class="svc-title__line svc-title__line--indent">Ciberseguridad</span>
           </div>
         </div>
+        <div class="services__tags-area" id="services-tags-area"></div>
       </div>
 
       <!-- RIGHT: image + copy -->

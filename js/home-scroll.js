@@ -8,6 +8,7 @@ const SERVICES = [
     index: 0,
     titleLines: ['Soporte', 'Especializado'],
     copy: 'Soporte técnico especializado con tiempos de respuesta garantizados. Equipos certificados disponibles para entornos críticos.',
+    tags: ['L3 Support', 'SLA garantizado', '24/7'],
     accent: '#4361EE',
     link: 'servicios/soporte-especializado.html',
     label: '01'
@@ -16,6 +17,7 @@ const SERVICES = [
     index: 1,
     titleLines: ['Optimización', 'Estratégica'],
     copy: 'Análisis profundo de tu stack actual. Reducción de costos sin comprometer rendimiento. Resultados medibles en 90 días.',
+    tags: ['Rightsizing', 'Reducción de costos', '90 días'],
     accent: '#00B4D8',
     link: 'servicios/optimizacion-estrategica.html',
     label: '02'
@@ -24,6 +26,7 @@ const SERVICES = [
     index: 2,
     titleLines: ['Implementación', 'Avanzada'],
     copy: 'Despliegue de clusters de alta disponibilidad con metodología probada. Zero-downtime. Rollback garantizado.',
+    tags: ['Zero-downtime', 'Alta disponibilidad', 'Rollback'],
     accent: '#7209B7',
     link: 'servicios/implementacion-avanzada.html',
     label: '03'
@@ -32,6 +35,7 @@ const SERVICES = [
     index: 3,
     titleLines: ['Diseño', 'de DR'],
     copy: 'Arquitecturas de Disaster Recovery diseñadas para tu RTO/RPO específico. Drills documentados. Runbooks completos.',
+    tags: ['RTO / RPO', 'Runbooks', 'Drills'],
     accent: '#4361EE',
     link: 'servicios/diseno-dr.html',
     label: '04'
@@ -40,6 +44,7 @@ const SERVICES = [
     index: 4,
     titleLines: ['Estrategia', 'Multi-Cloud'],
     copy: 'Diseño e implementación de estrategias multi-cloud. Evita vendor lock-in. Optimiza costos entre proveedores.',
+    tags: ['AWS / Azure / GCP', 'Sin vendor lock-in', 'Cost optimized'],
     accent: '#00B4D8',
     link: 'servicios/multi-cloud.html',
     label: '05'
@@ -48,6 +53,7 @@ const SERVICES = [
     index: 5,
     titleLines: ['Red y', 'Ciberseguridad'],
     copy: 'Auditorías de seguridad, hardening Fortinet, segmentación de red. Tu perímetro, redefinido.',
+    tags: ['Fortinet', 'Auditoría', 'Hardening'],
     accent: '#7209B7',
     link: 'servicios/red-ciberseguridad.html',
     label: '06'
@@ -268,6 +274,19 @@ export function initScrollAnimations(qunoxScene) {
     // Progress indicator color
     document.getElementById('services-progress').style.background = svc.accent;
 
+    // Tags
+    const tagsArea = document.getElementById('services-tags-area');
+    if (tagsArea) {
+      gsap.to(tagsArea, {
+        opacity: 0, duration: 0.2, onComplete: () => {
+          tagsArea.innerHTML = svc.tags
+            .map(t => `<span class="svc-tag">${t}</span>`)
+            .join('');
+          gsap.to(tagsArea, { opacity: 1, duration: 0.5, ease: 'power2.out' });
+        }
+      });
+    }
+
     // Three.js
     qunoxScene.setServiceMode(newIdx);
   }
@@ -336,58 +355,49 @@ export function initScrollAnimations(qunoxScene) {
 export function initDiagnosticInteractions() {
   const INFO_DATA = [
     {
-      num: '01', badge: 'INCONSISTENT', title: 'Configuraciones',
-      problem: 'Las inconsistencias entre entornos (desarrollo, staging, producción) causan bugs difíciles de reproducir, despliegues fallidos y ventanas de vulnerabilidad abiertas sin saberlo. Un cambio manual en producción que no existe en staging es un riesgo activo.',
-      solution: 'Auditamos el stack completo e implementamos gestión centralizada con Infrastructure as Code (Ansible, Terraform). Cada cambio pasa por validación automática y control de versiones — sin configuraciones manuales ni shadow IT.'
+      problem: 'Las inconsistencias entre entornos (desarrollo, staging, producción) causan bugs difíciles de reproducir, despliegues fallidos y ventanas de vulnerabilidad abiertas sin saberlo.',
+      solution: 'Auditamos el stack completo e implementamos gestión centralizada con IaC (Ansible, Terraform). Cada cambio pasa por validación automática y control de versiones — sin configuraciones manuales.'
     },
     {
-      num: '02', badge: 'UNDERUTILIZED', title: 'Recursos',
-      problem: 'Instancias sobredimensionadas, licencias sin usar y workloads mal distribuidos generan costos operativos innecesarios. En promedio, las empresas desperdician entre 30–40% de su presupuesto cloud sin saberlo.',
-      solution: 'Realizamos análisis de rightsizing y consolidamos workloads. Ajustamos capacidades al uso real e implementamos auto-scaling para que el costo siga al consumo efectivo, no al aprovisionamiento máximo.'
+      problem: 'Instancias sobredimensionadas, licencias sin usar y workloads mal distribuidos generan costos innecesarios. Las empresas desperdician entre 30–40% de su presupuesto cloud sin saberlo.',
+      solution: 'Realizamos análisis de rightsizing y consolidamos workloads. Ajustamos capacidades al uso real e implementamos auto-scaling para que el costo siga al consumo efectivo.'
     },
     {
-      num: '03', badge: 'FRAGILE', title: 'Arquitectura',
       problem: 'Sin redundancia, un single point of failure puede paralizar operaciones completas. Una caída de un componente no debería detener el negocio, pero en arquitecturas frágiles así ocurre.',
       solution: 'Diseñamos arquitecturas de alta disponibilidad con redundancia en cada capa crítica. Implementamos load balancing, failover automático y eliminamos dependencias únicas antes de que fallen.'
     },
     {
-      num: '04', badge: 'UNDEFINED', title: 'Resiliencia',
       problem: 'Sin un plan de recuperación documentado, ante un desastre el tiempo de respuesta es impredecible. Sin RTO/RPO definidos, la continuidad operativa queda al azar.',
-      solution: 'Definimos estrategias de Disaster Recovery con RTO y RPO específicos para tu negocio. Backups automatizados, runbooks detallados y drills periódicos que garantizan la recuperación cuando más importa.'
+      solution: 'Definimos estrategias de Disaster Recovery con RTO y RPO específicos. Backups automatizados, runbooks detallados y drills periódicos que garantizan la recuperación cuando más importa.'
     }
   ];
 
-  const panel    = document.getElementById('diag-info-panel');
-  const closeBtn = document.getElementById('diag-info-close');
-  if (!panel) return;
+  const items = document.querySelectorAll('.diag-item');
+  if (!items.length) return;
 
-  let activeItemIdx = -1;
+  items.forEach((item, i) => {
+    const panelInner = item.querySelector('.diag-item__panel-inner');
+    if (!panelInner) return;
 
-  function showPanel(idx) {
-    const d = INFO_DATA[idx];
-    document.getElementById('diag-info-num').textContent     = d.num;
-    document.getElementById('diag-info-badge').textContent   = d.badge;
-    document.getElementById('diag-info-title').textContent   = d.title;
-    document.getElementById('diag-info-problem').textContent = d.problem;
-    document.getElementById('diag-info-solution').textContent = d.solution;
-    panel.classList.add('active');
-    activeItemIdx = idx;
-  }
+    const d = INFO_DATA[i];
+    panelInner.innerHTML = `
+      <div>
+        <span class="diag-panel__label">El problema</span>
+        <p class="diag-panel__text">${d.problem}</p>
+      </div>
+      <div>
+        <span class="diag-panel__label diag-panel__label--blue">Cómo QUNOX lo resuelve</span>
+        <p class="diag-panel__text">${d.solution}</p>
+      </div>`;
 
-  function hidePanel() {
-    panel.classList.remove('active');
-    activeItemIdx = -1;
-  }
-
-  document.querySelectorAll('.diag-item').forEach((item, i) => {
     item.addEventListener('click', () => {
-      activeItemIdx === i ? hidePanel() : showPanel(i);
+      const isOpen = item.classList.contains('expanded');
+      items.forEach(it => it.classList.remove('expanded'));
+      if (!isOpen) item.classList.add('expanded');
     });
   });
 
-  if (closeBtn) closeBtn.addEventListener('click', e => { e.stopPropagation(); hidePanel(); });
-
-  // ── Auto-slideshow: cycle all 6 images every 5 seconds ──
+  // ── Auto-slideshow: 6 images, every 4 seconds ──
   const allImages = document.querySelectorAll('.diag-img');
   if (!allImages.length) return;
 
@@ -400,5 +410,5 @@ export function initDiagnosticInteractions() {
   }
 
   showSlide(0);
-  setInterval(() => showSlide(slideshowIdx + 1), 5000);
+  setInterval(() => showSlide(slideshowIdx + 1), 4000);
 }
