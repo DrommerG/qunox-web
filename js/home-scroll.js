@@ -131,18 +131,7 @@ export function initScrollAnimations(qunoxScene) {
       duration: 0.9,
       delay: i * 0.18,
       ease: 'power4.inOut',
-      transformOrigin: 'right',
-      onComplete: () => {
-        // Switch diagnostic image
-        document.querySelectorAll('.diag-img').forEach(img => img.classList.remove('active'));
-        const activeImg = document.querySelector(`.diag-img[data-idx="${i}"]`);
-        if (activeImg) activeImg.classList.add('active');
-        // Update label
-        const numEl  = document.querySelector('.diag-vl-num');
-        const textEl = document.querySelector('.diag-vl-text');
-        if (numEl)  numEl.textContent  = String(i + 1).padStart(2, '0');
-        if (textEl) textEl.textContent = diagImageLabels[i];
-      }
+      transformOrigin: 'right'
     });
     const badge = item.querySelector('.diag-item__status');
     if (badge) {
@@ -338,4 +327,78 @@ export function initScrollAnimations(qunoxScene) {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 250);
   });
+}
+
+// ================================================
+// Diagnostic: click-to-expand panel + auto slideshow
+// ================================================
+
+export function initDiagnosticInteractions() {
+  const INFO_DATA = [
+    {
+      num: '01', badge: 'INCONSISTENT', title: 'Configuraciones',
+      problem: 'Las inconsistencias entre entornos (desarrollo, staging, producción) causan bugs difíciles de reproducir, despliegues fallidos y ventanas de vulnerabilidad abiertas sin saberlo. Un cambio manual en producción que no existe en staging es un riesgo activo.',
+      solution: 'Auditamos el stack completo e implementamos gestión centralizada con Infrastructure as Code (Ansible, Terraform). Cada cambio pasa por validación automática y control de versiones — sin configuraciones manuales ni shadow IT.'
+    },
+    {
+      num: '02', badge: 'UNDERUTILIZED', title: 'Recursos',
+      problem: 'Instancias sobredimensionadas, licencias sin usar y workloads mal distribuidos generan costos operativos innecesarios. En promedio, las empresas desperdician entre 30–40% de su presupuesto cloud sin saberlo.',
+      solution: 'Realizamos análisis de rightsizing y consolidamos workloads. Ajustamos capacidades al uso real e implementamos auto-scaling para que el costo siga al consumo efectivo, no al aprovisionamiento máximo.'
+    },
+    {
+      num: '03', badge: 'FRAGILE', title: 'Arquitectura',
+      problem: 'Sin redundancia, un single point of failure puede paralizar operaciones completas. Una caída de un componente no debería detener el negocio, pero en arquitecturas frágiles así ocurre.',
+      solution: 'Diseñamos arquitecturas de alta disponibilidad con redundancia en cada capa crítica. Implementamos load balancing, failover automático y eliminamos dependencias únicas antes de que fallen.'
+    },
+    {
+      num: '04', badge: 'UNDEFINED', title: 'Resiliencia',
+      problem: 'Sin un plan de recuperación documentado, ante un desastre el tiempo de respuesta es impredecible. Sin RTO/RPO definidos, la continuidad operativa queda al azar.',
+      solution: 'Definimos estrategias de Disaster Recovery con RTO y RPO específicos para tu negocio. Backups automatizados, runbooks detallados y drills periódicos que garantizan la recuperación cuando más importa.'
+    }
+  ];
+
+  const panel    = document.getElementById('diag-info-panel');
+  const closeBtn = document.getElementById('diag-info-close');
+  if (!panel) return;
+
+  let activeItemIdx = -1;
+
+  function showPanel(idx) {
+    const d = INFO_DATA[idx];
+    document.getElementById('diag-info-num').textContent     = d.num;
+    document.getElementById('diag-info-badge').textContent   = d.badge;
+    document.getElementById('diag-info-title').textContent   = d.title;
+    document.getElementById('diag-info-problem').textContent = d.problem;
+    document.getElementById('diag-info-solution').textContent = d.solution;
+    panel.classList.add('active');
+    activeItemIdx = idx;
+  }
+
+  function hidePanel() {
+    panel.classList.remove('active');
+    activeItemIdx = -1;
+  }
+
+  document.querySelectorAll('.diag-item').forEach((item, i) => {
+    item.addEventListener('click', () => {
+      activeItemIdx === i ? hidePanel() : showPanel(i);
+    });
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', e => { e.stopPropagation(); hidePanel(); });
+
+  // ── Auto-slideshow: cycle all 6 images every 5 seconds ──
+  const allImages = document.querySelectorAll('.diag-img');
+  if (!allImages.length) return;
+
+  let slideshowIdx = 0;
+
+  function showSlide(idx) {
+    allImages.forEach(img => img.classList.remove('active'));
+    slideshowIdx = idx % allImages.length;
+    allImages[slideshowIdx].classList.add('active');
+  }
+
+  showSlide(0);
+  setInterval(() => showSlide(slideshowIdx + 1), 5000);
 }

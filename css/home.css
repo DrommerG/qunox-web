@@ -250,10 +250,67 @@ body.ready .page-wrap { opacity: 1; }
   width: 100%; height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.5s var(--ease-cinematic);
+  transition: opacity 0.8s var(--ease-cinematic);
   filter: brightness(0.92) contrast(1.05) saturate(0.9);
 }
 .diag-img.active { opacity: 1; }
+
+/* ── Diagnostic info panel ───────────────────── */
+.diag-info-panel {
+  position: absolute; inset: 0;
+  background: #0D0D1A;
+  border-radius: 4px;
+  opacity: 0; pointer-events: none;
+  transform: translateX(14px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  z-index: 10; overflow-y: auto;
+}
+.diag-info-panel.active {
+  opacity: 1; pointer-events: auto; transform: translateX(0);
+}
+.diag-info-close {
+  position: absolute; top: 0.85rem; right: 0.85rem;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.08); border: none;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.6); cursor: pointer;
+  transition: background 0.2s;
+}
+.diag-info-close:hover { background: rgba(255,255,255,0.16); }
+.diag-info-inner { padding: 1.75rem; height: 100%; box-sizing: border-box; }
+.diag-info-header {
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem;
+}
+.diag-info-num {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.1em; color: rgba(255,255,255,0.35);
+}
+.diag-info-badge {
+  font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.18rem 0.55rem; border-radius: 2px;
+  background: rgba(67,97,238,0.18); color: #8FABF8;
+  border: 1px solid rgba(67,97,238,0.28);
+}
+.diag-info-title {
+  font-family: var(--font-head, 'Space Grotesk', sans-serif);
+  font-size: 1.35rem; font-weight: 700;
+  color: #fff; margin-bottom: 1.25rem; letter-spacing: -0.02em;
+}
+.diag-info-block { margin-bottom: 1.1rem; }
+.diag-info-section-label {
+  display: block;
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-bottom: 0.4rem;
+}
+.diag-info-section-label--blue { color: #6B8EF5; }
+.diag-info-text {
+  font-size: 0.82rem; line-height: 1.75;
+  color: rgba(255,255,255,0.68);
+}
+.diag-item { cursor: pointer; }
+.diag-item:hover .diag-item__label { color: var(--blue, #4361EE); transition: color 0.2s; }
 
 .diagnostic__visual-label {
   display: flex; align-items: center; gap: 0.75rem;
@@ -349,10 +406,11 @@ body.ready .page-wrap { opacity: 1; }
 .svc-title__line {
   display: block;
   font-family: var(--font-head, 'Space Grotesk', sans-serif);
-  font-size: clamp(3rem, 6vw, 6.5rem);
+  font-size: clamp(3rem, 5.5vw, 6rem);
   font-weight: 700; line-height: 0.92;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   color: var(--ink, #0D0D1A);
+  padding-right: 0.2em;
 }
 .svc-title__line--indent { padding-left: clamp(1.5rem, 3.5vw, 4rem); }
 

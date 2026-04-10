@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="stylesheet" href="css/home.css"/>
+  <link rel="stylesheet" href="css/theme-color.css"/>
 </head>
 <body>
 
@@ -144,10 +145,34 @@
             <img src="images/scan/scan-recursos.jpg"     alt="Recursos"         class="diag-img"        data-idx="1"/>
             <img src="images/scan/scan-arquitectura.jpg" alt="Arquitectura"     class="diag-img"        data-idx="2"/>
             <img src="images/scan/scan-resiliencia.jpg"  alt="Resiliencia"      class="diag-img"        data-idx="3"/>
+            <img src="images/scan/scan-network.jpg"      alt="Red"              class="diag-img"        data-idx="4"/>
+            <img src="images/scan/scan-monitoring.jpg"   alt="Monitoreo"        class="diag-img"        data-idx="5"/>
           </div>
           <div class="diagnostic__visual-label" id="diag-visual-label">
             <span class="diag-vl-num">01</span>
             <span class="diag-vl-text">Conflicto de configuración activo</span>
+          </div>
+
+          <!-- Info panel — shown on item click -->
+          <div class="diag-info-panel" id="diag-info-panel">
+            <button class="diag-info-close" id="diag-info-close" aria-label="Cerrar">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <div class="diag-info-inner">
+              <div class="diag-info-header">
+                <span class="diag-info-num" id="diag-info-num">01</span>
+                <span class="diag-info-badge" id="diag-info-badge">INCONSISTENT</span>
+              </div>
+              <h3 class="diag-info-title" id="diag-info-title">Configuraciones</h3>
+              <div class="diag-info-block">
+                <span class="diag-info-section-label">El problema</span>
+                <p class="diag-info-text" id="diag-info-problem"></p>
+              </div>
+              <div class="diag-info-block">
+                <span class="diag-info-section-label diag-info-section-label--blue">Cómo QUNOX lo resuelve</span>
+                <p class="diag-info-text" id="diag-info-solution"></p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -359,12 +384,13 @@
 
 <!-- Home cinematic JS — ES module -->
 <script type="module">
-  import { QunoxScene }           from './js/home-scene.js';
-  import { initScrollAnimations } from './js/home-scroll.js';
+  import { QunoxScene }                                    from './js/home-scene.js';
+  import { initScrollAnimations, initDiagnosticInteractions } from './js/home-scroll.js';
 
   window.addEventListener('load', () => {
     const scene = new QunoxScene('qnx-canvas');
     initScrollAnimations(scene);
+    initDiagnosticInteractions();
     setTimeout(() => document.body.classList.add('ready'), 80);
   });
 </script>

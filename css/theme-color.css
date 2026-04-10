@@ -1,0 +1,402 @@
+/* ================================================
+   QUNOX — Theme Color Layer
+   Loaded after home.css and main.css.
+   Pure CSS overrides — no HTML or JS changes.
+   Design principle: premium enterprise tint system
+   (Cloudflare / Linear / Vercel aesthetic)
+   ================================================ */
+
+
+/* ── SCENE 2 — NOSOTROS (About)
+   Decision: off-white blue-tinted surface instead of
+   pure white. Matches --surface (#F8F9FF) to feel
+   considered, not blank. A fine square grid drawn
+   with CSS background-image (no SVG, no blob) adds
+   geometric texture without competing with type.
+   Left-border accents on the text blocks give the
+   paragraphs an editorial, structured feel.
+   ─────────────────────────────────────────────── */
+.scene--about {
+  /* Subtle blue-tinted surface — same hue family as --surface */
+  background: #F4F6FF !important;
+
+  /* Fine square grid overlay — 40 px cells, 1 px lines at 5 % opacity.
+     Uses two linear-gradient directions for a true crosshatch. */
+  background-image:
+    linear-gradient(rgba(67, 97, 238, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67, 97, 238, 0.045) 1px, transparent 1px) !important;
+  background-size: 40px 40px !important;
+}
+
+/* Top edge: thin blue rule separating hero scroll from About */
+.scene--about::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--blue, #4361EE) 30%,
+    var(--purple, #7209B7) 70%,
+    transparent 100%
+  );
+  opacity: 0.35;
+}
+
+/* Eyebrow: add a short ruled line before it (mirrors .label::before in main.css) */
+.about__eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--blue, #4361EE);
+  margin-right: 10px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+/* Lead paragraph: strong left border in --blue */
+.about__lead {
+  border-left: 3px solid var(--blue, #4361EE);
+  padding-left: 1.25rem;
+  margin-left: -1.25rem; /* keep text column aligned */
+}
+
+/* Body paragraphs: softer left border in --purple at low opacity */
+.about__text {
+  border-left: 2px solid rgba(114, 9, 183, 0.18);
+  padding-left: 1.25rem;
+  margin-left: -1.25rem;
+}
+
+/* Remove the border from the last paragraph so the section closes cleanly */
+.about__text:last-child {
+  border-left-color: transparent;
+}
+
+
+/* ── SCENE 3 — DIAGNOSTIC
+   Decision: keep white background but add three
+   targeted colour touches:
+   1. A faint blue-tinted header bar above the item list
+   2. Coloured ordinal numbers (the .diag-item__num)
+      — blue for warn rows, purple for error rows
+   3. A thin left-edge accent stripe on the entire
+      diagnostic container to anchor it in the grid
+   ─────────────────────────────────────────────── */
+.scene--diagnostic {
+  background: #fff !important;
+  /* Left-edge accent: 3 px solid blue at 60 % — structural, not decorative blob */
+  border-left: 3px solid rgba(67, 97, 238, 0.55);
+}
+
+/* Diagnostic header bar: very faint surface tint + bottom rule */
+.diagnostic__header {
+  background: rgba(67, 97, 238, 0.035);
+  padding: 0.75rem 1rem !important;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  border-bottom: 1px solid rgba(67, 97, 238, 0.10) !important;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Section label gets a small dot prefix for brand consistency */
+.diagnostic__label::before {
+  content: '●';
+  font-size: 0.5em;
+  color: var(--blue, #4361EE);
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: diagnosticPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes diagnosticPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+/* Ordinal numbers: blue for WARN items, purple for ERR items
+   Siblings: .diag-item contains both .diag-item__num and .diag-item__status */
+.diag-item:has(.diag-item__status--warn) .diag-item__num {
+  color: var(--blue, #4361EE);
+  font-weight: 700;
+}
+
+.diag-item:has(.diag-item__status--err) .diag-item__num {
+  color: var(--purple, #7209B7);
+  font-weight: 700;
+}
+
+/* Status chips: add a 1 px left colored border to reinforce state */
+.diag-item__status--warn {
+  border-left: 2px solid var(--blue, #4361EE);
+}
+
+.diag-item__status--err {
+  border-left: 2px solid var(--purple, #7209B7);
+}
+
+/* Visual frame: add a thin blue top stroke to the image panel */
+.diagnostic__visual-frame {
+  border-top: 2px solid rgba(67, 97, 238, 0.5) !important;
+}
+
+/* Progress bar track: tint to blue family */
+.diagnostic__progress-bar {
+  background: rgba(67, 97, 238, 0.08) !important;
+}
+
+
+/* ── SCENE 4 — SERVICES (sticky scroll)
+   Decision: the left side holds massive type on pure
+   white — too much negative space. Solutions:
+   1. Apply a faint blue surface tint to the entire
+      sticky panel background
+   2. Add a vertical rule on the centre gap between
+      left title and right detail
+   3. Tint the service counter with blue
+   4. The service number in the counter (#svc-current)
+      already has --ink; upgrade it to --blue for
+      visual hierarchy
+   5. Add a subtle left-edge accent band behind the
+      title area only, using a pseudo-element
+   ─────────────────────────────────────────────── */
+
+/* Whole scene: extremely faint grid (same motif as About) */
+.scene--services {
+  background-image:
+    linear-gradient(rgba(67, 97, 238, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67, 97, 238, 0.025) 1px, transparent 1px) !important;
+  background-size: 48px 48px !important;
+}
+
+/* Sticky panel: keep white but give it a hairline tint */
+.services__sticky-panel {
+  background: rgba(248, 249, 255, 0.92) !important; /* --surface at 92% */
+}
+
+/* Counter: blue-tinted current number */
+#svc-current {
+  color: var(--blue, #4361EE) !important;
+}
+
+/* Title area: add a 3 px blue left accent bar that scales with the active title */
+.services__title-area::before {
+  content: '';
+  position: absolute;
+  left: -2.5rem; /* sits in the panel padding gutter */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: linear-gradient(
+    180deg,
+    var(--blue, #4361EE) 0%,
+    var(--purple, #7209B7) 100%
+  );
+  border-radius: 2px;
+  opacity: 0.55;
+}
+
+/* Service title lines: first word keeps --ink, add a subtle
+   underline-tint on hover via the parent .svc-title.active */
+.svc-title.active .svc-title__line:first-child {
+  /* Blue left-edge stripe using box-shadow so it doesn't
+     affect layout or interfere with GSAP transforms */
+  text-shadow: none; /* keep clean — color is handled by other elements */
+}
+
+/* Bottom accent bar for the detail area: upgrade to blue→purple */
+.services__accent-bar {
+  background: linear-gradient(
+    90deg,
+    var(--blue, #4361EE),
+    var(--purple, #7209B7)
+  ) !important;
+  height: 1.5px !important;
+}
+
+/* Progress track: upgrade fill to match */
+.services__progress-fill {
+  background: linear-gradient(
+    180deg,
+    var(--blue, #4361EE),
+    var(--purple, #7209B7)
+  ) !important;
+}
+
+/* Mobile cards: add a left border accent per card */
+.svc-mobile-card {
+  border-left: 2px solid rgba(67, 97, 238, 0.20);
+  padding-left: 1rem;
+}
+.svc-mobile-num {
+  color: var(--blue, #4361EE) !important;
+}
+
+
+/* ── SCENE 5 — CLOSING CTA
+   Decision: already has a gradient text accent on the
+   headline and gradient on the form submit button.
+   Add:
+   1. A very subtle radial blue "light" at top-centre
+      — think Vercel's glow, but restrained (not a
+      blob, just a 1-layer radial gradient at 8 % opacity)
+   2. A thin horizontal rule above the section
+   3. Corner grid marks (pure CSS, no images)
+      for a technical/enterprise feel
+   ─────────────────────────────────────────────── */
+.scene--closing {
+  background: #F4F5F8 !important; /* slightly cooler than the warm #F8F8F6 */
+}
+
+/* Top fade — a single centred radial gradient at the top edge.
+   This is NOT a blob: it fades to transparent by 40 % of the
+   section height and has zero horizontal spread. */
+.scene--closing::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 280px;
+  background: radial-gradient(
+    ellipse 60% 100% at 50% 0%,
+    rgba(67, 97, 238, 0.06) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Top rule: same gradient as About section top */
+.scene--closing::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(67, 97, 238, 0.25) 30%,
+    rgba(114, 9, 183, 0.25) 70%,
+    transparent 100%
+  );
+}
+
+/* Eyebrow: mirror the .label styling for brand consistency */
+.closing__eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--blue, #4361EE);
+  margin-right: 10px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+.closing__eyebrow::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--blue, #4361EE);
+  margin-left: 10px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+/* Ghost button: tint border to blue for stronger CTA hierarchy */
+.btn-closing-ghost {
+  border-color: rgba(67, 97, 238, 0.30) !important;
+  color: var(--blue, #4361EE) !important;
+}
+.btn-closing-ghost:hover {
+  border-color: var(--blue, #4361EE) !important;
+  background: rgba(67, 97, 238, 0.05) !important;
+}
+
+
+/* ── SECTION DIVIDERS
+   Decision: thin 1 px rules between the white
+   sections break the all-white cascade without
+   adding heavy backgrounds. Uses the same
+   blue→transparent→blue gradient for a centred
+   fade effect (avoids hard edge to edge lines).
+   ─────────────────────────────────────────────── */
+
+/* Diagnostic → Services transition */
+.scene--diagnostic + .scene--services::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 5%; right: 5%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(67, 97, 238, 0.15) 30%,
+    rgba(67, 97, 238, 0.15) 70%,
+    transparent
+  );
+  z-index: 5;
+}
+
+/* Services → Closing transition */
+.scene--closing {
+  border-top: 1px solid rgba(67, 97, 238, 0.08);
+}
+
+/* Closing → Clients transition */
+.scene--clients {
+  border-top: 1px solid rgba(67, 97, 238, 0.08);
+}
+
+/* Clients: faint blue numbers on client count label */
+.clients__label {
+  color: var(--blue, #4361EE) !important;
+  opacity: 0.5;
+}
+
+
+/* ── FOOTER ACCENT
+   A thin blue-to-purple rule at the very top of the
+   footer — separates the dark footer from the light
+   clients section with brand colour.
+   ─────────────────────────────────────────────── */
+footer::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--blue, #4361EE) 0%,
+    var(--purple, #7209B7) 100%
+  );
+  margin-bottom: 0; /* sits flush at footer top */
+}
+
+
+/* ── RESPONSIVE — MOBILE
+   Revert the large left-gutter offsets on small screens
+   where the title area has no horizontal padding room.
+   ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .about__lead,
+  .about__text {
+    margin-left: 0;
+    padding-left: 1rem;
+  }
+
+  .services__title-area::before {
+    display: none; /* no gutter space on mobile */
+  }
+
+  .scene--about,
+  .scene--services {
+    background-size: 28px 28px !important;
+  }
+}
