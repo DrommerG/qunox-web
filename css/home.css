@@ -580,22 +580,53 @@ body.ready .page-wrap { opacity: 1; }
   max-width: 160px; object-fit: contain;
 }
 
+/* Mobile-only services grid (hidden on desktop) */
+.services__mobile-grid { display: none; }
+
 /* ================================================
    RESPONSIVE — MOBILE
    ================================================ */
 @media (max-width: 768px) {
   .scene--services { height: auto !important; }
 
-  .services__sticky-panel {
-    position: relative !important; height: auto !important;
-    grid-template-columns: 1fr;
-    padding: 5rem 1.5rem; gap: 2rem;
-  }
-  .svc-title { position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
-  .svc-title:not(.active) { display: none; }
-  .svc-title__line { font-size: clamp(2.5rem, 12vw, 4rem); }
+  /* Hide desktop scroll experience, show mobile grid */
+  .services__sticky-panel { display: none !important; }
+  .services__scroll-track { display: none !important; }
   .services__progress-track { display: none; }
-  .services__counter { top: 2rem; left: 1.5rem; }
+
+  /* Mobile services grid */
+  .services__mobile-grid {
+    display: flex; flex-direction: column;
+    padding: 3rem 1.5rem 4rem;
+  }
+  .svc-mobile-card {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .svc-mobile-num {
+    display: block;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.1em; color: #6B6B7B;
+    margin-bottom: 0.6rem;
+  }
+  .svc-mobile-card h3 {
+    font-family: var(--font-head, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.75rem, 9vw, 2.5rem);
+    font-weight: 700; line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: var(--ink, #0D0D1A);
+    margin-bottom: 0.75rem;
+  }
+  .svc-mobile-card p {
+    font-size: 0.875rem; color: #6B6B7B;
+    line-height: 1.65; margin-bottom: 0.75rem;
+  }
+  .svc-mobile-link {
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--blue, #4361EE);
+    text-decoration: none; letter-spacing: 0.04em;
+  }
 
   .diagnostic__layout { grid-template-columns: 1fr; gap: 2rem; }
   .diagnostic__visual { position: relative; top: auto; }

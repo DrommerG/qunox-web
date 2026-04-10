@@ -174,6 +174,7 @@ export function initScrollAnimations(qunoxScene) {
     trigger: '#scene-diagnostic',
     start: 'top 60%', end: 'bottom 40%',
     onUpdate: self => {
+      if (!statusEl) return;
       const idx = Math.min(statuses.length - 1, Math.floor(self.progress * statuses.length));
       statusEl.textContent = statuses[idx];
     }
@@ -220,25 +221,17 @@ export function initScrollAnimations(qunoxScene) {
     document.getElementById('svc-current').textContent =
       String(newIdx + 1).padStart(2, '0');
 
-    // Title out
-    const oldTitle = oldIdx >= 0 ? document.querySelector(`.svc-title[data-svc="${oldIdx}"]`) : null;
+    // Kill all title tweens and reset every title — prevents overlap on fast scroll
+    document.querySelectorAll('.svc-title').forEach(t => {
+      gsap.killTweensOf(t);
+      t.classList.remove('active');
+      gsap.set(t, { clearProps: 'all' });
+    });
+
     const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
-
-    if (oldTitle) {
-      // Remove from normal flow immediately to prevent overlap with incoming title
-      gsap.set(oldTitle, { position: 'absolute', top: 0, left: 0 });
-      gsap.to(oldTitle, {
-        y: dir * -60, opacity: 0, duration: 0.5, ease: 'power3.in',
-        onComplete: () => {
-          oldTitle.classList.remove('active');
-          gsap.set(oldTitle, { clearProps: 'all' });
-        }
-      });
-    }
-
-    gsap.set(newTitle, { y: dir * 80, opacity: 0 });
+    gsap.set(newTitle, { y: dir * 60, opacity: 0 });
     newTitle.classList.add('active');
-    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.8, delay: 0.1, ease: 'power4.out' });
+    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
 
     // Image clip-path reveal
     const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
