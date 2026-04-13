@@ -450,12 +450,15 @@ body.ready .page-wrap { opacity: 1; }
 }
 .svc-img.active { opacity: 1; }
 
-.services__copy-slot { display: flex; flex-direction: column; gap: 1rem; }
+.services__copy-slot {
+  display: flex; flex-direction: column; gap: 1rem;
+  padding-left: clamp(1.5rem, 3.5vw, 4rem);
+}
 
 .services__copy-text {
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: clamp(0.875rem, 1.1vw, 1rem);
-  line-height: 1.75; color: #6B6B7B; max-width: 380px;
+  line-height: 1.75; color: #6B6B7B;
   opacity: 0; will-change: opacity, transform;
 }
 
