@@ -202,123 +202,51 @@ export function initScrollAnimations(qunoxScene) {
     height: '100%', ease: 'none'
   });
 
-  // ── SERVICE TRANSITIONS ──────────────────────
-  let currentSvcIdx = -1;
+  // ── SERVICE PANELS: scrubbed curtain wipe ────
+  // 700vh total / 6 services = ~116.67vh per panel
+  const segVh = 700 / 6;
 
-  const INIT_CLIP = 'inset(100% 0% 0% 0%)';
-  const DONE_CLIP = 'inset(0% 0% 0% 0%)';
-
-  // Curtain background colors — alternating per service
-  const CURTAIN_COLORS = ['#F2F5FF', '#F5F2FF'];
-
-  function transitionToService(newIdx, oldIdx) {
-    const svc = SERVICES[newIdx];
-    const dir  = newIdx > (oldIdx ?? -1) ? 1 : -1;
-
-    // Curtain wipe — slide new bg color up from bottom
-    const wipe  = document.getElementById('services-color-wipe');
-    const panel = document.getElementById('services-sticky-panel');
-    const newColor = CURTAIN_COLORS[newIdx % 2];
-    gsap.killTweensOf(wipe);
-    wipe.style.background = newColor;
-    gsap.fromTo(wipe,
+  for (let i = 1; i <= 5; i++) {
+    gsap.fromTo(`.svc-panel[data-panel="${i}"]`,
       { clipPath: 'inset(100% 0 0 0)' },
       {
         clipPath: 'inset(0% 0 0 0)',
-        duration: 0.7,
-        ease: 'power3.inOut',
-        onComplete: () => {
-          panel.style.backgroundColor = newColor;
-          gsap.set(wipe, { clipPath: 'inset(100% 0 0 0)' });
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#scene-services',
+          start: `top+=${i * segVh}vh top`,
+          end:   `top+=${(i + 1) * segVh}vh top`,
+          scrub: true
         }
       }
     );
-
-    // Counter
-    document.getElementById('svc-current').textContent =
-      String(newIdx + 1).padStart(2, '0');
-
-    // Kill all title tweens and reset every title — prevents overlap on fast scroll
-    document.querySelectorAll('.svc-title').forEach(t => {
-      gsap.killTweensOf(t);
-      t.classList.remove('active');
-      gsap.set(t, { clearProps: 'all' });
-    });
-
-    const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
-    gsap.set(newTitle, { y: dir * 60, opacity: 0 });
-    newTitle.classList.add('active');
-    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
-
-    // Image clip-path reveal
-    const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
-    const newImg = document.querySelector(`.svc-img[data-svc="${newIdx}"]`);
-    const frame  = document.getElementById('services-image-frame');
-
-    if (oldImg) gsap.to(oldImg, { opacity: 0, duration: 0.3, ease: 'power2.in' });
-
-    gsap.fromTo(frame,
-      { clipPath: INIT_CLIP },
-      {
-        clipPath: DONE_CLIP, duration: 1.0, ease: 'power4.out',
-        onStart: () => {
-          if (newImg) { newImg.style.opacity = 1; newImg.classList.add('active'); }
-          if (oldImg) oldImg.classList.remove('active');
-        }
-      }
-    );
-
-    gsap.fromTo('#services-image-inner',
-      { scale: 1.08 }, { scale: 1, duration: 1.4, ease: 'power3.out' }
-    );
-
-    // Copy text
-    const copyEl = document.getElementById('services-copy-text');
-    const linkEl = document.getElementById('services-link');
-
-    gsap.to([copyEl, linkEl], {
-      opacity: 0, y: 12, duration: 0.3, ease: 'power2.in',
-      onComplete: () => {
-        copyEl.textContent = svc.copy;
-        linkEl.href = svc.link;
-        gsap.to([copyEl, linkEl], { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out' });
-      }
-    });
-
-    // Accent bar
-    const bar = document.getElementById('services-accent-bar');
-    bar.style.background = svc.accent;
-    gsap.fromTo(bar,
-      { width: '0%' },
-      { width: '100%', duration: 0.9, ease: 'power4.out', transformOrigin: 'left' }
-    );
-
-    // Progress indicator color
-    document.getElementById('services-progress').style.background = svc.accent;
-
-    // Three.js
-    qunoxScene.setServiceMode(newIdx);
   }
 
-  // Scroll watcher
+  // ── Counter + progress color + Three.js ──────
+  let currentSvcIdx = -1;
+
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top', end: 'bottom bottom',
     onUpdate: self => {
-      const newIdx = Math.min(5, Math.floor(self.progress * 6));
-      if (newIdx !== currentSvcIdx) {
-        transitionToService(newIdx, currentSvcIdx);
-        currentSvcIdx = newIdx;
+      const idx = Math.min(5, Math.floor(self.progress * 6));
+      document.getElementById('svc-current').textContent = String(idx + 1).padStart(2, '0');
+      if (idx !== currentSvcIdx) {
+        document.getElementById('services-progress').style.background = SERVICES[idx].accent;
+        qunoxScene.setServiceMode(idx);
+        currentSvcIdx = idx;
       }
     }
   });
 
-  // First service on enter
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top 80%',
     once: true,
-    onEnter: () => transitionToService(0, -1)
+    onEnter: () => {
+      qunoxScene.setServiceMode(0);
+      currentSvcIdx = 0;
+    }
   });
 
   // ── CLOSING ──────────────────────────────────
