@@ -181,103 +181,77 @@
 
     <div id="services-sticky-panel" class="services__sticky-panel">
 
-      <!-- Counter overlay — always on top -->
+      <!-- Background curtain divs — scrub-animated, z-index 1-6 -->
+      <div class="svc-bg" data-bg="0"></div>
+      <div class="svc-bg" data-bg="1"></div>
+      <div class="svc-bg" data-bg="2"></div>
+      <div class="svc-bg" data-bg="3"></div>
+      <div class="svc-bg" data-bg="4"></div>
+      <div class="svc-bg" data-bg="5"></div>
+
       <div class="services__counter">
         <span id="svc-current">01</span>
         <span class="services__counter-sep">—</span>
         <span class="services__counter-total">06</span>
       </div>
 
-      <!-- Panel 0: Soporte Especializado -->
-      <div class="svc-panel" data-panel="0">
-        <div class="svc-panel__left">
-          <span class="svc-panel__label">01</span>
-          <h2 class="svc-panel__title">Soporte<br><span class="svc-panel__title-indent">Especializado</span></h2>
-          <p class="svc-panel__copy">Soporte técnico especializado con tiempos de respuesta garantizados. Equipos certificados disponibles para entornos críticos.</p>
-          <a href="servicios/soporte-especializado.html" class="svc-panel__link"><span>Ver más</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
-        </div>
-        <div class="svc-panel__right">
-          <div class="svc-panel__img-frame">
-            <img src="images/services/svc-soporte.jpg" alt="Soporte Especializado" class="svc-panel__img"/>
+      <!-- LEFT: title + copy -->
+      <div class="services__title-area">
+        <div class="services__title-wrapper" id="services-title-wrapper">
+
+          <div class="svc-title" data-svc="0">
+            <span class="svc-title__line">Soporte</span>
+            <span class="svc-title__line svc-title__line--indent">Especializado</span>
           </div>
+          <div class="svc-title" data-svc="1">
+            <span class="svc-title__line">Optimización</span>
+            <span class="svc-title__line svc-title__line--indent">Estratégica</span>
+          </div>
+          <div class="svc-title" data-svc="2">
+            <span class="svc-title__line">Implementación</span>
+            <span class="svc-title__line svc-title__line--indent">Avanzada</span>
+          </div>
+          <div class="svc-title" data-svc="3">
+            <span class="svc-title__line">Diseño</span>
+            <span class="svc-title__line svc-title__line--indent">de DR</span>
+          </div>
+          <div class="svc-title" data-svc="4">
+            <span class="svc-title__line">Estrategia</span>
+            <span class="svc-title__line svc-title__line--indent">Multi-Cloud</span>
+          </div>
+          <div class="svc-title" data-svc="5">
+            <span class="svc-title__line">Red y</span>
+            <span class="svc-title__line svc-title__line--indent">Ciberseguridad</span>
+          </div>
+        </div>
+
+        <div class="services__copy-slot" id="services-copy-slot">
+          <p class="services__copy-text" id="services-copy-text">
+            Soporte técnico especializado con tiempos de respuesta garantizados. Equipos certificados disponibles para entornos críticos.
+          </p>
+          <a href="servicios/soporte-especializado.html" class="services__link" id="services-link">
+            <span>Ver más</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </a>
         </div>
       </div>
 
-      <!-- Panel 1: Optimización Estratégica -->
-      <div class="svc-panel" data-panel="1">
-        <div class="svc-panel__left">
-          <span class="svc-panel__label">02</span>
-          <h2 class="svc-panel__title">Optimización<br><span class="svc-panel__title-indent">Estratégica</span></h2>
-          <p class="svc-panel__copy">Análisis profundo de tu stack actual. Reducción de costos sin comprometer rendimiento. Resultados medibles en 90 días.</p>
-          <a href="servicios/optimizacion-estrategica.html" class="svc-panel__link"><span>Ver más</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
-        </div>
-        <div class="svc-panel__right">
-          <div class="svc-panel__img-frame">
-            <img src="images/services/svc-optimizacion.jpg" alt="Optimización Estratégica" class="svc-panel__img"/>
+      <!-- RIGHT: image -->
+      <div class="services__detail-area">
+        <div class="services__image-frame" id="services-image-frame">
+          <div class="services__image-inner" id="services-image-inner">
+            <img src="images/services/svc-soporte.jpg"        alt="Soporte Especializado"    class="svc-img active" data-svc="0"/>
+            <img src="images/services/svc-optimizacion.jpg"   alt="Optimización Estratégica" class="svc-img"        data-svc="1"/>
+            <img src="images/services/svc-implementacion.jpg" alt="Implementación Avanzada"  class="svc-img"        data-svc="2"/>
+            <img src="images/services/svc-dr.jpg"             alt="Diseño de DR"             class="svc-img"        data-svc="3"/>
+            <img src="images/services/svc-multicloud.jpg"     alt="Estrategia Multi-Cloud"   class="svc-img"        data-svc="4"/>
+            <img src="images/services/svc-seguridad.jpg"      alt="Red y Ciberseguridad"     class="svc-img"        data-svc="5"/>
           </div>
         </div>
+        <div class="services__accent-bar" id="services-accent-bar"></div>
       </div>
-
-      <!-- Panel 2: Implementación Avanzada -->
-      <div class="svc-panel" data-panel="2">
-        <div class="svc-panel__left">
-          <span class="svc-panel__label">03</span>
-          <h2 class="svc-panel__title">Implementación<br><span class="svc-panel__title-indent">Avanzada</span></h2>
-          <p class="svc-panel__copy">Despliegue de clusters de alta disponibilidad con metodología probada. Zero-downtime. Rollback garantizado.</p>
-          <a href="servicios/implementacion-avanzada.html" class="svc-panel__link"><span>Ver más</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
-        </div>
-        <div class="svc-panel__right">
-          <div class="svc-panel__img-frame">
-            <img src="images/services/svc-implementacion.jpg" alt="Implementación Avanzada" class="svc-panel__img"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel 3: Diseño de DR -->
-      <div class="svc-panel" data-panel="3">
-        <div class="svc-panel__left">
-          <span class="svc-panel__label">04</span>
-          <h2 class="svc-panel__title">Diseño<br><span class="svc-panel__title-indent">de DR</span></h2>
-          <p class="svc-panel__copy">Arquitecturas de Disaster Recovery diseñadas para tu RTO/RPO específico. Drills documentados. Runbooks completos.</p>
-          <a href="servicios/diseno-dr.html" class="svc-panel__link"><span>Ver más</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
-        </div>
-        <div class="svc-panel__right">
-          <div class="svc-panel__img-frame">
-            <img src="images/services/svc-dr.jpg" alt="Diseño de DR" class="svc-panel__img"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel 4: Estrategia Multi-Cloud -->
-      <div class="svc-panel" data-panel="4">
-        <div class="svc-panel__left">
-          <span class="svc-panel__label">05</span>
-          <h2 class="svc-panel__title">Estrategia<br><span class="svc-panel__title-indent">Multi-Cloud</span></h2>
-          <p class="svc-panel__copy">Diseño e implementación de estrategias multi-cloud. Evita vendor lock-in. Optimiza costos entre proveedores.</p>
-          <a href="servicios/multi-cloud.html" class="svc-panel__link"><span>Ver más</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
-        </div>
-        <div class="svc-panel__right">
-          <div class="svc-panel__img-frame">
-            <img src="images/services/svc-multicloud.jpg" alt="Estrategia Multi-Cloud" class="svc-panel__img"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel 5: Red y Ciberseguridad -->
-      <div class="svc-panel" data-panel="5">
-        <div class="svc-panel__left">
-          <span class="svc-panel__label">06</span>
-          <h2 class="svc-panel__title">Red y<br><span class="svc-panel__title-indent">Ciberseguridad</span></h2>
-          <p class="svc-panel__copy">Auditorías de seguridad, hardening Fortinet, segmentación de red. Tu perímetro, redefinido.</p>
-          <a href="servicios/red-ciberseguridad.html" class="svc-panel__link"><span>Ver más</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
-        </div>
-        <div class="svc-panel__right">
-          <div class="svc-panel__img-frame">
-            <img src="images/services/svc-seguridad.jpg" alt="Red y Ciberseguridad" class="svc-panel__img"/>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <div class="services__scroll-track" id="services-scroll-track">
@@ -350,7 +324,7 @@
         <a href="servicios.html" class="btn-closing-ghost">Ver todos los servicios</a>
       </div>
       <div class="closing__seal">
-        <img src="logo.jpeg" alt="QUNOX" class="closing__seal-img"/>
+        <img src="images/logo-seal.jpeg" alt="QUNOX" class="closing__seal-img"/>
       </div>
     </div>
   </section>
@@ -360,11 +334,11 @@
   ============================================ -->
   <section id="scene-partners" class="scene scene--partners">
     <div class="partners__container">
-      <span class="partners__section-label">Nuestros Partners</span>
-      <div class="partners__logos">
-        <img src="images/partners/nutanix.png" alt="Nutanix" class="partner-logo"/>
-        <img src="images/partners/veeam.png"   alt="Veeam"   class="partner-logo"/>
-        <img src="images/partners/vmware.png"  alt="VMware"  class="partner-logo"/>
+      <p class="partners__label">Nuestros Partners</p>
+      <div class="partners__grid">
+        <div class="partners__item"><img src="images/partners/nutanix.png" alt="Nutanix"/></div>
+        <div class="partners__item"><img src="images/partners/veeam.png"   alt="Veeam"/></div>
+        <div class="partners__item"><img src="images/partners/vmware.png"  alt="VMware"/></div>
       </div>
     </div>
   </section>
