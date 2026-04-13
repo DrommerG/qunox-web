@@ -208,9 +208,31 @@ export function initScrollAnimations(qunoxScene) {
   const INIT_CLIP = 'inset(100% 0% 0% 0%)';
   const DONE_CLIP = 'inset(0% 0% 0% 0%)';
 
+  // Curtain background colors — alternating per service
+  const CURTAIN_COLORS = ['#F2F5FF', '#F5F2FF'];
+
   function transitionToService(newIdx, oldIdx) {
     const svc = SERVICES[newIdx];
     const dir  = newIdx > (oldIdx ?? -1) ? 1 : -1;
+
+    // Curtain wipe — slide new bg color up from bottom
+    const wipe  = document.getElementById('services-color-wipe');
+    const panel = document.getElementById('services-sticky-panel');
+    const newColor = CURTAIN_COLORS[newIdx % 2];
+    gsap.killTweensOf(wipe);
+    wipe.style.background = newColor;
+    gsap.fromTo(wipe,
+      { clipPath: 'inset(100% 0 0 0)' },
+      {
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 0.7,
+        ease: 'power3.inOut',
+        onComplete: () => {
+          panel.style.backgroundColor = newColor;
+          gsap.set(wipe, { clipPath: 'inset(100% 0 0 0)' });
+        }
+      }
+    );
 
     // Counter
     document.getElementById('svc-current').textContent =
@@ -273,19 +295,6 @@ export function initScrollAnimations(qunoxScene) {
 
     // Progress indicator color
     document.getElementById('services-progress').style.background = svc.accent;
-
-    // Tags
-    const tagsArea = document.getElementById('services-tags-area');
-    if (tagsArea) {
-      gsap.to(tagsArea, {
-        opacity: 0, duration: 0.2, onComplete: () => {
-          tagsArea.innerHTML = svc.tags
-            .map(t => `<span class="svc-tag">${t}</span>`)
-            .join('');
-          gsap.to(tagsArea, { opacity: 1, duration: 0.5, ease: 'power2.out' });
-        }
-      });
-    }
 
     // Three.js
     qunoxScene.setServiceMode(newIdx);
@@ -380,15 +389,7 @@ export function initDiagnosticInteractions() {
     if (!panelInner) return;
 
     const d = INFO_DATA[i];
-    panelInner.innerHTML = `
-      <div>
-        <span class="diag-panel__label">El problema</span>
-        <p class="diag-panel__text">${d.problem}</p>
-      </div>
-      <div>
-        <span class="diag-panel__label diag-panel__label--blue">Cómo QUNOX lo resuelve</span>
-        <p class="diag-panel__text">${d.solution}</p>
-      </div>`;
+    panelInner.innerHTML = `<p class="diag-panel__text">${d.problem}</p>`;
 
     item.addEventListener('click', () => {
       const isOpen = item.classList.contains('expanded');
