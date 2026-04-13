@@ -291,7 +291,7 @@ export function initScrollAnimations(qunoxScene) {
     );
   }
 
-  // Scroll watcher — fires transitionToService at each 1/6 boundary
+  // Sync index from scroll position (keeps progress bar + bg curtain in sync)
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top', end: 'bottom bottom',
@@ -311,6 +311,73 @@ export function initScrollAnimations(qunoxScene) {
     once: true,
     onEnter: () => transitionToService(0, -1)
   });
+
+  // ── WHEEL SNAP: one scroll gesture = one service ──────────────────────────
+  let _svcScrolling = false;
+  let _touchStartY = 0;
+
+  function snapToService(dir) {
+    if (_svcScrolling) return false;
+    const sceneEl = document.getElementById('scene-services');
+    const sceneTop = sceneEl.getBoundingClientRect().top + window.scrollY;
+    const sceneH   = sceneEl.offsetHeight;
+    const cur      = window.scrollY;
+    if (cur < sceneTop - 2 || cur >= sceneTop + sceneH) return false;
+
+    const targetIdx = _svcIdx + dir;
+    let targetY;
+
+    if (targetIdx < 0) {
+      targetY = sceneTop - 50;         // jump above section
+    } else if (targetIdx > 5) {
+      targetY = sceneTop + sceneH + 50; // jump below section
+    } else {
+      targetY = sceneTop + targetIdx * (sceneH / 6);
+    }
+
+    _svcScrolling = true;
+    const startY = window.scrollY;
+    const diff   = targetY - startY;
+    const ms     = 480;
+    const t0     = performance.now();
+
+    (function step(now) {
+      const p = Math.min((now - t0) / ms, 1);
+      const e = p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
+      window.scrollTo(0, startY + diff * e);
+      if (p < 1) requestAnimationFrame(step);
+      else setTimeout(() => { _svcScrolling = false; }, 80);
+    })(t0);
+
+    return true;
+  }
+
+  document.addEventListener('wheel', function(e) {
+    const sceneEl = document.getElementById('scene-services');
+    const sceneTop = sceneEl.getBoundingClientRect().top + window.scrollY;
+    const cur = window.scrollY;
+    if (cur < sceneTop - 2 || cur >= sceneTop + sceneEl.offsetHeight) return;
+    if (_svcScrolling) { e.preventDefault(); return; }
+    const snapped = snapToService(e.deltaY > 0 ? 1 : -1);
+    if (snapped) e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('touchstart', function(e) {
+    _touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    const sceneEl = document.getElementById('scene-services');
+    const sceneTop = sceneEl.getBoundingClientRect().top + window.scrollY;
+    const cur = window.scrollY;
+    if (cur < sceneTop - 2 || cur >= sceneTop + sceneEl.offsetHeight) return;
+    if (_svcScrolling) { e.preventDefault(); return; }
+    const diff = _touchStartY - e.touches[0].clientY;
+    if (Math.abs(diff) < 30) return;
+    _touchStartY = e.touches[0].clientY;
+    const snapped = snapToService(diff > 0 ? 1 : -1);
+    if (snapped) e.preventDefault();
+  }, { passive: false });
 
   // ── CLOSING ──────────────────────────────────
   gsap.set('.closing__actions', { y: 20 });
