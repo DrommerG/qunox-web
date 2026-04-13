@@ -113,7 +113,7 @@ export function initScrollAnimations(qunoxScene) {
   });
 
   // ── DIAGNOSTIC: scan reveals ─────────────────
-  gsap.from('.diagnostic__header', {
+  gsap.from('.diagnostic__intro', {
     scrollTrigger: { trigger: '#scene-diagnostic', start: 'top 75%', toggleActions: 'play none none reverse' },
     opacity: 0, y: 20, duration: 0.6, ease: 'power3.out'
   });
@@ -183,16 +183,89 @@ export function initScrollAnimations(qunoxScene) {
     onLeave: ()     => qunoxScene.setDistortion(0)
   });
 
-  // ── SERVICES: sticky pin ─────────────────────
+  // ── SERVICES: fluid scroll — single scrub timeline ──────────────────────
+  // All content (title, copy, image) is pre-rendered in the DOM.
+  // One GSAP timeline drives all opacity transitions, linked to scroll via scrub: 1.
+  // This makes every transition feel physically tied to scroll position (no timed pauses).
+
+  const segDur  = 10;   // timeline units per service
+  const fadeDur = 1.5;  // fade-in / fade-out duration in timeline units
+  const overlap = 1.0;  // units the next service fades in before the current finishes fading out
+
+  // Set initial opacity: service 0 visible, everything else hidden
+  gsap.set('.svc-title, .svc-copy, .svc-img', { opacity: 0 });
+  gsap.set(['.svc-title[data-svc="0"]', '.svc-copy[data-svc="0"]', '.svc-img[data-svc="0"]'], { opacity: 1 });
+
+  // Set initial accent + counter + accent bar width + pointer-events
+  const _accentBar = document.getElementById('services-accent-bar');
+  _accentBar.style.background = SERVICES[0].accent;
+  _accentBar.style.width = '100%';
+  document.getElementById('services-progress').style.background = SERVICES[0].accent;
+  document.querySelector('.svc-copy[data-svc="0"]').style.pointerEvents = 'auto';
+
+  // Build the content transition timeline
+  const svcTL = gsap.timeline();
+
+  // Service 0: already visible — only needs to fade OUT
+  svcTL.to(
+    ['.svc-title[data-svc="0"]', '.svc-copy[data-svc="0"]', '.svc-img[data-svc="0"]'],
+    { opacity: 0, duration: fadeDur, ease: 'none' },
+    segDur - fadeDur  // t = 8.5
+  );
+
+  // Services 1–5: fade in (with overlap), then fade out (except last)
+  for (let i = 1; i <= 5; i++) {
+    const fadeInAt  = i * segDur - overlap;               // overlaps previous by 1 unit
+    const fadeOutAt = i * segDur + (segDur - fadeDur);    // t = i*10 + 8.5
+
+    svcTL.to(
+      [`.svc-title[data-svc="${i}"]`, `.svc-copy[data-svc="${i}"]`, `.svc-img[data-svc="${i}"]`],
+      { opacity: 1, duration: fadeDur, ease: 'none' },
+      fadeInAt
+    );
+
+    if (i < 5) {
+      svcTL.to(
+        [`.svc-title[data-svc="${i}"]`, `.svc-copy[data-svc="${i}"]`, `.svc-img[data-svc="${i}"]`],
+        { opacity: 0, duration: fadeDur, ease: 'none' },
+        fadeOutAt
+      );
+    }
+  }
+
+  // Extend timeline to 60 units so each service maps to exactly 1/6 of scroll range
+  const _pad = { v: 0 };
+  svcTL.to(_pad, { v: 1, duration: 0.01 }, 59.99);
+
+  // Single ScrollTrigger: pins panel + drives content timeline + side-effects
+  let _svcIdx = 0;
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     pinSpacing: false,
-    anticipatePin: 1
+    anticipatePin: 1,
+    scrub: 1,
+    animation: svcTL,
+    onUpdate: self => {
+      const idx = Math.min(5, Math.floor(self.progress * 6));
+      document.getElementById('svc-current').textContent = String(idx + 1).padStart(2, '0');
+      const accent = SERVICES[idx].accent;
+      _accentBar.style.background = accent;
+      document.getElementById('services-progress').style.background = accent;
+      if (idx !== _svcIdx) {
+        qunoxScene.setServiceMode(idx);
+        _svcIdx = idx;
+        // Update pointer-events so only the active service's link is clickable
+        document.querySelectorAll('.svc-copy').forEach((el, i) => {
+          el.style.pointerEvents = i === idx ? 'auto' : 'none';
+        });
+      }
+    }
   });
 
+  // Progress bar fill (separate — no animation, just height scrub)
   gsap.to('#services-progress', {
     scrollTrigger: {
       trigger: '#scene-services',
@@ -203,8 +276,7 @@ export function initScrollAnimations(qunoxScene) {
   });
 
   // ── BACKGROUND CURTAIN: scrub per segment ────
-  // 700vh / 6 = ~116.67vh per service.
-  // Each bg wipe completes in the first 30% of its segment (~35vh).
+  // 700vh / 6 ≈ 116.67vh per service. Wipe completes in first 30% of segment (~35vh).
   const segVh = 700 / 6;
   const wipeVh = segVh * 0.3;
 
@@ -223,91 +295,6 @@ export function initScrollAnimations(qunoxScene) {
       }
     );
   }
-
-  // ── SERVICE CONTENT TRANSITIONS ──────────────
-  let currentSvcIdx = -1;
-
-  function transitionToService(newIdx, oldIdx) {
-    const svc = SERVICES[newIdx];
-    const dir  = newIdx > (oldIdx ?? -1) ? 1 : -1;
-
-    // Counter
-    document.getElementById('svc-current').textContent =
-      String(newIdx + 1).padStart(2, '0');
-
-    // Title — fast snap
-    document.querySelectorAll('.svc-title').forEach(t => {
-      gsap.killTweensOf(t);
-      t.classList.remove('active');
-      gsap.set(t, { clearProps: 'all' });
-    });
-    const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
-    gsap.set(newTitle, { y: dir * 40, opacity: 0 });
-    newTitle.classList.add('active');
-    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.25, ease: 'power3.out' });
-
-    // Image crossfade
-    const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
-    const newImg = document.querySelector(`.svc-img[data-svc="${newIdx}"]`);
-    if (oldImg) {
-      gsap.to(oldImg, { opacity: 0, duration: 0.2, ease: 'power2.in',
-        onComplete: () => oldImg.classList.remove('active') });
-    }
-    if (newImg && oldIdx >= 0) {
-      gsap.set(newImg, { opacity: 0 });
-      newImg.classList.add('active');
-      gsap.to(newImg, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-    } else if (newImg) {
-      newImg.classList.add('active');
-    }
-
-    // Copy text — fast swap
-    const copyEl = document.getElementById('services-copy-text');
-    const linkEl = document.getElementById('services-link');
-    gsap.to([copyEl, linkEl], {
-      opacity: 0, y: 8, duration: 0.15, ease: 'power2.in',
-      onComplete: () => {
-        copyEl.textContent = svc.copy;
-        linkEl.href = svc.link;
-        gsap.to([copyEl, linkEl], { opacity: 1, y: 0, duration: 0.25, stagger: 0.05, ease: 'power3.out' });
-      }
-    });
-
-    // Accent bar
-    const bar = document.getElementById('services-accent-bar');
-    bar.style.background = svc.accent;
-    gsap.fromTo(bar,
-      { width: '0%' },
-      { width: '100%', duration: 0.4, ease: 'power4.out', transformOrigin: 'left' }
-    );
-
-    // Progress color
-    document.getElementById('services-progress').style.background = svc.accent;
-
-    // Three.js
-    qunoxScene.setServiceMode(newIdx);
-  }
-
-  // Scroll watcher
-  ScrollTrigger.create({
-    trigger: '#scene-services',
-    start: 'top top', end: 'bottom bottom',
-    onUpdate: self => {
-      const newIdx = Math.min(5, Math.floor(self.progress * 6));
-      if (newIdx !== currentSvcIdx) {
-        transitionToService(newIdx, currentSvcIdx);
-        currentSvcIdx = newIdx;
-      }
-    }
-  });
-
-  // First service on enter
-  ScrollTrigger.create({
-    trigger: '#scene-services',
-    start: 'top 80%',
-    once: true,
-    onEnter: () => transitionToService(0, -1)
-  });
 
   // ── CLOSING ──────────────────────────────────
   gsap.set('.closing__actions', { y: 20 });
@@ -390,12 +377,27 @@ export function initDiagnosticInteractions() {
   const allImages = document.querySelectorAll('.diag-img');
   if (!allImages.length) return;
 
+  const slideLabels = [
+    { num: '01', text: 'Conflicto de configuración activo' },
+    { num: '02', text: 'Recursos críticos al límite' },
+    { num: '03', text: 'Arquitectura sin redundancia detectada' },
+    { num: '04', text: 'Sin plan de recuperación definido' },
+    { num: '05', text: 'Red sin segmentación detectada' },
+    { num: '06', text: 'Monitoreo reactivo en lugar de proactivo' }
+  ];
+
+  const labelNum  = document.querySelector('.diag-vl-num');
+  const labelText = document.querySelector('.diag-vl-text');
   let slideshowIdx = 0;
 
   function showSlide(idx) {
     allImages.forEach(img => img.classList.remove('active'));
     slideshowIdx = idx % allImages.length;
     allImages[slideshowIdx].classList.add('active');
+    if (labelNum && labelText && slideLabels[slideshowIdx]) {
+      labelNum.textContent  = slideLabels[slideshowIdx].num;
+      labelText.textContent = slideLabels[slideshowIdx].text;
+    }
   }
 
   showSlide(0);
