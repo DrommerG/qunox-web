@@ -183,89 +183,85 @@ export function initScrollAnimations(qunoxScene) {
     onLeave: ()     => qunoxScene.setDistortion(0)
   });
 
-  // ── SERVICES: fluid scroll — single scrub timeline ──────────────────────
-  // All content (title, copy, image) is pre-rendered in the DOM.
-  // One GSAP timeline drives all opacity transitions, linked to scroll via scrub: 1.
-  // This makes every transition feel physically tied to scroll position (no timed pauses).
+  // ── SERVICES: sticky pin + smooth transitions ───────────────────────────
+  // Content transitions are event-driven (no scrub lag).
+  // Each transition plays a 0.45s animation the moment scroll crosses a segment boundary.
 
-  const segDur  = 10;   // timeline units per service
-  const fadeDur = 1.5;  // fade-in / fade-out duration in timeline units
-  const overlap = 1.0;  // units the next service fades in before the current finishes fading out
-
-  // Set initial opacity: service 0 visible, everything else hidden
-  gsap.set('.svc-title, .svc-copy, .svc-img', { opacity: 0 });
-  gsap.set(['.svc-title[data-svc="0"]', '.svc-copy[data-svc="0"]', '.svc-img[data-svc="0"]'], { opacity: 1 });
-
-  // Set initial accent + counter + accent bar width + pointer-events
   const _accentBar = document.getElementById('services-accent-bar');
-  _accentBar.style.background = SERVICES[0].accent;
   _accentBar.style.width = '100%';
-  document.getElementById('services-progress').style.background = SERVICES[0].accent;
-  document.querySelector('.svc-copy[data-svc="0"]').style.pointerEvents = 'auto';
 
-  // Build the content transition timeline
-  const svcTL = gsap.timeline();
+  let _svcIdx = -1;
 
-  // Service 0: already visible — only needs to fade OUT
-  svcTL.to(
-    ['.svc-title[data-svc="0"]', '.svc-copy[data-svc="0"]', '.svc-img[data-svc="0"]'],
-    { opacity: 0, duration: fadeDur, ease: 'none' },
-    segDur - fadeDur  // t = 8.5
-  );
+  function transitionToService(newIdx, oldIdx) {
+    if (newIdx === oldIdx) return;
+    const svc = SERVICES[newIdx];
+    const dir = (oldIdx < 0) ? 1 : (newIdx > oldIdx ? 1 : -1);
 
-  // Services 1–5: fade in (with overlap), then fade out (except last)
-  for (let i = 1; i <= 5; i++) {
-    const fadeInAt  = i * segDur - overlap;               // overlaps previous by 1 unit
-    const fadeOutAt = i * segDur + (segDur - fadeDur);    // t = i*10 + 8.5
+    // Counter
+    document.getElementById('svc-current').textContent = String(newIdx + 1).padStart(2, '0');
 
-    svcTL.to(
-      [`.svc-title[data-svc="${i}"]`, `.svc-copy[data-svc="${i}"]`, `.svc-img[data-svc="${i}"]`],
-      { opacity: 1, duration: fadeDur, ease: 'none' },
-      fadeInAt
-    );
+    // Accent color + progress
+    _accentBar.style.background = svc.accent;
+    document.getElementById('services-progress').style.background = svc.accent;
 
-    if (i < 5) {
-      svcTL.to(
-        [`.svc-title[data-svc="${i}"]`, `.svc-copy[data-svc="${i}"]`, `.svc-img[data-svc="${i}"]`],
-        { opacity: 0, duration: fadeDur, ease: 'none' },
-        fadeOutAt
-      );
+    // Three.js
+    qunoxScene.setServiceMode(newIdx);
+
+    // ── Title ──────────────────────────────────────
+    document.querySelectorAll('.svc-title').forEach(t => {
+      if (t !== document.querySelector(`.svc-title[data-svc="${newIdx}"]`)) {
+        gsap.killTweensOf(t);
+        t.classList.remove('active');
+        gsap.set(t, { clearProps: 'all' });
+      }
+    });
+    const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
+    gsap.set(newTitle, { y: dir * 40, opacity: 0 });
+    newTitle.classList.add('active');
+    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' });
+
+    // ── Image ──────────────────────────────────────
+    const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
+    const newImg = document.querySelector(`.svc-img[data-svc="${newIdx}"]`);
+    if (oldImg) {
+      gsap.to(oldImg, { opacity: 0, duration: 0.25, ease: 'power2.in',
+        onComplete: () => oldImg.classList.remove('active') });
     }
+    gsap.set(newImg, { opacity: 0 });
+    newImg.classList.add('active');
+    gsap.to(newImg, { opacity: 1, duration: 0.4, delay: 0.1, ease: 'power2.out' });
+
+    // ── Copy + link ────────────────────────────────
+    const copyEl = document.getElementById('services-copy-text');
+    const linkEl = document.getElementById('services-link');
+    gsap.killTweensOf([copyEl, linkEl]);
+    gsap.to([copyEl, linkEl], {
+      opacity: 0, y: dir * 10, duration: 0.18, ease: 'power2.in',
+      onComplete: () => {
+        copyEl.textContent = svc.copy;
+        linkEl.href = svc.link;
+        gsap.fromTo([copyEl, linkEl],
+          { opacity: 0, y: dir * -10 },
+          { opacity: 1, y: 0, duration: 0.35, stagger: 0.06, ease: 'power3.out' }
+        );
+      }
+    });
+
+    // ── Accent bar wipe ────────────────────────────
+    gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.5, ease: 'power4.out' });
   }
 
-  // Extend timeline to 60 units so each service maps to exactly 1/6 of scroll range
-  const _pad = { v: 0 };
-  svcTL.to(_pad, { v: 1, duration: 0.01 }, 59.99);
-
-  // Single ScrollTrigger: pins panel + drives content timeline + side-effects
-  let _svcIdx = 0;
+  // Pin the sticky panel
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     pinSpacing: false,
-    anticipatePin: 1,
-    scrub: 1,
-    animation: svcTL,
-    onUpdate: self => {
-      const idx = Math.min(5, Math.floor(self.progress * 6));
-      document.getElementById('svc-current').textContent = String(idx + 1).padStart(2, '0');
-      const accent = SERVICES[idx].accent;
-      _accentBar.style.background = accent;
-      document.getElementById('services-progress').style.background = accent;
-      if (idx !== _svcIdx) {
-        qunoxScene.setServiceMode(idx);
-        _svcIdx = idx;
-        // Update pointer-events so only the active service's link is clickable
-        document.querySelectorAll('.svc-copy').forEach((el, i) => {
-          el.style.pointerEvents = i === idx ? 'auto' : 'none';
-        });
-      }
-    }
+    anticipatePin: 1
   });
 
-  // Progress bar fill (separate — no animation, just height scrub)
+  // Progress bar height (scrub)
   gsap.to('#services-progress', {
     scrollTrigger: {
       trigger: '#scene-services',
@@ -275,8 +271,7 @@ export function initScrollAnimations(qunoxScene) {
     height: '100%', ease: 'none'
   });
 
-  // ── BACKGROUND CURTAIN: scrub per segment ────
-  // 700vh / 6 ≈ 116.67vh per service. Wipe completes in first 30% of segment (~35vh).
+  // ── BACKGROUND CURTAIN: scrub per segment ────────
   const segVh = 700 / 6;
   const wipeVh = segVh * 0.3;
 
@@ -295,6 +290,27 @@ export function initScrollAnimations(qunoxScene) {
       }
     );
   }
+
+  // Scroll watcher — fires transitionToService at each 1/6 boundary
+  ScrollTrigger.create({
+    trigger: '#scene-services',
+    start: 'top top', end: 'bottom bottom',
+    onUpdate: self => {
+      const newIdx = Math.min(5, Math.floor(self.progress * 6));
+      if (newIdx !== _svcIdx) {
+        transitionToService(newIdx, _svcIdx);
+        _svcIdx = newIdx;
+      }
+    }
+  });
+
+  // Show first service when section enters viewport
+  ScrollTrigger.create({
+    trigger: '#scene-services',
+    start: 'top 80%',
+    once: true,
+    onEnter: () => transitionToService(0, -1)
+  });
 
   // ── CLOSING ──────────────────────────────────
   gsap.set('.closing__actions', { y: 20 });
