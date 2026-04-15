@@ -194,9 +194,8 @@ export function initScrollAnimations(qunoxScene) {
     const svc = SERVICES[newIdx];
     const dir = (oldIdx < 0) ? 1 : (newIdx > oldIdx ? 1 : -1);
 
-    // Accent color + progress
+    // Accent color
     _accentBar.style.background = svc.accent;
-    document.getElementById('services-progress').style.background = svc.accent;
 
     // Three.js
     qunoxScene.setServiceMode(newIdx);
@@ -245,30 +244,26 @@ export function initScrollAnimations(qunoxScene) {
     gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.5, ease: 'power4.out' });
   }
 
-  // Pin + GSAP native snap — no custom wheel override, no conflicts
+  // Pin + GSAP native snap
+  // Custom snapTo: skip snapping to 0 when entering from top going down
+  // to prevent the "wall" feeling. Service 0 is already shown via onEnter at 80%.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     pinSpacing: false,
-    anticipatePin: 1,
     snap: {
-      snapTo: 1 / 6,
-      duration: { min: 0.3, max: 0.6 },
-      delay: 0.08,
+      snapTo: (value, self) => {
+        // Entering from above scrolling down — if very near start, don't snap back to 0
+        if (value < (1 / 12) && self && self.direction === 1) return 1 / 6;
+        // Snap to nearest 1/6 boundary
+        return Math.round(value * 6) / 6;
+      },
+      duration: { min: 0.35, max: 0.65 },
+      delay: 0.12,
       ease: 'power2.inOut'
     }
-  });
-
-  // Progress bar height (scrub)
-  gsap.to('#services-progress', {
-    scrollTrigger: {
-      trigger: '#scene-services',
-      start: 'top top', end: 'bottom bottom',
-      scrub: 0.5
-    },
-    height: '100%', ease: 'none'
   });
 
   // ── BACKGROUND CURTAIN: scrub per segment ────────
