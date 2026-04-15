@@ -183,127 +183,43 @@ export function initScrollAnimations(qunoxScene) {
     onLeave: ()     => qunoxScene.setDistortion(0)
   });
 
-  // ── SERVICES: sticky pin + GSAP native snap ──────────────────────────────
-  const _accentBar = document.getElementById('services-accent-bar');
-  _accentBar.style.width = '100%';
+  // ── SERVICES: horizontal slide (gelato-style) ────────────────────────────
+  // Vertical scroll drives horizontal translateX of the panel track.
+  // 6 panels × 100vw = 600vw total; scroll distance = 600vh.
+  // GSAP timeline + scrub: panels glide in from the right, perfectly synced.
 
   let _svcIdx = -1;
 
-  function transitionToService(newIdx, oldIdx) {
-    if (newIdx === oldIdx) return;
-    const svc = SERVICES[newIdx];
-    const dir = (oldIdx < 0) ? 1 : (newIdx > oldIdx ? 1 : -1);
+  const svcTL = gsap.timeline();
 
-    // Accent color
-    _accentBar.style.background = svc.accent;
-
-    // Three.js
-    qunoxScene.setServiceMode(newIdx);
-
-    // ── Title ──────────────────────────────────────
-    document.querySelectorAll('.svc-title').forEach(t => {
-      if (t !== document.querySelector(`.svc-title[data-svc="${newIdx}"]`)) {
-        gsap.killTweensOf(t);
-        t.classList.remove('active');
-        gsap.set(t, { clearProps: 'all' });
-      }
-    });
-    const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
-    gsap.set(newTitle, { y: dir * 40, opacity: 0 });
-    newTitle.classList.add('active');
-    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' });
-
-    // ── Image ──────────────────────────────────────
-    const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
-    const newImg = document.querySelector(`.svc-img[data-svc="${newIdx}"]`);
-    if (oldImg) {
-      gsap.to(oldImg, { opacity: 0, duration: 0.25, ease: 'power2.in',
-        onComplete: () => oldImg.classList.remove('active') });
-    }
-    gsap.set(newImg, { opacity: 0 });
-    newImg.classList.add('active');
-    gsap.to(newImg, { opacity: 1, duration: 0.4, delay: 0.1, ease: 'power2.out' });
-
-    // ── Copy + link ────────────────────────────────
-    const copyEl = document.getElementById('services-copy-text');
-    const linkEl = document.getElementById('services-link');
-    gsap.killTweensOf([copyEl, linkEl]);
-    gsap.to([copyEl, linkEl], {
-      opacity: 0, y: dir * 10, duration: 0.18, ease: 'power2.in',
-      onComplete: () => {
-        copyEl.textContent = svc.copy;
-        linkEl.href = svc.link;
-        gsap.fromTo([copyEl, linkEl],
-          { opacity: 0, y: dir * -10 },
-          { opacity: 1, y: 0, duration: 0.35, stagger: 0.06, ease: 'power3.out' }
-        );
-      }
-    });
-
-    // ── Accent bar wipe ────────────────────────────
-    gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.5, ease: 'power4.out' });
-  }
-
-  // Pin + GSAP native snap
-  // anticipatePin: 1 pre-applies pin geometry before trigger fires — eliminates entry jank
   ScrollTrigger.create({
+    animation: svcTL,
+    pin: '#services-sticky-panel',
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
-    pin: '#services-sticky-panel',
-    pinSpacing: false,
+    scrub: 1.2,
     anticipatePin: 1,
-    snap: {
-      snapTo: (value, self) => {
-        // Don't snap back to 0 when entering from above — let momentum carry forward
-        if (value < (1 / 12) && self && self.direction === 1) return 1 / 6;
-        return Math.round(value * 6) / 6;
-      },
-      duration: { min: 0.35, max: 0.65 },
-      delay: 0.12,
-      ease: 'power2.inOut'
-    }
+    invalidateOnRefresh: true
   });
 
-  // ── BACKGROUND CURTAIN: scrub per segment ────────
-  const segVh = 700 / 6;
-  const wipeVh = segVh * 0.3;
+  svcTL.to('#services-h-track', {
+    x: () => -(document.getElementById('services-h-track').offsetWidth - window.innerWidth),
+    ease: 'none',
+    duration: 5
+  });
 
-  for (let i = 1; i <= 5; i++) {
-    gsap.fromTo(`.svc-bg[data-bg="${i}"]`,
-      { clipPath: 'inset(100% 0 0 0)' },
-      {
-        clipPath: 'inset(0% 0 0 0)',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#scene-services',
-          start: `top+=${i * segVh}vh top`,
-          end:   `top+=${i * segVh + wipeVh}vh top`,
-          scrub: true
-        }
-      }
-    );
-  }
-
-  // Sync service index from scroll progress
+  // Sync Three.js scene with visible panel
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top', end: 'bottom bottom',
     onUpdate: self => {
       const newIdx = Math.min(5, Math.floor(self.progress * 6));
       if (newIdx !== _svcIdx) {
-        transitionToService(newIdx, _svcIdx);
+        qunoxScene.setServiceMode(newIdx);
         _svcIdx = newIdx;
       }
     }
-  });
-
-  // Show first service when section enters viewport
-  ScrollTrigger.create({
-    trigger: '#scene-services',
-    start: 'top 80%',
-    once: true,
-    onEnter: () => transitionToService(0, -1)
   });
 
   // ── CLOSING ──────────────────────────────────
