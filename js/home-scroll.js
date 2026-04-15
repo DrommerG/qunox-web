@@ -259,6 +259,21 @@ export function initScrollAnimations(qunoxScene) {
     gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.5, ease: 'power4.out' });
   }
 
+  // Entry grace: 400ms after entering from above, don't block downward momentum
+  let _svcEntryGrace = false;
+  let _svcEntryTimer = null;
+
+  ScrollTrigger.create({
+    trigger: '#scene-services',
+    start: 'top top',
+    onEnter: () => {
+      _svcEntryGrace = true;
+      clearTimeout(_svcEntryTimer);
+      _svcEntryTimer = setTimeout(() => { _svcEntryGrace = false; }, 400);
+    },
+    onEnterBack: () => { _svcEntryGrace = false; }
+  });
+
   // Pin the sticky panel
   ScrollTrigger.create({
     trigger: '#scene-services',
@@ -366,6 +381,8 @@ export function initScrollAnimations(qunoxScene) {
     const sceneTop = sceneEl.getBoundingClientRect().top + window.scrollY;
     const cur = window.scrollY;
     if (cur < sceneTop - 2 || cur >= sceneTop + sceneEl.offsetHeight) return;
+    // Grace period on entry going down — let momentum dissipate naturally
+    if (_svcEntryGrace && e.deltaY > 0) return;
     if (_svcScrolling) { e.preventDefault(); return; }
     const snapped = snapToService(e.deltaY > 0 ? 1 : -1);
     if (snapped) e.preventDefault();
