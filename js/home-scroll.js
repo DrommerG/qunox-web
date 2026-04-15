@@ -245,19 +245,18 @@ export function initScrollAnimations(qunoxScene) {
   }
 
   // Pin + GSAP native snap
-  // Custom snapTo: skip snapping to 0 when entering from top going down
-  // to prevent the "wall" feeling. Service 0 is already shown via onEnter at 80%.
+  // anticipatePin: 1 pre-applies pin geometry before trigger fires — eliminates entry jank
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     pinSpacing: false,
+    anticipatePin: 1,
     snap: {
       snapTo: (value, self) => {
-        // Entering from above scrolling down — if very near start, don't snap back to 0
+        // Don't snap back to 0 when entering from above — let momentum carry forward
         if (value < (1 / 12) && self && self.direction === 1) return 1 / 6;
-        // Snap to nearest 1/6 boundary
         return Math.round(value * 6) / 6;
       },
       duration: { min: 0.35, max: 0.65 },
