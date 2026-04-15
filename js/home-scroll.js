@@ -346,15 +346,16 @@ export function initScrollAnimations(qunoxScene) {
     _svcScrolling = true;
     const startY = window.scrollY;
     const diff   = targetY - startY;
-    const ms     = 480;
+    const ms     = 700;
     const t0     = performance.now();
 
     (function step(now) {
       const p = Math.min((now - t0) / ms, 1);
-      const e = p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
+      // power3.inOut — slow start, fast middle, slow end
+      const e = p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2;
       window.scrollTo(0, startY + diff * e);
       if (p < 1) requestAnimationFrame(step);
-      else setTimeout(() => { _svcScrolling = false; }, 80);
+      else setTimeout(() => { _svcScrolling = false; }, 60);
     })(t0);
 
     return true;
