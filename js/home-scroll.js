@@ -184,29 +184,24 @@ export function initScrollAnimations(qunoxScene) {
   });
 
   // ── SERVICES: horizontal slide (gelato-style) ────────────────────────────
-  // Vertical scroll drives horizontal translateX of the panel track.
-  // 6 panels × 100vw = 600vw total; scroll distance = 600vh.
-  // GSAP timeline + scrub: panels glide in from the right, perfectly synced.
+  // Vertical scroll → horizontal translateX of panel track.
+  // Canonical GSAP pattern: gsap.to() with scrollTrigger inline.
 
   let _svcIdx = -1;
 
-  const svcTL = gsap.timeline();
-
-  ScrollTrigger.create({
-    animation: svcTL,
-    pin: '#services-sticky-panel',
-    trigger: '#scene-services',
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 1.2,
-    anticipatePin: 1,
-    invalidateOnRefresh: true
-  });
-
-  svcTL.to('#services-h-track', {
+  gsap.to('#services-h-track', {
     x: () => -(document.getElementById('services-h-track').offsetWidth - window.innerWidth),
     ease: 'none',
-    duration: 5
+    scrollTrigger: {
+      trigger: '#scene-services',
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 1.2,
+      pin: '#services-sticky-panel',
+      pinSpacing: false,
+      anticipatePin: 1,
+      invalidateOnRefresh: true
+    }
   });
 
   // Sync Three.js scene with visible panel
