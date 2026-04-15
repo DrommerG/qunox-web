@@ -197,8 +197,16 @@ export function initScrollAnimations(qunoxScene) {
     const svc = SERVICES[newIdx];
     const dir = (oldIdx < 0) ? 1 : (newIdx > oldIdx ? 1 : -1);
 
-    // Counter
-    document.getElementById('svc-current').textContent = String(newIdx + 1).padStart(2, '0');
+    // Counter — flip animation
+    const counterEl = document.getElementById('svc-current');
+    gsap.killTweensOf(counterEl);
+    gsap.to(counterEl, {
+      y: dir * -18, opacity: 0, duration: 0.15, ease: 'power2.in',
+      onComplete: () => {
+        counterEl.textContent = String(newIdx + 1).padStart(2, '0');
+        gsap.fromTo(counterEl, { y: dir * 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' });
+      }
+    });
 
     // Accent color + progress
     _accentBar.style.background = svc.accent;

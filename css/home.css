@@ -369,14 +369,24 @@ body.ready .page-wrap { opacity: 1; }
 }
 
 .services__counter {
-  position: absolute; top: 5.5rem; left: 4rem;
+  position: absolute; top: 4rem; right: 4rem; left: auto;
   z-index: 10;
-  display: flex; align-items: center; gap: 0.75rem;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.1rem;
   font-family: var(--font-body, 'Inter', sans-serif);
-  font-size: 0.8rem; color: #6B6B7B;
+  color: #6B6B7B;
 }
-#svc-current { font-weight: 600; color: var(--ink, #0D0D1A); }
-.services__counter-sep { opacity: 0.4; }
+#svc-current {
+  font-family: var(--font-head, 'Space Grotesk', sans-serif);
+  font-size: clamp(3.5rem, 5.5vw, 5.5rem);
+  font-weight: 700; line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink, #0D0D1A);
+}
+.services__counter-sep { display: none; }
+.services__counter-total {
+  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em;
+  opacity: 0.35; text-transform: uppercase;
+}
 
 /* ── Background curtain divs (scrub-animated) ── */
 .svc-bg {
