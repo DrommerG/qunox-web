@@ -189,7 +189,8 @@ export function initScrollAnimations(qunoxScene) {
   const _accentBar = document.getElementById('services-accent-bar');
   _accentBar.style.width = '100%';
 
-  let _svcIdx = -1;
+  let _svcIdx     = -1;
+  let _isSnapping = false;
 
   function transitionToService(newIdx, oldIdx) {
     if (newIdx === oldIdx) return;
@@ -246,10 +247,8 @@ export function initScrollAnimations(qunoxScene) {
     gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.55, ease: 'power3.out' });
   }
 
-  // Pin + snap + service sync — single trigger so progress is always in sync.
-  // Directional snap: scrolling forward/backward always advances/retreats.
-  // 30% threshold prevents accidental advance on tiny nudges.
-  // anticipatePin: 1 prevents the 1-frame jump on pin engagement.
+  // ── Pin (no GSAP snap — manual snap below is more reliable) ─────────────
+  // anticipatePin: 1 prevents the 1-frame jump when the pin engages.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
@@ -259,30 +258,92 @@ export function initScrollAnimations(qunoxScene) {
     anticipatePin: 1,
     onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); },
     onUpdate: self => {
+      if (_isSnapping) return; // suppress during manual snap to avoid flicker
       const newIdx = Math.min(5, Math.floor(self.progress * 6));
       if (newIdx !== _svcIdx) {
         transitionToService(newIdx, _svcIdx);
         _svcIdx = newIdx;
       }
-    },
-    snap: {
-      snapTo: (value, self) => {
-        const seg = 1 / 6;
-        if (self.direction === 1) {
-          // Scrolling down → advance if past 30% into next segment
-          const base = Math.floor(value / seg) * seg;
-          return Math.min(5 / 6, (value - base) > seg * 0.3 ? base + seg : base);
-        } else {
-          // Scrolling up → retreat if past 30% back into previous segment
-          const base = Math.ceil(value / seg) * seg;
-          return Math.max(0, (base - value) > seg * 0.3 ? base - seg : base);
-        }
-      },
-      duration: { min: 0.4, max: 0.65 },
-      delay: 0.15,
-      ease: 'power1.inOut'
     }
   });
+
+  // Show service 0 before the pin engages so the entry feels smooth
+  ScrollTrigger.create({
+    trigger: '#scene-services',
+    start: 'top 80%',
+    once: true,
+    onEnter: () => transitionToService(0, -1)
+  });
+
+  // ── Manual scroll-end snap ────────────────────────────────────────────────
+  // Uses wheel/scroll events + rAF instead of GSAP snap, which has known
+  // quirks with pinned sections.
+  const _svcSection = document.getElementById('scene-services');
+  let _snapTimer    = null;
+  let _lastScrollY  = window.scrollY;
+  let _scrollDir    = 1;
+
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (!_isSnapping && y !== _lastScrollY) {
+      _scrollDir = y > _lastScrollY ? 1 : -1;
+    }
+    _lastScrollY = y;
+    if (_isSnapping) return;
+    clearTimeout(_snapTimer);
+    _snapTimer = setTimeout(doServiceSnap, 180);
+  }, { passive: true });
+
+  function doServiceSnap() {
+    if (_isSnapping || _svcIdx < 0) return;
+
+    const sTop = _svcSection.getBoundingClientRect().top + window.scrollY;
+    const sH   = _svcSection.offsetHeight;
+    const y    = window.scrollY;
+    const prog = (y - sTop) / sH;
+
+    if (prog < 0 || prog > 1) return; // outside section — let other snaps handle
+
+    const seg = 1 / 6;
+    let targetIdx;
+
+    if (_scrollDir === 1) {
+      // Scrolling down: advance if past 30% into the next service's zone
+      const base = Math.floor(prog / seg);
+      const rem  = prog - base * seg;
+      targetIdx  = rem > seg * 0.3 ? Math.min(5, base + 1) : base;
+    } else {
+      // Scrolling up: retreat if past 30% back into the previous service's zone
+      const ceilBase = Math.ceil(prog / seg);
+      const base     = Math.min(5, ceilBase);
+      const rem      = base * seg - prog;
+      targetIdx      = rem > seg * 0.3 ? Math.max(0, base - 1) : base;
+    }
+
+    const targetY = sTop + (targetIdx / 6) * sH;
+
+    // Update service content before animating scroll
+    if (targetIdx !== _svcIdx) {
+      transitionToService(targetIdx, _svcIdx);
+      _svcIdx = targetIdx;
+    }
+
+    if (Math.abs(y - targetY) < 4) return; // already at snap position
+
+    // Animate scroll with easeInOut — no GSAP ScrollTo plugin needed
+    _isSnapping = true;
+    const startY = y;
+    const dist   = targetY - startY;
+    const dur    = 450;
+    const t0     = performance.now();
+    function eio(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+    (function step(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      window.scrollTo(0, startY + dist * eio(p));
+      if (p < 1) requestAnimationFrame(step);
+      else        _isSnapping = false;
+    })(performance.now());
+  }
 
   // ── BACKGROUND CURTAIN: scrub per segment ────────
   // Each segment = 480/6 = 80vh. Curtain sweeps over 45% = 36vh for a silky reveal.
