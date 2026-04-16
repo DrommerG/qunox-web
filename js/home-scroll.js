@@ -246,20 +246,31 @@ export function initScrollAnimations(qunoxScene) {
     gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.55, ease: 'power3.out' });
   }
 
-  // Pin — natural, no harsh snap.
-  // Simple 1/6 snap with gentle power1.inOut easing feels effortless.
-  // anticipatePin: 1 eliminates entry jank by pre-computing pin geometry.
+  // Pin — directional snap: scrolling forward always advances, backward retreats.
+  // 15% threshold within a segment prevents accidental advance on tiny nudges.
+  // No anticipatePin — avoids the "wall" feeling on entry.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     pinSpacing: false,
-    anticipatePin: 1,
+    onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); },
     snap: {
-      snapTo: 1 / 6,
-      duration: { min: 0.45, max: 0.75 },
-      delay: 0.18,
+      snapTo: (value, self) => {
+        const seg = 1 / 6;
+        if (self.direction === 1) {
+          // Scrolling down → advance if past 15% into next segment
+          const base = Math.floor(value / seg) * seg;
+          return Math.min(5 / 6, (value - base) > seg * 0.15 ? base + seg : base);
+        } else {
+          // Scrolling up → retreat if past 15% back into previous segment
+          const base = Math.ceil(value / seg) * seg;
+          return Math.max(0, (base - value) > seg * 0.15 ? base - seg : base);
+        }
+      },
+      duration: { min: 0.4, max: 0.65 },
+      delay: 0.15,
       ease: 'power1.inOut'
     }
   });
