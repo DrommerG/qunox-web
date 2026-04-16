@@ -87,16 +87,18 @@ export function initScrollAnimations(qunoxScene) {
     word.appendChild(inner);
   });
 
+  gsap.set('#hero-sub', { y: 20 });
+  gsap.set('.hero__brand-label', { opacity: 0, y: 10 });
+
   const heroTL = gsap.timeline({ delay: 0.3 });
 
   heroTL
+    .to('.hero__brand-label', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' })
     .from('.hero__headline .word-inner', {
       y: '110%', duration: 1.0, stagger: 0.12, ease: 'power4.out'
-    }, '-=0.6')
+    }, '-=0.3')
     .to('#hero-sub', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.3')
     .to('#hero-scroll-hint', { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.2');
-
-  gsap.set('#hero-sub', { y: 20 });
 
   // ── HERO: camera push on scroll ─────────────
   ScrollTrigger.create({
@@ -183,7 +185,7 @@ export function initScrollAnimations(qunoxScene) {
     onLeave: ()     => qunoxScene.setDistortion(0)
   });
 
-  // ── SERVICES: sticky pin + GSAP native snap ──────────────────────────────
+  // ── SERVICES: fluid curtain scroll ──────────────────────────────────────
   const _accentBar = document.getElementById('services-accent-bar');
   _accentBar.style.width = '100%';
 
@@ -209,43 +211,44 @@ export function initScrollAnimations(qunoxScene) {
       }
     });
     const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
-    gsap.set(newTitle, { y: dir * 40, opacity: 0 });
+    gsap.set(newTitle, { y: dir * 22, opacity: 0 });
     newTitle.classList.add('active');
-    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' });
+    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
 
     // ── Image ──────────────────────────────────────
     const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
     const newImg = document.querySelector(`.svc-img[data-svc="${newIdx}"]`);
     if (oldImg) {
-      gsap.to(oldImg, { opacity: 0, duration: 0.25, ease: 'power2.in',
+      gsap.to(oldImg, { opacity: 0, duration: 0.35, ease: 'power2.in',
         onComplete: () => oldImg.classList.remove('active') });
     }
     gsap.set(newImg, { opacity: 0 });
     newImg.classList.add('active');
-    gsap.to(newImg, { opacity: 1, duration: 0.4, delay: 0.1, ease: 'power2.out' });
+    gsap.to(newImg, { opacity: 1, duration: 0.55, delay: 0.1, ease: 'power2.out' });
 
     // ── Copy + link ────────────────────────────────
     const copyEl = document.getElementById('services-copy-text');
     const linkEl = document.getElementById('services-link');
     gsap.killTweensOf([copyEl, linkEl]);
     gsap.to([copyEl, linkEl], {
-      opacity: 0, y: dir * 10, duration: 0.18, ease: 'power2.in',
+      opacity: 0, y: dir * 8, duration: 0.2, ease: 'power2.in',
       onComplete: () => {
         copyEl.textContent = svc.copy;
         linkEl.href = svc.link;
         gsap.fromTo([copyEl, linkEl],
-          { opacity: 0, y: dir * -10 },
-          { opacity: 1, y: 0, duration: 0.35, stagger: 0.06, ease: 'power3.out' }
+          { opacity: 0, y: dir * -8 },
+          { opacity: 1, y: 0, duration: 0.45, stagger: 0.07, ease: 'power3.out' }
         );
       }
     });
 
     // ── Accent bar wipe ────────────────────────────
-    gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.5, ease: 'power4.out' });
+    gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.55, ease: 'power3.out' });
   }
 
-  // Pin + GSAP native snap
-  // anticipatePin: 1 pre-applies pin geometry before trigger fires — eliminates entry jank
+  // Pin — natural, no harsh snap.
+  // Simple 1/6 snap with gentle power1.inOut easing feels effortless.
+  // anticipatePin: 1 eliminates entry jank by pre-computing pin geometry.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
@@ -254,20 +257,17 @@ export function initScrollAnimations(qunoxScene) {
     pinSpacing: false,
     anticipatePin: 1,
     snap: {
-      snapTo: (value, self) => {
-        // Don't snap back to 0 when entering from above — let momentum carry forward
-        if (value < (1 / 12) && self && self.direction === 1) return 1 / 6;
-        return Math.round(value * 6) / 6;
-      },
-      duration: { min: 0.35, max: 0.65 },
-      delay: 0.12,
-      ease: 'power2.inOut'
+      snapTo: 1 / 6,
+      duration: { min: 0.45, max: 0.75 },
+      delay: 0.18,
+      ease: 'power1.inOut'
     }
   });
 
   // ── BACKGROUND CURTAIN: scrub per segment ────────
-  const segVh = 700 / 6;
-  const wipeVh = segVh * 0.3;
+  // Each segment = 480/6 = 80vh. Curtain sweeps over 45% = 36vh for a silky reveal.
+  const segVh = 480 / 6;
+  const wipeVh = segVh * 0.45;
 
   for (let i = 1; i <= 5; i++) {
     gsap.fromTo(`.svc-bg[data-bg="${i}"]`,
@@ -279,7 +279,7 @@ export function initScrollAnimations(qunoxScene) {
           trigger: '#scene-services',
           start: `top+=${i * segVh}vh top`,
           end:   `top+=${i * segVh + wipeVh}vh top`,
-          scrub: true
+          scrub: 0.8
         }
       }
     );

@@ -101,7 +101,7 @@ body::before{
 }
 #nav.scrolled{box-shadow:0 1px 24px rgba(67,97,238,0.10);border-color:rgba(67,97,238,0.12)}
 .nav-inner{width:100%;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.nav-logo-img{height:52px;width:auto;mix-blend-mode:multiply;display:block}
+.nav-logo-img{height:70px;width:auto;mix-blend-mode:multiply;display:block}
 .nav-links{display:flex;align-items:center;gap:36px;list-style:none}
 .nav-links a{
   font-size:14px;font-weight:500;color:var(--sub);

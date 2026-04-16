@@ -67,6 +67,19 @@ body.ready .page-wrap { opacity: 1; }
   padding: 0 2rem;
 }
 
+.hero__brand-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: clamp(0.6rem, 0.8vw, 0.72rem);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--blue, #4361EE);
+  display: block;
+  margin-bottom: 1.4rem;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
 .hero__headline {
   font-family: var(--font-head, 'Space Grotesk', sans-serif);
   font-size: clamp(4rem, 9vw, 9rem);
@@ -345,7 +358,7 @@ body.ready .page-wrap { opacity: 1; }
 /* ================================================
    SCENE 3-8 — SERVICES  (700vh)
    ================================================ */
-.scene--services { position: relative; height: 700vh; background: #fff; }
+.scene--services { position: relative; height: 480vh; background: #fff; }
 
 .services__progress-track {
   position: fixed; right: 2.5rem; top: 50%;
