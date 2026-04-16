@@ -246,27 +246,36 @@ export function initScrollAnimations(qunoxScene) {
     gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.55, ease: 'power3.out' });
   }
 
-  // Pin — directional snap: scrolling forward always advances, backward retreats.
-  // 15% threshold within a segment prevents accidental advance on tiny nudges.
-  // No anticipatePin — avoids the "wall" feeling on entry.
+  // Pin + snap + service sync — single trigger so progress is always in sync.
+  // Directional snap: scrolling forward/backward always advances/retreats.
+  // 30% threshold prevents accidental advance on tiny nudges.
+  // anticipatePin: 1 prevents the 1-frame jump on pin engagement.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     pinSpacing: false,
+    anticipatePin: 1,
     onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); },
+    onUpdate: self => {
+      const newIdx = Math.min(5, Math.floor(self.progress * 6));
+      if (newIdx !== _svcIdx) {
+        transitionToService(newIdx, _svcIdx);
+        _svcIdx = newIdx;
+      }
+    },
     snap: {
       snapTo: (value, self) => {
         const seg = 1 / 6;
         if (self.direction === 1) {
-          // Scrolling down → advance if past 15% into next segment
+          // Scrolling down → advance if past 30% into next segment
           const base = Math.floor(value / seg) * seg;
-          return Math.min(5 / 6, (value - base) > seg * 0.15 ? base + seg : base);
+          return Math.min(5 / 6, (value - base) > seg * 0.3 ? base + seg : base);
         } else {
-          // Scrolling up → retreat if past 15% back into previous segment
+          // Scrolling up → retreat if past 30% back into previous segment
           const base = Math.ceil(value / seg) * seg;
-          return Math.max(0, (base - value) > seg * 0.15 ? base - seg : base);
+          return Math.max(0, (base - value) > seg * 0.3 ? base - seg : base);
         }
       },
       duration: { min: 0.4, max: 0.65 },
@@ -295,27 +304,6 @@ export function initScrollAnimations(qunoxScene) {
       }
     );
   }
-
-  // Sync service index from scroll progress
-  ScrollTrigger.create({
-    trigger: '#scene-services',
-    start: 'top top', end: 'bottom bottom',
-    onUpdate: self => {
-      const newIdx = Math.min(5, Math.floor(self.progress * 6));
-      if (newIdx !== _svcIdx) {
-        transitionToService(newIdx, _svcIdx);
-        _svcIdx = newIdx;
-      }
-    }
-  });
-
-  // Show first service when section enters viewport
-  ScrollTrigger.create({
-    trigger: '#scene-services',
-    start: 'top 80%',
-    once: true,
-    onEnter: () => transitionToService(0, -1)
-  });
 
   // ── CLOSING ──────────────────────────────────
   gsap.set('.closing__actions', { y: 20 });
