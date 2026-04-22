@@ -185,23 +185,18 @@ export function initScrollAnimations(qunoxScene) {
     onLeave: ()     => qunoxScene.setDistortion(0)
   });
 
-  // ── SERVICES: fluid curtain scroll ──────────────────────────────────────
+  // ── SERVICES: pure scroll-driven, no snap, no auto-movement ─────────────
   const _accentBar = document.getElementById('services-accent-bar');
   _accentBar.style.width = '100%';
 
-  let _svcIdx      = -1;
-  let _isSnapping  = false;
-  let _snapCooldown = false; // brief lock after a snap completes
+  let _svcIdx = -1;
 
   function transitionToService(newIdx, oldIdx) {
     if (newIdx === oldIdx) return;
     const svc = SERVICES[newIdx];
     const dir = (oldIdx < 0) ? 1 : (newIdx > oldIdx ? 1 : -1);
 
-    // Accent color
     _accentBar.style.background = svc.accent;
-
-    // Three.js
     qunoxScene.setServiceMode(newIdx);
 
     // ── Title ──────────────────────────────────────
@@ -213,53 +208,50 @@ export function initScrollAnimations(qunoxScene) {
       }
     });
     const newTitle = document.querySelector(`.svc-title[data-svc="${newIdx}"]`);
-    gsap.set(newTitle, { y: dir * 22, opacity: 0 });
+    gsap.set(newTitle, { y: dir * 10, opacity: 0 });
     newTitle.classList.add('active');
-    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
+    gsap.to(newTitle, { y: 0, opacity: 1, duration: 0.35, ease: 'power2.out' });
 
     // ── Image ──────────────────────────────────────
     const oldImg = oldIdx >= 0 ? document.querySelector(`.svc-img[data-svc="${oldIdx}"]`) : null;
     const newImg = document.querySelector(`.svc-img[data-svc="${newIdx}"]`);
     if (oldImg) {
-      gsap.to(oldImg, { opacity: 0, duration: 0.35, ease: 'power2.in',
+      gsap.to(oldImg, { opacity: 0, duration: 0.25, ease: 'power2.in',
         onComplete: () => oldImg.classList.remove('active') });
     }
     gsap.set(newImg, { opacity: 0 });
     newImg.classList.add('active');
-    gsap.to(newImg, { opacity: 1, duration: 0.55, delay: 0.1, ease: 'power2.out' });
+    gsap.to(newImg, { opacity: 1, duration: 0.35, ease: 'power2.out' });
 
     // ── Copy + link ────────────────────────────────
     const copyEl = document.getElementById('services-copy-text');
     const linkEl = document.getElementById('services-link');
     gsap.killTweensOf([copyEl, linkEl]);
     gsap.to([copyEl, linkEl], {
-      opacity: 0, y: dir * 8, duration: 0.2, ease: 'power2.in',
+      opacity: 0, y: dir * 5, duration: 0.15, ease: 'power2.in',
       onComplete: () => {
         copyEl.textContent = svc.copy;
         linkEl.href = svc.link;
         gsap.fromTo([copyEl, linkEl],
-          { opacity: 0, y: dir * -8 },
-          { opacity: 1, y: 0, duration: 0.45, stagger: 0.07, ease: 'power3.out' }
+          { opacity: 0, y: dir * -5 },
+          { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: 'power2.out' }
         );
       }
     });
 
-    // ── Accent bar wipe ────────────────────────────
-    gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.55, ease: 'power3.out' });
+    // ── Accent bar ─────────────────────────────────
+    gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.35, ease: 'power2.out' });
   }
 
-  // ── Pin — pinSpacing: true (default) so GSAP adds spacer and downstream
-  // content stays correctly positioned after the pinned block.
-  // anticipatePin: 1 prevents the 1-frame jump when the pin engages.
+  // ── Pin — no snap, user controls scroll entirely.
+  // Service changes only when onUpdate fires due to actual scrolling.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
     anticipatePin: 1,
-    onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); },
     onUpdate: self => {
-      if (_isSnapping) return;
       const newIdx = Math.min(5, Math.floor(self.progress * 6));
       if (newIdx !== _svcIdx) {
         transitionToService(newIdx, _svcIdx);
@@ -268,100 +260,18 @@ export function initScrollAnimations(qunoxScene) {
     }
   });
 
-  // Show service 0 before the pin engages so the entry feels smooth
+  // Pre-load service 0 content before the pin engages — eliminates entry collision.
   ScrollTrigger.create({
     trigger: '#scene-services',
-    start: 'top 80%',
+    start: 'top 90%',
     once: true,
-    onEnter: () => transitionToService(0, -1)
+    onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); }
   });
 
-  // ── Manual scroll-end snap ────────────────────────────────────────────────
-  const _svcSection = document.getElementById('scene-services');
-  let _snapTimer   = null;
-  let _lastScrollY = window.scrollY;
-  let _scrollDir   = 1;
-
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (!_isSnapping && y !== _lastScrollY) {
-      _scrollDir = y > _lastScrollY ? 1 : -1;
-    }
-    _lastScrollY = y;
-    if (_isSnapping || _snapCooldown) return;
-    clearTimeout(_snapTimer);
-    _snapTimer = setTimeout(doServiceSnap, 220);
-  }, { passive: true });
-
-  function doServiceSnap() {
-    if (_isSnapping || _snapCooldown || _svcIdx < 0) return;
-
-    const sTop = _svcSection.getBoundingClientRect().top + window.scrollY;
-    const sH   = _svcSection.offsetHeight;
-    const vH   = window.innerHeight;
-    const y    = window.scrollY;
-
-    // Effective scroll range inside the pin: top of section → (sH - vH) past it
-    const pinScrollLength = sH - vH;
-    const pinOffset = y - sTop;
-    const prog = pinOffset / pinScrollLength;
-
-    if (prog < 0 || prog > 1) return; // outside active pin range
-
-    // Allow natural exit: near the very end scrolling down, or near the
-    // very start scrolling up — don't snap, let the section release.
-    const EXIT_THRESHOLD = 0.04;
-    if (_scrollDir === 1  && prog > 1 - EXIT_THRESHOLD) return;
-    if (_scrollDir === -1 && prog < EXIT_THRESHOLD)      return;
-
-    const seg = 1 / 6;
-    let targetIdx;
-
-    if (_scrollDir === 1) {
-      const base = Math.floor(prog / seg);
-      const rem  = prog - base * seg;
-      targetIdx  = rem > seg * 0.3 ? Math.min(5, base + 1) : base;
-    } else {
-      const ceilBase = Math.ceil(prog / seg);
-      const base     = Math.min(5, ceilBase);
-      const rem      = base * seg - prog;
-      targetIdx      = rem > seg * 0.3 ? Math.max(0, base - 1) : base;
-    }
-
-    const targetY = sTop + (targetIdx / 6) * pinScrollLength;
-
-    if (targetIdx !== _svcIdx) {
-      transitionToService(targetIdx, _svcIdx);
-      _svcIdx = targetIdx;
-    }
-
-    if (Math.abs(y - targetY) < 4) return;
-
-    _isSnapping = true;
-    const startY = y;
-    const dist   = targetY - startY;
-    const dur    = 480;
-    const t0     = performance.now();
-    function eio(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
-    (function step(now) {
-      const p = Math.min((now - t0) / dur, 1);
-      window.scrollTo(0, startY + dist * eio(p));
-      if (p < 1) {
-        requestAnimationFrame(step);
-      } else {
-        _isSnapping = false;
-        // Brief cooldown so the scroll event fired right after the snap
-        // doesn't immediately trigger another snap cycle.
-        _snapCooldown = true;
-        setTimeout(() => { _snapCooldown = false; }, 120);
-      }
-    })(performance.now());
-  }
-
-  // ── BACKGROUND CURTAIN: scrub per segment ────────
-  // Each segment = 480/6 = 80vh. Curtain sweeps over 45% = 36vh for a silky reveal.
-  const segVh = 480 / 6;
-  const wipeVh = segVh * 0.45;
+  // ── BACKGROUND CURTAIN: scrub: 0.2 for immediate response ────────────────
+  // Each segment = 480/6 = 80vh. Curtain sweeps over 40% = 32vh.
+  const segVh  = 480 / 6;
+  const wipeVh = segVh * 0.4;
 
   for (let i = 1; i <= 5; i++) {
     gsap.fromTo(`.svc-bg[data-bg="${i}"]`,
@@ -373,7 +283,7 @@ export function initScrollAnimations(qunoxScene) {
           trigger: '#scene-services',
           start: `top+=${i * segVh}vh top`,
           end:   `top+=${i * segVh + wipeVh}vh top`,
-          scrub: 0.8
+          scrub: 0.2
         }
       }
     );
