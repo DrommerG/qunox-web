@@ -189,8 +189,9 @@ export function initScrollAnimations(qunoxScene) {
   const _accentBar = document.getElementById('services-accent-bar');
   _accentBar.style.width = '100%';
 
-  let _svcIdx     = -1;
-  let _isSnapping = false;
+  let _svcIdx      = -1;
+  let _isSnapping  = false;
+  let _snapCooldown = false; // brief lock after a snap completes
 
   function transitionToService(newIdx, oldIdx) {
     if (newIdx === oldIdx) return;
@@ -247,18 +248,18 @@ export function initScrollAnimations(qunoxScene) {
     gsap.fromTo(_accentBar, { width: '0%' }, { width: '100%', duration: 0.55, ease: 'power3.out' });
   }
 
-  // ── Pin (no GSAP snap — manual snap below is more reliable) ─────────────
+  // ── Pin — pinSpacing: true (default) so GSAP adds spacer and downstream
+  // content stays correctly positioned after the pinned block.
   // anticipatePin: 1 prevents the 1-frame jump when the pin engages.
   ScrollTrigger.create({
     trigger: '#scene-services',
     start: 'top top',
     end: 'bottom bottom',
     pin: '#services-sticky-panel',
-    pinSpacing: false,
     anticipatePin: 1,
     onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); },
     onUpdate: self => {
-      if (_isSnapping) return; // suppress during manual snap to avoid flicker
+      if (_isSnapping) return;
       const newIdx = Math.min(5, Math.floor(self.progress * 6));
       if (newIdx !== _svcIdx) {
         transitionToService(newIdx, _svcIdx);
@@ -276,12 +277,10 @@ export function initScrollAnimations(qunoxScene) {
   });
 
   // ── Manual scroll-end snap ────────────────────────────────────────────────
-  // Uses wheel/scroll events + rAF instead of GSAP snap, which has known
-  // quirks with pinned sections.
   const _svcSection = document.getElementById('scene-services');
-  let _snapTimer    = null;
-  let _lastScrollY  = window.scrollY;
-  let _scrollDir    = 1;
+  let _snapTimer   = null;
+  let _lastScrollY = window.scrollY;
+  let _scrollDir   = 1;
 
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
@@ -289,59 +288,73 @@ export function initScrollAnimations(qunoxScene) {
       _scrollDir = y > _lastScrollY ? 1 : -1;
     }
     _lastScrollY = y;
-    if (_isSnapping) return;
+    if (_isSnapping || _snapCooldown) return;
     clearTimeout(_snapTimer);
-    _snapTimer = setTimeout(doServiceSnap, 180);
+    _snapTimer = setTimeout(doServiceSnap, 220);
   }, { passive: true });
 
   function doServiceSnap() {
-    if (_isSnapping || _svcIdx < 0) return;
+    if (_isSnapping || _snapCooldown || _svcIdx < 0) return;
 
     const sTop = _svcSection.getBoundingClientRect().top + window.scrollY;
     const sH   = _svcSection.offsetHeight;
+    const vH   = window.innerHeight;
     const y    = window.scrollY;
-    const prog = (y - sTop) / sH;
 
-    if (prog < 0 || prog > 1) return; // outside section — let other snaps handle
+    // Effective scroll range inside the pin: top of section → (sH - vH) past it
+    const pinScrollLength = sH - vH;
+    const pinOffset = y - sTop;
+    const prog = pinOffset / pinScrollLength;
+
+    if (prog < 0 || prog > 1) return; // outside active pin range
+
+    // Allow natural exit: near the very end scrolling down, or near the
+    // very start scrolling up — don't snap, let the section release.
+    const EXIT_THRESHOLD = 0.04;
+    if (_scrollDir === 1  && prog > 1 - EXIT_THRESHOLD) return;
+    if (_scrollDir === -1 && prog < EXIT_THRESHOLD)      return;
 
     const seg = 1 / 6;
     let targetIdx;
 
     if (_scrollDir === 1) {
-      // Scrolling down: advance if past 30% into the next service's zone
       const base = Math.floor(prog / seg);
       const rem  = prog - base * seg;
       targetIdx  = rem > seg * 0.3 ? Math.min(5, base + 1) : base;
     } else {
-      // Scrolling up: retreat if past 30% back into the previous service's zone
       const ceilBase = Math.ceil(prog / seg);
       const base     = Math.min(5, ceilBase);
       const rem      = base * seg - prog;
       targetIdx      = rem > seg * 0.3 ? Math.max(0, base - 1) : base;
     }
 
-    const targetY = sTop + (targetIdx / 6) * sH;
+    const targetY = sTop + (targetIdx / 6) * pinScrollLength;
 
-    // Update service content before animating scroll
     if (targetIdx !== _svcIdx) {
       transitionToService(targetIdx, _svcIdx);
       _svcIdx = targetIdx;
     }
 
-    if (Math.abs(y - targetY) < 4) return; // already at snap position
+    if (Math.abs(y - targetY) < 4) return;
 
-    // Animate scroll with easeInOut — no GSAP ScrollTo plugin needed
     _isSnapping = true;
     const startY = y;
     const dist   = targetY - startY;
-    const dur    = 450;
+    const dur    = 480;
     const t0     = performance.now();
     function eio(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
     (function step(now) {
       const p = Math.min((now - t0) / dur, 1);
       window.scrollTo(0, startY + dist * eio(p));
-      if (p < 1) requestAnimationFrame(step);
-      else        _isSnapping = false;
+      if (p < 1) {
+        requestAnimationFrame(step);
+      } else {
+        _isSnapping = false;
+        // Brief cooldown so the scroll event fired right after the snap
+        // doesn't immediately trigger another snap cycle.
+        _snapCooldown = true;
+        setTimeout(() => { _snapCooldown = false; }, 120);
+      }
     })(performance.now());
   }
 
