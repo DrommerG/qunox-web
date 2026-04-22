@@ -189,7 +189,23 @@ export function initScrollAnimations(qunoxScene) {
   const _accentBar = document.getElementById('services-accent-bar');
   _accentBar.style.width = '100%';
 
-  let _svcIdx = -1;
+  let _svcIdx = 0;
+
+  // Initialize service 0 statically — no animation, panel is ready before pin engages.
+  // All subsequent transitions (including returning to 0 from 1) go through onUpdate.
+  (() => {
+    const svc0 = SERVICES[0];
+    _accentBar.style.background = svc0.accent;
+    qunoxScene.setServiceMode(0);
+    const t = document.querySelector('.svc-title[data-svc="0"]');
+    t.classList.add('active');
+    gsap.set(t, { y: 0, opacity: 1 });
+    const img = document.querySelector('.svc-img[data-svc="0"]');
+    img.classList.add('active');
+    gsap.set(img, { opacity: 1 });
+    document.getElementById('services-copy-text').textContent = svc0.copy;
+    document.getElementById('services-link').href = svc0.link;
+  })();
 
   function transitionToService(newIdx, oldIdx) {
     if (newIdx === oldIdx) return;
@@ -260,17 +276,9 @@ export function initScrollAnimations(qunoxScene) {
     }
   });
 
-  // Pre-load service 0 content before the pin engages — eliminates entry collision.
-  ScrollTrigger.create({
-    trigger: '#scene-services',
-    start: 'top 90%',
-    once: true,
-    onEnter: () => { if (_svcIdx < 0) transitionToService(0, -1); }
-  });
-
   // ── BACKGROUND CURTAIN: scrub: 0.2 for immediate response ────────────────
-  // Each segment = 480/6 = 80vh. Curtain sweeps over 40% = 32vh.
-  const segVh  = 480 / 6;
+  // Each segment = 300/6 = 50vh. Curtain sweeps over 40% = 20vh.
+  const segVh  = 300 / 6;
   const wipeVh = segVh * 0.4;
 
   for (let i = 1; i <= 5; i++) {
